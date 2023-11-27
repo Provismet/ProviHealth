@@ -1,0 +1,22 @@
+name: Balance Feedback
+description: Issues relating to a feature being too strong or too weak.
+labels: "balance"
+projects: "Provismet/3"
+body:
+  - type: dropdown
+    id: tweak-type
+    attributes:
+      label: Adjustment Type
+      options:
+        - Buff
+        - Nerf
+        - Functional tweak
+    validations:
+      required: true
+  - type: textarea
+    id: describe-issue
+    attributes:
+      label: Description
+      placeholder: Describe the issue here in as much detail as possible. Give examples of real gameplay scenarios if you have any.
+    validations:
+      required: true

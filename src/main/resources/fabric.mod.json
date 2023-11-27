@@ -1,41 +1,31 @@
 {
 	"schemaVersion": 1,
-	"id": "modid",
+	"id": "provihealth",
 	"version": "${version}",
-	"name": "Example mod",
+	"name": "Provi's Health Bars",
 	"description": "This is an example description! Tell everyone what your mod is about!",
 	"authors": [
-		"Me!"
+		"Provismet"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/Provismet/ProviHealth",
+		"sources": "https://github.com/Provismet/ProviHealth"
 	},
-	"license": "CC0-1.0",
-	"icon": "assets/modid/icon.png",
-	"environment": "*",
+	"license": "Apache-2",
+	"icon": "assets/provihealth/icon.png",
+	"environment": "client",
 	"entrypoints": {
-		"main": [
-			"com.example.ExampleMod"
-		],
 		"client": [
-			"com.example.ExampleModClient"
+			"com.provismet.provihealth.ProviHealthClient"
 		]
 	},
 	"mixins": [
-		"modid.mixins.json",
-		{
-			"config": "modid.client.mixins.json",
-			"environment": "client"
-		}
+		"provihealth.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.14.22",
 		"minecraft": "~1.20.2",
 		"java": ">=17",
 		"fabric-api": "*"
-	},
-	"suggests": {
-		"another-mod": "*"
 	}
 }
