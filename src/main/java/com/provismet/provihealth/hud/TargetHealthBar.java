@@ -18,6 +18,9 @@ import net.minecraft.util.math.MathHelper;
 
 public class TargetHealthBar implements HudRenderCallback {
     private static final Identifier BARS = ProviHealthClient.identifier("textures/gui/healthbars/bars.png");
+    private static final Identifier HEART = new Identifier("hud/heart/full");
+    private static final Identifier VEHICLE_HEART = new Identifier("hud/heart/vehicle_full");
+
     private static final int BAR_WIDTH = 128;
     private static final int BAR_HEIGHT = 10;
     private static final int MOUNT_BAR_HEIGHT = 6;
@@ -84,7 +87,20 @@ public class TargetHealthBar implements HudRenderCallback {
 
             drawContext.drawTexture(BorderRegistry.getBorder(target.getGroup()), 0, 0, FRAME_LENGTH, FRAME_LENGTH, 48f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Portrait Background
             drawContext.drawText(MinecraftClient.getInstance().textRenderer, target.getName(), FRAME_LENGTH, BAR_Y - BAR_HEIGHT, 0xFFFFFF, true); // Name
-            drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("%d/%d", Math.round(this.target.getHealth()), Math.round(this.target.getMaxHealth())), FRAME_LENGTH, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true); // Health Value
+            int healthX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("%d/%d", Math.round(this.target.getHealth()), Math.round(this.target.getMaxHealth())), FRAME_LENGTH, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true); // Health Value
+            drawContext.drawGuiTexture(HEART, healthX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 1, 11, 11);
+
+            if (vehicleMaxHealthDeep > 0f) {
+                String mountHealthString = String.format("%d/%d", Math.round(vehicleHealthDeep), Math.round(vehicleMaxHealthDeep));
+                int mountHealthWidth = MinecraftClient.getInstance().textRenderer.getWidth(mountHealthString) + 11;
+                int expectedLeftPixel = BAR_X + BAR_WIDTH - mountHealthWidth - 3;
+
+                if (expectedLeftPixel < healthX) expectedLeftPixel = healthX + 12;
+
+                int mountHealthX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, mountHealthString, expectedLeftPixel, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true);
+                drawContext.drawGuiTexture(VEHICLE_HEART, mountHealthX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 1, 11, 11);
+            }
+
             if (BorderRegistry.getItem(this.target.getGroup()) != null) drawContext.drawItem(BorderRegistry.getItem(this.target.getGroup()), BAR_X + BAR_WIDTH - 16, BAR_Y - 16);
 
             float prevTargetHeadYaw = this.target.getHeadYaw();
