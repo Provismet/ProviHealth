@@ -1,11 +1,11 @@
 package com.provismet.provihealth.hud;
 
-import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import com.provismet.provihealth.ProviHealthClient;
 import com.provismet.provihealth.config.Options;
+import com.provismet.provihealth.world.EntityHealthBar;
 
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
@@ -40,12 +40,18 @@ public class TargetHealthBar implements HudRenderCallback {
         boolean isNew = false;
 
         if (MinecraftClient.getInstance().targetedEntity instanceof LivingEntity living) {
+            if (living.isInvisibleTo(MinecraftClient.getInstance().player)) return;
             if (!living.equals(this.target)) isNew = true;
             this.target = living;
             this.healthBarDuration = Options.maxHealthBarTicks;
         }
 
-        if (this.target != null && this.healthBarDuration > 0f) {
+        if (this.healthBarDuration > 0f) {
+            if (this.target == null) {
+                this.reset();
+                return;
+            }
+
             float healthPercent = MathHelper.clamp(this.target.getHealth() / this.target.getMaxHealth(), 0f, 1f);
 
             float vehicleHealthDeep = 0f;
@@ -96,12 +102,14 @@ public class TargetHealthBar implements HudRenderCallback {
             this.target.prevHeadYaw = this.target.getYaw() + headBodyYawDifference;
 
             drawContext.enableScissor(0, 0, FRAME_LENGTH, FRAME_LENGTH);
-            InventoryScreen.drawEntity(drawContext, 28, 32, 30,
+            EntityHealthBar.enabled = false;
+            InventoryScreen.drawEntity(drawContext, 24, 32, 30,
                 new Vector3f(0.0F, this.target.getHeight() / 2f + 0.0625f, 0f),
                 (new Quaternionf()).rotateZ(3.1415927f),
                 null,
                 this.target
             );
+            EntityHealthBar.enabled = true;
             drawContext.disableScissor();
 
             this.target.setHeadYaw(prevTargetHeadYaw);
@@ -110,14 +118,11 @@ public class TargetHealthBar implements HudRenderCallback {
             this.target.prevBodyYaw = prevPrevTargetBodyYaw;
             this.target.setYaw(prevTargetYaw);
 
-            drawContext.drawTexture(BorderRegistry.getBorder(this.target.getGroup()), 0, 0, FRAME_LENGTH, FRAME_LENGTH, 0f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Portrait Foreground
+            drawContext.drawTexture(BorderRegistry.getBorder(this.target.getGroup()), 0, 0, 300, 0f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Portrait foreground
         }
 
         if (this.healthBarDuration > 0f) this.healthBarDuration -= tickDelta;
-        else {
-            this.healthBarDuration = 0f;
-            this.target = null;
-        }
+        else this.reset();
     }
 
     private int glideHealth (int trueValue, float glideFactor) {
@@ -138,16 +143,10 @@ public class TargetHealthBar implements HudRenderCallback {
         drawContext.drawTexture(BARS, BAR_X, BAR_Y + BAR_HEIGHT, width, MOUNT_BAR_HEIGHT, 0f, barIndex * (BAR_HEIGHT + MOUNT_BAR_HEIGHT) + BAR_HEIGHT, width, MOUNT_BAR_HEIGHT, BAR_WIDTH, 32);
     }
 
-    @Nullable
-    private LivingEntity getTopMostPassenger (Entity entity) {
-        if (entity == null) return null;
-
-        LivingEntity topmost = null;
-        Entity iterable;
-        for (iterable = entity; iterable.hasPassengers(); iterable.getFirstPassenger()) {
-            if (iterable instanceof LivingEntity living) topmost = living;
-        }
-
-        return topmost;
+    private void reset () {
+        this.healthBarDuration = 0f;
+        this.target = null;
+        this.currentHealthWidth = 0;
+        this.currentVehicleHealthWidth = 0;
     }
 }
