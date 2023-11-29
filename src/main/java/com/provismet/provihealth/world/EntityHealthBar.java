@@ -53,7 +53,7 @@ public class EntityHealthBar {
 
         Matrix4f model = matrices.peek().getPositionMatrix();
         renderBar(model, vertexConsumer, 1, 1f, false); // Empty
-        renderBar(model, vertexConsumer, 0, ((IMixinLivingEntity)target).provihealth_glideHealth(tickDelta * 0.5f), false); // Health
+        renderBar(model, vertexConsumer, 0, ((IMixinLivingEntity)target).provihealth_glideHealth(tickDelta * Options.worldGlide), false); // Health
 
         if (target.hasVehicle()) {
             float vehicleHealthDeep = 0f;
@@ -73,7 +73,7 @@ public class EntityHealthBar {
                 matrices.translate(0f, -1f * (7f / TEXTURE_SIZE), 0f);
                 Matrix4f mountModel = matrices.peek().getPositionMatrix();
                 renderBar(mountModel, vertexConsumer, 1, 1f, true);
-                renderBar(mountModel, vertexConsumer, 0, ((IMixinLivingEntity)target).provihealth_glideVehicle(vehicleHealthPercent, tickDelta * 0.5f), true);
+                renderBar(mountModel, vertexConsumer, 0, ((IMixinLivingEntity)target).provihealth_glideVehicle(vehicleHealthPercent, tickDelta * Options.worldGlide), true);
             }
         }
 

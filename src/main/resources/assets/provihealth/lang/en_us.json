@@ -1,0 +1,34 @@
+{
+    "title.provihealth.config": "Provi's Health Bars",
+    
+    "category.provihealth.general": "General",
+    "category.provihealth.hud": "HUD",
+    "category.provihealth.health": "In-World",
+
+    "subcategory.provihealth.boss": "Bosses",
+    "subcategory.provihealth.hostile": "Hostile Mobs",
+    "subcategory.provihealth.player": "Players",
+    "subcategory.provihealth.other": "Non-Hostile Mobs",
+
+    "entry.provihealth.hudDuration": "HUD Duration",
+    "entry.provihealth.blacklist": "Blacklist",
+    "entry.provihealth.boss": "Boss Display",
+    "entry.provihealth.hostile": "Hostile Mob Display",
+    "entry.provihealth.player": "Player Display",
+    "entry.provihealth.other": "Non-Hostile Mob Display",
+    "entry.provihealth.healthBar": "Health Bar Visibility",
+    "entry.provihealth.targetOverride": "Show On Target",
+    "entry.provihealth.hudGlide": "Glide Speed",
+
+    "enum.provihealth.full": "Full",
+    "enum.provihealth.portrait_only": "Portrait Only",
+    "enum.provihealth.none": "None",
+
+    "enum.provihealth.always_show": "Show",
+    "enum.provihealth.hide_if_full": "Hide When Full",
+    "enum.provihealth.always_hide": "Hide",
+
+    "tooltip.provihealth.hudDuration": "How many ticks the HUD display will linger for when not targeting a mob.",
+    "tooltip.provihealth.targetOverride": "Always render health bar when targeting a mob of this type.",
+    "tooltip.provihealth.glide": "Determines how quickly the health bar will slide from its old value to new values.\nWarning: Very low values will prevent the health bar visual from catching up with the true value."
+}

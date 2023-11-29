@@ -5,6 +5,7 @@ import org.joml.Vector3f;
 
 import com.provismet.provihealth.ProviHealthClient;
 import com.provismet.provihealth.config.Options;
+import com.provismet.provihealth.config.Options.HUDType;
 import com.provismet.provihealth.world.EntityHealthBar;
 
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
@@ -55,6 +56,8 @@ public class TargetHealthBar implements HudRenderCallback {
                 return;
             }
 
+            HUDType hudType = Options.getHUDFor(this.target);
+
             float healthPercent = MathHelper.clamp(this.target.getHealth() / this.target.getMaxHealth(), 0f, 1f);
 
             float vehicleHealthDeep = 0f;
@@ -78,63 +81,72 @@ public class TargetHealthBar implements HudRenderCallback {
                 this.currentVehicleHealthWidth = vehicleHealthWidth;
             }
 
-            this.renderBar(drawContext, BAR_WIDTH, 1); // Empty space
-            this.renderBar(drawContext, glideHealth(healthWidth, tickDelta * 0.5f), 0); // Health
-            if (vehicleMaxHealthDeep > 0f) {
-                this.renderMountBar(drawContext, MOUNT_BAR_WIDTH, 1); // Empty space
-                this.renderMountBar(drawContext, glideVehicleHealth(vehicleHealthWidth, tickDelta * 0.5f), 0); // Health
+            if (hudType == HUDType.FULL) {
+                // Render bars
+                this.renderBar(drawContext, BAR_WIDTH, 1); // Empty space
+                this.renderBar(drawContext, glideHealth(healthWidth, tickDelta * Options.hudGlide), 0); // Health
+                if (vehicleMaxHealthDeep > 0f) {
+                    this.renderMountBar(drawContext, MOUNT_BAR_WIDTH, 1); // Empty space
+                    this.renderMountBar(drawContext, glideVehicleHealth(vehicleHealthWidth, tickDelta * Options.hudGlide), 0); // Health
+                }
+
+                // Render health value and heart icons
+                int healthX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("%d/%d", Math.round(this.target.getHealth()), Math.round(this.target.getMaxHealth())), FRAME_LENGTH, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true); // Health Value
+                drawContext.drawGuiTexture(HEART, healthX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 1, 11, 11);
+
+                if (vehicleMaxHealthDeep > 0f) {
+                    String mountHealthString = String.format("%d/%d", Math.round(vehicleHealthDeep), Math.round(vehicleMaxHealthDeep));
+                    int mountHealthWidth = MinecraftClient.getInstance().textRenderer.getWidth(mountHealthString) + 11;
+                    int expectedLeftPixel = BAR_X + BAR_WIDTH - mountHealthWidth - 3;
+
+                    if (expectedLeftPixel < healthX) expectedLeftPixel = healthX + 12;
+
+                    int mountHealthX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, mountHealthString, expectedLeftPixel, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true);
+                    drawContext.drawGuiTexture(VEHICLE_HEART, mountHealthX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 1, 11, 11);
+                }
+
+                // Render entity group icon
+                if (BorderRegistry.getItem(this.target.getGroup()) != null) drawContext.drawItem(BorderRegistry.getItem(this.target.getGroup()), BAR_X + BAR_WIDTH - 16, BAR_Y - 16);
             }
+            
+            if (hudType != HUDType.NONE) {
+                // Render Portrait
+                drawContext.drawTexture(BorderRegistry.getBorder(target.getGroup()), 0, 0, FRAME_LENGTH, FRAME_LENGTH, 48f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Background
+                drawContext.drawTexture(BorderRegistry.getBorder(this.target.getGroup()), 0, 0, 300, 0f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Foreground
+                drawContext.drawText(MinecraftClient.getInstance().textRenderer, target.getName(), FRAME_LENGTH, BAR_Y - BAR_HEIGHT, 0xFFFFFF, true); // Name
 
-            drawContext.drawTexture(BorderRegistry.getBorder(target.getGroup()), 0, 0, FRAME_LENGTH, FRAME_LENGTH, 48f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Portrait Background
-            drawContext.drawText(MinecraftClient.getInstance().textRenderer, target.getName(), FRAME_LENGTH, BAR_Y - BAR_HEIGHT, 0xFFFFFF, true); // Name
-            int healthX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("%d/%d", Math.round(this.target.getHealth()), Math.round(this.target.getMaxHealth())), FRAME_LENGTH, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true); // Health Value
-            drawContext.drawGuiTexture(HEART, healthX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 1, 11, 11);
+                // Render Paper Doll
+                float prevTargetHeadYaw = this.target.getHeadYaw();
+                float prevPrevTargetHeadYaw = this.target.prevHeadYaw;
+                float prevTargetBodyYaw = this.target.getBodyYaw();
+                float prevPrevTargetBodyYaw = this.target.prevBodyYaw;
+                float prevTargetYaw = this.target.getYaw();
 
-            if (vehicleMaxHealthDeep > 0f) {
-                String mountHealthString = String.format("%d/%d", Math.round(vehicleHealthDeep), Math.round(vehicleMaxHealthDeep));
-                int mountHealthWidth = MinecraftClient.getInstance().textRenderer.getWidth(mountHealthString) + 11;
-                int expectedLeftPixel = BAR_X + BAR_WIDTH - mountHealthWidth - 3;
+                float headBodyYawDifference = this.target.getHeadYaw() - this.target.getBodyYaw();
 
-                if (expectedLeftPixel < healthX) expectedLeftPixel = healthX + 12;
+                this.target.setYaw(135f);
+                this.target.setBodyYaw(this.target.getYaw());
+                this.target.prevBodyYaw = this.target.getYaw();
+                this.target.setHeadYaw(this.target.getYaw() + headBodyYawDifference);
+                this.target.prevHeadYaw = this.target.getYaw() + headBodyYawDifference;
 
-                int mountHealthX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, mountHealthString, expectedLeftPixel, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true);
-                drawContext.drawGuiTexture(VEHICLE_HEART, mountHealthX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 1, 11, 11);
+                drawContext.enableScissor(0, 0, FRAME_LENGTH, FRAME_LENGTH);
+                EntityHealthBar.enabled = false;
+                InventoryScreen.drawEntity(drawContext, 24, 32, 30,
+                    new Vector3f(0.0F, this.target.getHeight() / 2f + 0.0625f, 0f),
+                    (new Quaternionf()).rotateZ(3.1415927f),
+                    null,
+                    this.target
+                );
+                EntityHealthBar.enabled = true;
+                drawContext.disableScissor();
+
+                this.target.setHeadYaw(prevTargetHeadYaw);
+                this.target.prevHeadYaw = prevPrevTargetHeadYaw;
+                this.target.setBodyYaw(prevTargetBodyYaw);
+                this.target.prevBodyYaw = prevPrevTargetBodyYaw;
+                this.target.setYaw(prevTargetYaw);
             }
-
-            if (BorderRegistry.getItem(this.target.getGroup()) != null) drawContext.drawItem(BorderRegistry.getItem(this.target.getGroup()), BAR_X + BAR_WIDTH - 16, BAR_Y - 16);
-
-            float prevTargetHeadYaw = this.target.getHeadYaw();
-            float prevPrevTargetHeadYaw = this.target.prevHeadYaw;
-            float prevTargetBodyYaw = this.target.getBodyYaw();
-            float prevPrevTargetBodyYaw = this.target.prevBodyYaw;
-            float prevTargetYaw = this.target.getYaw();
-
-            float headBodyYawDifference = this.target.getHeadYaw() - this.target.getBodyYaw();
-
-            this.target.setYaw(135f);
-            this.target.setBodyYaw(this.target.getYaw());
-            this.target.prevBodyYaw = this.target.getYaw();
-            this.target.setHeadYaw(this.target.getYaw() + headBodyYawDifference);
-            this.target.prevHeadYaw = this.target.getYaw() + headBodyYawDifference;
-
-            drawContext.enableScissor(0, 0, FRAME_LENGTH, FRAME_LENGTH);
-            EntityHealthBar.enabled = false;
-            InventoryScreen.drawEntity(drawContext, 24, 32, 30,
-                new Vector3f(0.0F, this.target.getHeight() / 2f + 0.0625f, 0f),
-                (new Quaternionf()).rotateZ(3.1415927f),
-                null,
-                this.target
-            );
-            EntityHealthBar.enabled = true;
-            drawContext.disableScissor();
-
-            this.target.setHeadYaw(prevTargetHeadYaw);
-            this.target.prevHeadYaw = prevPrevTargetHeadYaw;
-            this.target.setBodyYaw(prevTargetBodyYaw);
-            this.target.prevBodyYaw = prevPrevTargetBodyYaw;
-            this.target.setYaw(prevTargetYaw);
-
-            drawContext.drawTexture(BorderRegistry.getBorder(this.target.getGroup()), 0, 0, 300, 0f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Portrait foreground
         }
 
         if (this.healthBarDuration > 0f) this.healthBarDuration -= tickDelta;
