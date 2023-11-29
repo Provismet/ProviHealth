@@ -3,13 +3,13 @@ package com.provismet.provihealth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.provismet.provihealth.hud.BorderRegistry;
+import com.provismet.provihealth.api.ProviHealthApi;
+import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.hud.TargetHealthBar;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.minecraft.entity.EntityGroup;
-import net.minecraft.item.Items;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
 
 public class ProviHealthClient implements ClientModInitializer {
@@ -24,10 +24,19 @@ public class ProviHealthClient implements ClientModInitializer {
     public void onInitializeClient () {
         HudRenderCallback.EVENT.register(new TargetHealthBar());
 
-        BorderRegistry.registerItem(EntityGroup.AQUATIC, Items.COD);
-        BorderRegistry.registerItem(EntityGroup.ARTHROPOD, Items.COBWEB);
-        BorderRegistry.registerItem(EntityGroup.ILLAGER, Items.IRON_AXE);
-        BorderRegistry.registerItem(EntityGroup.UNDEAD, Items.ROTTEN_FLESH);
+        FabricLoader.getInstance().getEntrypointContainers(MODID, ProviHealthApi.class).forEach(
+            entrypoint -> {
+                String otherModId = entrypoint.getProvider().getMetadata().getId();
+                try {
+                    entrypoint.getEntrypoint().onInitialize();
+                }
+                catch (Exception e) {
+                    LOGGER.error("Mod " + otherModId + " caused an error during inter-mod initialisation: ", e);
+                }
+            }
+        );
+
+        Options.load();
     }
     
 }

@@ -15,16 +15,16 @@
 	"icon": "assets/provihealth/icon.png",
 	"environment": "client",
 	"entrypoints": {
-		"client": [
-			"com.provismet.provihealth.ProviHealthClient"
-		]
+		"client": ["com.provismet.provihealth.ProviHealthClient"],
+		"modmenu": ["com.provismet.provihealth.compat.ModMenuHook"],
+		"provihealth": ["com.provismet.provihealth.compat.SelfApiHook"]
 	},
 	"mixins": [
 		"provihealth.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.14.22",
-		"minecraft": "~1.20.2",
+		"minecraft": "~1.20",
 		"java": ">=17",
 		"fabric-api": "*"
 	}
