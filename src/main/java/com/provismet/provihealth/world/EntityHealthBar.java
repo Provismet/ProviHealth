@@ -5,6 +5,8 @@ import org.joml.Quaternionf;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.provismet.provihealth.ProviHealthClient;
+import com.provismet.provihealth.config.Options;
+import com.provismet.provihealth.interfaces.IMixinLivingEntity;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
@@ -28,15 +30,16 @@ public class EntityHealthBar {
     public static boolean enabled = true;
 
     @SuppressWarnings("resource")
-    public static void render (Entity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, Quaternionf rotation) {
+    public static void render (Entity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, Quaternionf rotation) {
         LivingEntity target;
         if (entity instanceof LivingEntity living) target = living;
         else return;
         if (!enabled || target.hasPassengers() || target == MinecraftClient.getInstance().player || target.isInvisibleTo(MinecraftClient.getInstance().player)) return;
+        if (!Options.shouldRenderHealthFor(living)) return;
 
         matrices.push();
         matrices.translate(0f, target.getHeight() + 0.5f + (target.shouldRenderName() || target.hasCustomName() && target == MinecraftClient.getInstance().targetedEntity ? 0.3f : 0f), 0f);
-        matrices.scale(1.5f, 1.5f, 1f);
+        matrices.scale(1.5f, 1.5f, 1.5f);
         matrices.multiply(rotation);
 
         Tessellator tessellator = Tessellator.getInstance();
@@ -50,7 +53,7 @@ public class EntityHealthBar {
 
         Matrix4f model = matrices.peek().getPositionMatrix();
         renderBar(model, vertexConsumer, 1, 1f, false); // Empty
-        renderBar(model, vertexConsumer, 0, MathHelper.clamp(target.getHealth() / target.getMaxHealth(), 0f, 1f), false); // Health
+        renderBar(model, vertexConsumer, 0, ((IMixinLivingEntity)target).provihealth_glideHealth(tickDelta * 0.5f), false); // Health
 
         if (target.hasVehicle()) {
             float vehicleHealthDeep = 0f;
@@ -70,7 +73,7 @@ public class EntityHealthBar {
                 matrices.translate(0f, -1f * (7f / TEXTURE_SIZE), 0f);
                 Matrix4f mountModel = matrices.peek().getPositionMatrix();
                 renderBar(mountModel, vertexConsumer, 1, 1f, true);
-                renderBar(mountModel, vertexConsumer, 0, vehicleHealthPercent, true);
+                renderBar(mountModel, vertexConsumer, 0, ((IMixinLivingEntity)target).provihealth_glideVehicle(vehicleHealthPercent, tickDelta * 0.5f), true);
             }
         }
 
