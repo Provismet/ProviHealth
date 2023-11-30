@@ -44,6 +44,9 @@ public class Options {
     public static float hudGlide = 0.5f;
     public static float worldGlide = 0.5f;
 
+    public static boolean showHudIcon = true;
+    public static boolean useCustomHudPortraits = true;
+
     @SuppressWarnings("resource")
     public static boolean shouldRenderHealthFor (LivingEntity livingEntity) {
         if (blacklist.contains(EntityType.getId(livingEntity.getType()).toString())) return false;
@@ -79,6 +82,8 @@ public class Options {
         JsonHelper json = new JsonHelper();
         String jsonData = json.start()
             .append("hudDuration", maxHealthBarTicks).newLine()
+            .append("hudIcon", showHudIcon).newLine()
+            .append("hudPortraits", useCustomHudPortraits).newLine()
             .append("hudGlide", hudGlide).newLine()
             .append("worldGlide", worldGlide).newLine()
             .append("bossHealth", bosses.name()).newLine()
@@ -120,6 +125,14 @@ public class Options {
                 switch (label) {
                     case "hudDuration":
                         maxHealthBarTicks = parser.nextInt();
+                        break;
+                    
+                    case "hudIcon":
+                        showHudIcon = parser.nextBoolean();
+                        break;
+                    
+                    case "hudPortraits":
+                        useCustomHudPortraits = parser.nextBoolean();
                         break;
                     
                     case "hudGlide":
@@ -199,6 +212,7 @@ public class Options {
                         break;
                 
                     default:
+                        ProviHealthClient.LOGGER.warn("Unknown label \"" + label + "\" found in config.");
                         break;
                 }
             }

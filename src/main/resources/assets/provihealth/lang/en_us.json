@@ -19,6 +19,8 @@
     "entry.provihealth.healthBar": "Health Bar Visibility",
     "entry.provihealth.targetOverride": "Show On Target",
     "entry.provihealth.hudGlide": "Glide Speed",
+    "entry.provihealth.showIcon": "Show Group Icon",
+    "entry.provihealth.hudPortraits": "Use Custom HUD Portraits",
 
     "enum.provihealth.full": "Full",
     "enum.provihealth.portrait_only": "Portrait Only",
@@ -30,5 +32,6 @@
 
     "tooltip.provihealth.hudDuration": "How many ticks the HUD display will linger for when not targeting a mob.",
     "tooltip.provihealth.targetOverride": "Always render health bar when targeting a mob of this type.",
-    "tooltip.provihealth.glide": "Determines how quickly the health bar will slide from its old value to new values.\nWarning: Very low values will prevent the health bar visual from catching up with the true value."
+    "tooltip.provihealth.glide": "Determines how quickly the health bar will slide from its old value to new values.\nWarning: Very low values will prevent the health bar visual from catching up with the true value.",
+    "tooltip.provihealth.hudPortraits": "Allows mobs to have different HUD portraits based on their group or type."
 }

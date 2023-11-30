@@ -34,6 +34,19 @@ public class ProviHealthConfigScreen {
             .build()
         );
 
+        hud.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.showIcon"), Options.showHudIcon)
+            .setDefaultValue(true)
+            .setSaveConsumer(newValue -> Options.showHudIcon = newValue)
+            .build()
+        );
+
+        hud.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.hudPortraits"), Options.useCustomHudPortraits)
+            .setDefaultValue(true)
+            .setTooltip(Text.translatable("tooltip.provihealth.hudPortraits"))
+            .setSaveConsumer(newValue -> Options.useCustomHudPortraits = newValue)
+            .build()
+        );
+
         hud.addEntry(entryBuilder.startFloatField(Text.translatable("entry.provihealth.hudGlide"), Options.hudGlide)
             .setDefaultValue(0.5f)
             .setMin(0.01f)
