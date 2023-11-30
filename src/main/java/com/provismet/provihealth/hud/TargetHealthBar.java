@@ -42,7 +42,7 @@ public class TargetHealthBar implements HudRenderCallback {
     @SuppressWarnings("resource")
     @Override
     public void onHudRender (DrawContext drawContext, float tickDelta) {
-        if (!Options.shouldRenderHUD || !MinecraftClient.isHudEnabled() || this.isDebugOpen() || MinecraftClient.getInstance().player.isSpectator()) return;
+        if (!MinecraftClient.isHudEnabled() || MinecraftClient.getInstance().getDebugHud().shouldShowDebugHud() || MinecraftClient.getInstance().player.isSpectator()) return;
 
         boolean isNew = false;
 
@@ -184,16 +184,6 @@ public class TargetHealthBar implements HudRenderCallback {
         this.target = null;
         this.currentHealthWidth = 0;
         this.currentVehicleHealthWidth = 0;
-    }
-
-    @SuppressWarnings("resource")
-    private boolean isDebugOpen () { // This only exists to circumvent a 1.20.1 incompatibility.
-        try {
-            return MinecraftClient.getInstance().inGameHud.getDebugHud().shouldShowDebugHud();
-        }
-        catch (NoSuchMethodError e) {
-            return false;
-        }
     }
 
     // Copied from InventoryScreen because this method does not exist in 1.20.1
