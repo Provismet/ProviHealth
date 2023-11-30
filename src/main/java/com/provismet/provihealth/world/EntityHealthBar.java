@@ -26,21 +26,21 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 public class EntityHealthBar {
-    private static final Identifier BARS = ProviHealthClient.identifier("textures/gui/healthbars/inworld.png");
+    private static final Identifier BARS = ProviHealthClient.identifier("textures/gui/healthbars/in_world.png");
     private static final float TEXTURE_SIZE = 64;
     private static final float MOUNT_BAR_PIXEL_LENGTH = 58;
 
     public static boolean enabled = true;
 
     @SuppressWarnings("resource")
-    public static void render (Entity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, Quaternionf rotation, int light) {
+    public static void render (Entity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, Quaternionf rotation) {
         LivingEntity target;
         if (entity instanceof LivingEntity living) target = living;
         else return;
         if (!enabled || (target.hasPassengers() && target.getFirstPassenger() instanceof LivingEntity) || target == MinecraftClient.getInstance().player || target.isInvisibleTo(MinecraftClient.getInstance().player)) return;
         if (!Options.shouldRenderHealthFor(living)) return;
 
-        light = LightmapTextureManager.pack(15, 15); // A temporary measure until I figure out how to make light affect the health bar. The text is already affected by light.
+        int light = LightmapTextureManager.pack(15, 15);
 
         matrices.push();
         matrices.translate(0f, target.getHeight() + 0.5f + (target.shouldRenderName() || target.hasCustomName() && target == MinecraftClient.getInstance().targetedEntity ? 0.3f : 0f), 0f);
@@ -50,15 +50,15 @@ public class EntityHealthBar {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder vertexConsumer = tessellator.getBuffer();
 
-        vertexConsumer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+        vertexConsumer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, BARS);
         RenderSystem.enableDepthTest();
         RenderSystem.enableBlend();
 
         Matrix4f model = matrices.peek().getPositionMatrix();
-        renderBar(model, vertexConsumer, light, 1, 1f, false); // Empty
-        renderBar(model, vertexConsumer, light, 0, ((IMixinLivingEntity)target).provihealth_glideHealth(tickDelta * Options.worldGlide), false); // Health
+        renderBar(model, vertexConsumer, 1, 1f, false); // Empty
+        renderBar(model, vertexConsumer, 0, ((IMixinLivingEntity)target).provihealth_glideHealth(tickDelta * Options.worldGlide), false); // Health
 
         if (target.hasVehicle()) {
             float vehicleHealthDeep = 0f;
@@ -78,8 +78,8 @@ public class EntityHealthBar {
                 matrices.push();
                 matrices.translate(0f, -1f * (7f / TEXTURE_SIZE), 0f);
                 Matrix4f mountModel = matrices.peek().getPositionMatrix();
-                renderBar(mountModel, vertexConsumer, light, 1, 1f, true);
-                renderBar(mountModel, vertexConsumer, light, 0, ((IMixinLivingEntity)target).provihealth_glideVehicle(vehicleHealthPercent, tickDelta * Options.worldGlide), true);
+                renderBar(mountModel, vertexConsumer, 1, 1f, true);
+                renderBar(mountModel, vertexConsumer, 0, ((IMixinLivingEntity)target).provihealth_glideVehicle(vehicleHealthPercent, tickDelta * Options.worldGlide), true);
                 matrices.pop();
             }
         }
@@ -103,7 +103,7 @@ public class EntityHealthBar {
         matrices.pop();
     }
 
-    private static void renderBar (Matrix4f model, VertexConsumer vertexConsumer, int light, int index, float percentage, boolean isMount) {
+    private static void renderBar (Matrix4f model, VertexConsumer vertexConsumer, int index, float percentage, boolean isMount) {
         // All U and V values are a percentage.
         final float MIN_U = isMount ? 3f / TEXTURE_SIZE : 0f; // Leftmost pixel
         final float MIN_V = ((index * 12f) / TEXTURE_SIZE) + (isMount ? 7f / TEXTURE_SIZE : 0f); // Topmost pixel
@@ -117,9 +117,9 @@ public class EntityHealthBar {
 
         final float Z = (float)index * 0.0001f;
 
-        vertexConsumer.vertex(model, MAX_X, MAX_Y, Z).texture(MAX_U, MAX_V).color(1f, 1f, 1f, 1f).light(light).next();
-        vertexConsumer.vertex(model, MAX_X, MIN_Y, Z).texture(MAX_U, MIN_V).color(1f, 1f, 1f, 1f).light(light).next();
-        vertexConsumer.vertex(model, MIN_X, MIN_Y, Z).texture(MIN_U, MIN_V).color(1f, 1f, 1f, 1f).light(light).next();
-        vertexConsumer.vertex(model, MIN_X, MAX_Y, Z).texture(MIN_U, MAX_V).color(1f, 1f, 1f, 1f).light(light).next();
+        vertexConsumer.vertex(model, MAX_X, MAX_Y, Z).texture(MAX_U, MAX_V).next();
+        vertexConsumer.vertex(model, MAX_X, MIN_Y, Z).texture(MAX_U, MIN_V).next();
+        vertexConsumer.vertex(model, MIN_X, MIN_Y, Z).texture(MIN_U, MIN_V).next();
+        vertexConsumer.vertex(model, MIN_X, MAX_Y, Z).texture(MIN_U, MAX_V).next();
     }
 }

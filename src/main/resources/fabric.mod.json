@@ -24,7 +24,7 @@
 		"provihealth.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.14.22",
+		"fabricloader": ">=0.14.20",
 		"minecraft": "~1.20",
 		"java": ">=17",
 		"fabric-api": "*"

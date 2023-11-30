@@ -22,6 +22,6 @@ public abstract class EntityRenderDispatcherMixin {
 		)
     )
     private void addHealthBar (Entity entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo info) {
-        EntityHealthBar.render(entity, tickDelta, matrices, vertexConsumers, ((EntityRenderDispatcher)(Object)this).getRotation(), light);
+        EntityHealthBar.render(entity, tickDelta, matrices, vertexConsumers, ((EntityRenderDispatcher)(Object)this).getRotation());
     }
 }

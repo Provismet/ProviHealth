@@ -1,5 +1,7 @@
 package com.provismet.provihealth.hud;
 
+import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -12,7 +14,8 @@ import com.provismet.provihealth.world.EntityHealthBar;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
@@ -20,8 +23,7 @@ import net.minecraft.util.math.MathHelper;
 
 public class TargetHealthBar implements HudRenderCallback {
     private static final Identifier BARS = ProviHealthClient.identifier("textures/gui/healthbars/bars.png");
-    private static final Identifier HEART = new Identifier("hud/heart/full");
-    private static final Identifier VEHICLE_HEART = new Identifier("hud/heart/vehicle_full");
+    private static final Identifier HEARTS = ProviHealthClient.identifier("textures/gui/healthbars/hearts.png");
 
     private static final int BAR_WIDTH = 128;
     private static final int BAR_HEIGHT = 10;
@@ -40,7 +42,7 @@ public class TargetHealthBar implements HudRenderCallback {
     @SuppressWarnings("resource")
     @Override
     public void onHudRender (DrawContext drawContext, float tickDelta) {
-        if (!Options.shouldRenderHUD || !MinecraftClient.isHudEnabled() || MinecraftClient.getInstance().inGameHud.getDebugHud().shouldShowDebugHud() || MinecraftClient.getInstance().player.isSpectator()) return;
+        if (!Options.shouldRenderHUD || !MinecraftClient.isHudEnabled() || this.isDebugOpen() || MinecraftClient.getInstance().player.isSpectator()) return;
 
         boolean isNew = false;
 
@@ -93,7 +95,7 @@ public class TargetHealthBar implements HudRenderCallback {
 
                 // Render health value and heart icons
                 int healthX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("%d/%d", Math.round(this.target.getHealth()), Math.round(this.target.getMaxHealth())), FRAME_LENGTH, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true); // Health Value
-                drawContext.drawGuiTexture(HEART, healthX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 1, 11, 11);
+                drawContext.drawTexture(HEARTS, healthX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 1, 11, 11, 0f, 0f, 9, 9, 9, 18);
 
                 if (vehicleMaxHealthDeep > 0f) {
                     String mountHealthString = String.format("%d/%d", Math.round(vehicleHealthDeep), Math.round(vehicleMaxHealthDeep));
@@ -103,7 +105,7 @@ public class TargetHealthBar implements HudRenderCallback {
                     if (expectedLeftPixel < healthX) expectedLeftPixel = healthX + 12;
 
                     int mountHealthX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, mountHealthString, expectedLeftPixel, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true);
-                    drawContext.drawGuiTexture(VEHICLE_HEART, mountHealthX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 1, 11, 11);
+                    drawContext.drawTexture(HEARTS, mountHealthX, BAR_Y + BAR_HEIGHT + MOUNT_BAR_HEIGHT + 1, 11, 11, 0f, 9f, 9, 9, 9, 18);
                 }
 
                 // Render entity group icon
@@ -138,7 +140,7 @@ public class TargetHealthBar implements HudRenderCallback {
 
                 drawContext.enableScissor(0, 0, FRAME_LENGTH, FRAME_LENGTH);
                 EntityHealthBar.enabled = false;
-                InventoryScreen.drawEntity(drawContext, 24, 0, 30,
+                this.drawEntity(drawContext, 24, 0, 30,
                     new Vector3f(0f, renderHeight, 0f),
                     (new Quaternionf()).rotateZ(3.1415927f),
                     null,
@@ -183,4 +185,38 @@ public class TargetHealthBar implements HudRenderCallback {
         this.currentHealthWidth = 0;
         this.currentVehicleHealthWidth = 0;
     }
+
+    @SuppressWarnings("resource")
+    private boolean isDebugOpen () { // This only exists to circumvent a 1.20.1 incompatibility.
+        try {
+            return MinecraftClient.getInstance().inGameHud.getDebugHud().shouldShowDebugHud();
+        }
+        catch (NoSuchMethodError e) {
+            return false;
+        }
+    }
+
+    // Copied from InventoryScreen because this method does not exist in 1.20.1
+    private void drawEntity (DrawContext context, float x, float y, int size, Vector3f vector3f, Quaternionf quaternionf, @Nullable Quaternionf quaternionf2, LivingEntity entity) {
+      context.getMatrices().push();
+      context.getMatrices().translate((double)x, (double)y, 50.0);
+      context.getMatrices().multiplyPositionMatrix((new Matrix4f()).scaling((float)size, (float)size, (float)(-size)));
+      context.getMatrices().translate(vector3f.x, vector3f.y, vector3f.z);
+      context.getMatrices().multiply(quaternionf);
+      DiffuseLighting.method_34742();
+      EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
+      if (quaternionf2 != null) {
+         quaternionf2.conjugate();
+         entityRenderDispatcher.setRotation(quaternionf2);
+      }
+
+      entityRenderDispatcher.setRenderShadows(false);
+      RenderSystem.runAsFancy(() -> {
+         entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, 1.0F, context.getMatrices(), context.getVertexConsumers(), 15728880);
+      });
+      context.draw();
+      entityRenderDispatcher.setRenderShadows(true);
+      context.getMatrices().pop();
+      DiffuseLighting.enableGuiDepthLighting();
+   }
 }
