@@ -20,7 +20,6 @@ import com.google.gson.stream.JsonReader;
 import com.provismet.provihealth.ProviHealthClient;
 
 public class Options {
-    public static boolean shouldRenderHUD = true;
     public static int maxHealthBarTicks = 40;
 
     public static List<String> blacklist = Arrays.asList("minecraft:armor_stand");
@@ -48,10 +47,13 @@ public class Options {
     public static boolean useCustomHudPortraits = true;
 
     public static boolean showTextInWorld = true;
+    public static float maxRenderDistance = 24f;
+    public static float worldHealthBarScale = 1.5f;
 
     @SuppressWarnings("resource")
     public static boolean shouldRenderHealthFor (LivingEntity livingEntity) {
         if (blacklist.contains(EntityType.getId(livingEntity.getType()).toString())) return false;
+        if (livingEntity.distanceTo(MinecraftClient.getInstance().player) > Options.maxRenderDistance) return false;
 
         Entity target = MinecraftClient.getInstance().targetedEntity;
         if (livingEntity.getType().isIn(ConventionalEntityTypeTags.BOSSES)) {
@@ -89,6 +91,8 @@ public class Options {
             .append("hudGlide", hudGlide).newLine()
             .append("worldGlide", worldGlide).newLine()
             .append("worldHealthText", showTextInWorld).newLine()
+            .append("maxRenderDistance", maxRenderDistance).newLine()
+            .append("barScale", worldHealthBarScale).newLine()
             .append("bossHealth", bosses.name()).newLine()
             .append("bossTarget", bossesVisibilityOverride).newLine()
             .append("hostileHealth", hostile.name()).newLine()
@@ -148,6 +152,14 @@ public class Options {
 
                     case "worldHealthText":
                         showTextInWorld = parser.nextBoolean();
+                        break;
+                    
+                    case "maxRenderDistance":
+                        maxRenderDistance = (float)parser.nextDouble();
+                        break;
+
+                    case "barScale":
+                        worldHealthBarScale = (float)parser.nextDouble();
                         break;
 
                     case "bossHealth":

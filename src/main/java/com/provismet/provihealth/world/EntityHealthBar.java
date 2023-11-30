@@ -43,8 +43,9 @@ public class EntityHealthBar {
         int light = LightmapTextureManager.pack(15, 15);
 
         matrices.push();
-        matrices.translate(0f, target.getHeight() + 0.5f + (target.shouldRenderName() || target.hasCustomName() && target == MinecraftClient.getInstance().targetedEntity ? 0.3f : 0f), 0f);
-        matrices.scale(1.5f, 1.5f, 1.5f);
+        matrices.translate(0f, target.getHeight() + 0.45f - (0.003f / Options.worldHealthBarScale), 0f);
+        matrices.scale(Options.worldHealthBarScale, Options.worldHealthBarScale, Options.worldHealthBarScale);
+        matrices.translate(0f, (target.shouldRenderName() || target.hasCustomName() && target == MinecraftClient.getInstance().targetedEntity ? 0.02f + 0.3f / Options.worldHealthBarScale : 0f), 0f);
         matrices.multiply(rotation);
 
         Tessellator tessellator = Tessellator.getInstance();

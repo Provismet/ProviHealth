@@ -101,6 +101,22 @@ public class ProviHealthConfigScreen {
             .build()
         );
 
+        health.addEntry(entryBuilder.startFloatField(Text.translatable("entry.provihealth.maxDistance"), Options.maxRenderDistance)
+            .setMin(0f)
+            .setDefaultValue(24f)
+            .setTooltip(Text.translatable("tooltip.provihealth.maxDistance"))
+            .setSaveConsumer(newValue -> Options.maxRenderDistance = newValue)
+            .build()
+        );
+
+        health.addEntry(entryBuilder.startFloatField(Text.translatable("entry.provihealth.barScale"), Options.worldHealthBarScale)
+            .setMin(0.01f)
+            .setMax(3f)
+            .setDefaultValue(1.5f)
+            .setSaveConsumer(newValue -> Options.worldHealthBarScale = newValue)
+            .build()
+        );
+
         health.addEntry(entryBuilder.startSubCategory(Text.translatable("subcategory.provihealth.boss"), Arrays.asList(
                 entryBuilder.startEnumSelector(Text.translatable("entry.provihealth.healthBar"), VisibilityType.class, Options.bosses)
                     .setDefaultValue(VisibilityType.ALWAYS_HIDE)
