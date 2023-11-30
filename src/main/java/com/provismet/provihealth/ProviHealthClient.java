@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier;
 
 public class ProviHealthClient implements ClientModInitializer {
     public static final String MODID = "provihealth";
-    public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
+    public static final Logger LOGGER = LoggerFactory.getLogger("Provi's Health Bars");
 
     public static Identifier identifier (String path) {
         return Identifier.of(MODID, path);
