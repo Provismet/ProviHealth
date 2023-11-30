@@ -47,6 +47,8 @@ public class Options {
     public static boolean showHudIcon = true;
     public static boolean useCustomHudPortraits = true;
 
+    public static boolean showTextInWorld = true;
+
     @SuppressWarnings("resource")
     public static boolean shouldRenderHealthFor (LivingEntity livingEntity) {
         if (blacklist.contains(EntityType.getId(livingEntity.getType()).toString())) return false;
@@ -86,6 +88,7 @@ public class Options {
             .append("hudPortraits", useCustomHudPortraits).newLine()
             .append("hudGlide", hudGlide).newLine()
             .append("worldGlide", worldGlide).newLine()
+            .append("worldHealthText", showTextInWorld).newLine()
             .append("bossHealth", bosses.name()).newLine()
             .append("bossTarget", bossesVisibilityOverride).newLine()
             .append("hostileHealth", hostile.name()).newLine()
@@ -141,6 +144,10 @@ public class Options {
                     
                     case "worldGlide":
                         worldGlide = (float)parser.nextDouble();
+                        break;
+
+                    case "worldHealthText":
+                        showTextInWorld = parser.nextBoolean();
                         break;
 
                     case "bossHealth":

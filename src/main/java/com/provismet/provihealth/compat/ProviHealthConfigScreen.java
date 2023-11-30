@@ -95,6 +95,12 @@ public class ProviHealthConfigScreen {
             .build()
         );
 
+        health.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.worldText"), Options.showTextInWorld)
+            .setDefaultValue(true)
+            .setSaveConsumer(newValue -> Options.showTextInWorld = newValue)
+            .build()
+        );
+
         health.addEntry(entryBuilder.startSubCategory(Text.translatable("subcategory.provihealth.boss"), Arrays.asList(
                 entryBuilder.startEnumSelector(Text.translatable("entry.provihealth.healthBar"), VisibilityType.class, Options.bosses)
                     .setDefaultValue(VisibilityType.ALWAYS_HIDE)

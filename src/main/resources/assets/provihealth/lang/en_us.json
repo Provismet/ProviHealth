@@ -21,6 +21,7 @@
     "entry.provihealth.hudGlide": "Glide Speed",
     "entry.provihealth.showIcon": "Show Group Icon",
     "entry.provihealth.hudPortraits": "Use Custom HUD Portraits",
+    "entry.provihealth.worldText": "Show Health Value",
 
     "enum.provihealth.full": "Full",
     "enum.provihealth.portrait_only": "Portrait Only",

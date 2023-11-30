@@ -9,8 +9,11 @@ import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.interfaces.IMixinLivingEntity;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -36,6 +39,8 @@ public class EntityHealthBar {
         else return;
         if (!enabled || (target.hasPassengers() && target.getFirstPassenger() instanceof LivingEntity) || target == MinecraftClient.getInstance().player || target.isInvisibleTo(MinecraftClient.getInstance().player)) return;
         if (!Options.shouldRenderHealthFor(living)) return;
+
+        light = LightmapTextureManager.pack(15, 15); // A temporary measure until I figure out how to make light affect the health bar. The text is already affected by light.
 
         matrices.push();
         matrices.translate(0f, target.getHeight() + 0.5f + (target.shouldRenderName() || target.hasCustomName() && target == MinecraftClient.getInstance().targetedEntity ? 0.3f : 0f), 0f);
@@ -70,14 +75,29 @@ public class EntityHealthBar {
             float vehicleHealthPercent = vehicleMaxHealthDeep > 0f ? MathHelper.clamp(vehicleHealthDeep / vehicleMaxHealthDeep, 0f, 1f) : 0f;
 
             if (vehicleHealthPercent > 0f) {
+                matrices.push();
                 matrices.translate(0f, -1f * (7f / TEXTURE_SIZE), 0f);
                 Matrix4f mountModel = matrices.peek().getPositionMatrix();
                 renderBar(mountModel, vertexConsumer, light, 1, 1f, true);
                 renderBar(mountModel, vertexConsumer, light, 0, ((IMixinLivingEntity)target).provihealth_glideVehicle(vehicleHealthPercent, tickDelta * Options.worldGlide), true);
+                matrices.pop();
             }
         }
 
         tessellator.draw();
+
+        // Health Text
+        if (Options.showTextInWorld) {
+            matrices.push();
+            matrices.scale(-0.01f, -0.01f, -0.01f);
+            Matrix4f textModel = matrices.peek().getPositionMatrix();
+
+            final String healthString = String.format("%d/%d", Math.round(target.getHealth()), Math.round(target.getMaxHealth()));
+            final TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+            textRenderer.draw(healthString, -(textRenderer.getWidth(healthString)) / 2f, -8, 0xFFFFFF, true, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
+            matrices.pop();
+        }
+
         RenderSystem.disableBlend();
         RenderSystem.disableDepthTest();
         matrices.pop();
