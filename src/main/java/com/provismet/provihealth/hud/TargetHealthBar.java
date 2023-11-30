@@ -30,6 +30,7 @@ public class TargetHealthBar implements HudRenderCallback {
     private static final int MOUNT_BAR_HEIGHT = 6;
     private static final int MOUNT_BAR_WIDTH = 121;
     private static final int FRAME_LENGTH = 48;
+    private static final int LEFT_TEXT_X = FRAME_LENGTH + 2;
     private static final int BAR_X = FRAME_LENGTH - 5;
     private static final int BAR_Y = FRAME_LENGTH / 2 - (BAR_HEIGHT + MOUNT_BAR_HEIGHT) / 2;
 
@@ -94,7 +95,7 @@ public class TargetHealthBar implements HudRenderCallback {
                 }
 
                 // Render health value and heart icons
-                int healthX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("%d/%d", Math.round(this.target.getHealth()), Math.round(this.target.getMaxHealth())), FRAME_LENGTH, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true); // Health Value
+                int healthX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("%d/%d", Math.round(this.target.getHealth()), Math.round(this.target.getMaxHealth())), LEFT_TEXT_X, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true); // Health Value
                 drawContext.drawTexture(HEARTS, healthX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 1, 11, 11, 0f, 0f, 9, 9, 9, 18);
 
                 if (vehicleMaxHealthDeep > 0f) {
@@ -118,7 +119,7 @@ public class TargetHealthBar implements HudRenderCallback {
                 drawContext.drawTexture(BorderRegistry.getBorder(this.target), 0, 0, FRAME_LENGTH, FRAME_LENGTH, 48f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Background
                 drawContext.drawTexture(BorderRegistry.getBorder(this.target), 0, 0, 300, 0f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Foreground
                 RenderSystem.disableBlend();
-                drawContext.drawText(MinecraftClient.getInstance().textRenderer, target.getName(), FRAME_LENGTH, BAR_Y - BAR_HEIGHT, 0xFFFFFF, true); // Name
+                drawContext.drawText(MinecraftClient.getInstance().textRenderer, target.getName(), LEFT_TEXT_X, BAR_Y - BAR_HEIGHT, 0xFFFFFF, true); // Name
 
                 // Render Paper Doll
                 float prevTargetHeadYaw = this.target.getHeadYaw();
