@@ -3,13 +3,14 @@
 	"id": "provihealth",
 	"version": "${version}",
 	"name": "Provi's Health Bars",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Adds health bars to mobs, showing both in the world and on your HUD.",
 	"authors": [
 		"Provismet"
 	],
 	"contact": {
 		"homepage": "https://github.com/Provismet/ProviHealth",
-		"sources": "https://github.com/Provismet/ProviHealth"
+		"sources": "https://github.com/Provismet/ProviHealth",
+		"issues": "https://github.com/Provismet/ProviHealth/issues"
 	},
 	"license": "Apache-2",
 	"icon": "assets/provihealth/icon.png",
