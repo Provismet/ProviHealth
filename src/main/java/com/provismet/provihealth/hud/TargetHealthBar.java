@@ -3,6 +3,7 @@ package com.provismet.provihealth.hud;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.provismet.provihealth.ProviHealthClient;
 import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.config.Options.HUDType;
@@ -27,7 +28,7 @@ public class TargetHealthBar implements HudRenderCallback {
     private static final int MOUNT_BAR_HEIGHT = 6;
     private static final int MOUNT_BAR_WIDTH = 121;
     private static final int FRAME_LENGTH = 48;
-    private static final int BAR_X = FRAME_LENGTH - 10;
+    private static final int BAR_X = FRAME_LENGTH - 5;
     private static final int BAR_Y = FRAME_LENGTH / 2 - (BAR_HEIGHT + MOUNT_BAR_HEIGHT) / 2;
 
     private LivingEntity target = null;
@@ -106,13 +107,15 @@ public class TargetHealthBar implements HudRenderCallback {
                 }
 
                 // Render entity group icon
-                if (BorderRegistry.getItem(this.target.getGroup()) != null) drawContext.drawItem(BorderRegistry.getItem(this.target.getGroup()), BAR_X + BAR_WIDTH - 16, BAR_Y - 16);
+                if (BorderRegistry.getItem(this.target) != null && Options.showHudIcon) drawContext.drawItem(BorderRegistry.getItem(this.target), BAR_X + BAR_WIDTH - 16, BAR_Y - 16);
             }
             
             if (hudType != HUDType.NONE) {
                 // Render Portrait
-                drawContext.drawTexture(BorderRegistry.getBorder(target.getGroup()), 0, 0, FRAME_LENGTH, FRAME_LENGTH, 48f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Background
-                drawContext.drawTexture(BorderRegistry.getBorder(this.target.getGroup()), 0, 0, 300, 0f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Foreground
+                RenderSystem.enableBlend();
+                drawContext.drawTexture(BorderRegistry.getBorder(this.target), 0, 0, FRAME_LENGTH, FRAME_LENGTH, 48f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Background
+                drawContext.drawTexture(BorderRegistry.getBorder(this.target), 0, 0, 300, 0f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Foreground
+                RenderSystem.disableBlend();
                 drawContext.drawText(MinecraftClient.getInstance().textRenderer, target.getName(), FRAME_LENGTH, BAR_Y - BAR_HEIGHT, 0xFFFFFF, true); // Name
 
                 // Render Paper Doll
@@ -124,16 +127,19 @@ public class TargetHealthBar implements HudRenderCallback {
 
                 float headBodyYawDifference = this.target.getHeadYaw() - this.target.getBodyYaw();
 
-                this.target.setYaw(135f);
+                this.target.setYaw(150f);
                 this.target.setBodyYaw(this.target.getYaw());
                 this.target.prevBodyYaw = this.target.getYaw();
                 this.target.setHeadYaw(this.target.getYaw() + headBodyYawDifference);
                 this.target.prevHeadYaw = this.target.getYaw() + headBodyYawDifference;
 
+                float renderHeight = this.target.getEyeHeight(this.target.getPose()) + 0.5f;
+                if (renderHeight < 1f) renderHeight = 1f;
+
                 drawContext.enableScissor(0, 0, FRAME_LENGTH, FRAME_LENGTH);
                 EntityHealthBar.enabled = false;
-                InventoryScreen.drawEntity(drawContext, 24, 32, 30,
-                    new Vector3f(0.0F, this.target.getHeight() / 2f + 0.0625f, 0f),
+                InventoryScreen.drawEntity(drawContext, 24, 0, 30,
+                    new Vector3f(0f, renderHeight, 0f),
                     (new Quaternionf()).rotateZ(3.1415927f),
                     null,
                     this.target
