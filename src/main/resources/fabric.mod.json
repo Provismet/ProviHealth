@@ -12,7 +12,7 @@
 		"sources": "https://github.com/Provismet/ProviHealth",
 		"issues": "https://github.com/Provismet/ProviHealth/issues"
 	},
-	"license": "Apache-2",
+	"license": "Apache-2.0",
 	"icon": "assets/provihealth/icon.png",
 	"environment": "client",
 	"entrypoints": {
