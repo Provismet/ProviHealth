@@ -43,7 +43,7 @@ public class TargetHealthBar implements HudRenderCallback {
     @SuppressWarnings("resource")
     @Override
     public void onHudRender (DrawContext drawContext, float tickDelta) {
-        if (!MinecraftClient.isHudEnabled() || MinecraftClient.getInstance().getDebugHud().shouldShowDebugHud() || MinecraftClient.getInstance().player.isSpectator()) return;
+        if (!MinecraftClient.isHudEnabled() || MinecraftClient.getInstance().options.debugEnabled || MinecraftClient.getInstance().player.isSpectator()) return;
 
         boolean isNew = false;
 
