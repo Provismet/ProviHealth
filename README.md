@@ -11,6 +11,10 @@ To access the settings menu you will need:
 - [Mod Menu](https://github.com/TerraformersMC/ModMenu)
 - [Cloth Config](https://github.com/shedaniel/cloth-config)
 
+## License
+The mod distributables and source code are licensed Apache Version 2.0.  
+The original assets (including health bar graphics and HUD portraits) are licensed All Rights Reserved.
+
 ## Dependency and API
 This mod can be used as a dependency via [Jitpack](https://jitpack.io/#Provismet/ProviHealth).
 
