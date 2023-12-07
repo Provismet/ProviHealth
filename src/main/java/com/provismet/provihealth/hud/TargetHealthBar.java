@@ -19,6 +19,8 @@ import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -134,7 +136,7 @@ public class TargetHealthBar implements HudRenderCallback {
                 drawContext.drawTexture(BorderRegistry.getBorder(this.target), 0, OFFSET_Y, FRAME_LENGTH, FRAME_LENGTH, 48f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Background
                 drawContext.drawTexture(BorderRegistry.getBorder(this.target), 0, OFFSET_Y, 300, 0f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Foreground
                 RenderSystem.disableBlend();
-                drawContext.drawText(MinecraftClient.getInstance().textRenderer, target.getName(), LEFT_TEXT_X, BAR_Y - BAR_HEIGHT, 0xFFFFFF, true); // Name
+                drawContext.drawText(MinecraftClient.getInstance().textRenderer, this.getName(this.target), LEFT_TEXT_X, BAR_Y - BAR_HEIGHT, 0xFFFFFF, true); // Name
 
                 // Render Paper Doll
                 float prevTargetHeadYaw = this.target.getHeadYaw();
@@ -172,6 +174,11 @@ public class TargetHealthBar implements HudRenderCallback {
                 this.target.setYaw(prevTargetYaw);
             }
         }
+    }
+
+    private Text getName (LivingEntity entity) {
+        if (entity instanceof PlayerEntity && entity.isInvisibleTo(MinecraftClient.getInstance().player)) return Text.translatable("entity.provihealth.unknownPlayer");
+        else return entity.getName();
     }
 
     private int glideHealth (int trueValue, float glideFactor) {
