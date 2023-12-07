@@ -107,14 +107,13 @@ public class TargetHealthBar implements HudRenderCallback {
 
                 // Render health value and heart icons
                 int healthX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("%d/%d", Math.round(this.target.getHealth()), Math.round(this.target.getMaxHealth())), LEFT_TEXT_X, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true); // Health Value
-                drawContext.drawTexture(HEART, healthX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 9, 9, 0f, 0f, 9, 9, 9, 9);
+                drawContext.drawTexture(HEART, healthX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 1, 9, 9, 0f, 0f, 9, 9, 9, 9);
 
                 // Render armour icon if necessary
-                int armourX = healthX;
+                int armourX = MinecraftClient.getInstance().textRenderer.getWidth(String.format("%d/%d", Math.round(this.target.getMaxHealth()), Math.round(this.target.getMaxHealth()))) + LEFT_TEXT_X + 18;
                 if (this.target.getArmor() > 0) {
-                    armourX += 18;
                     armourX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("%d", this.target.getArmor()), armourX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true);
-                    drawContext.drawTexture(ARMOUR, armourX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 9, 9, 0f, 0f, 9, 9, 9, 9);
+                    drawContext.drawTexture(ARMOUR, armourX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 1, 9, 9, 0f, 0f, 9, 9, 9, 9);
                 }
 
                 if (vehicleMaxHealthDeep > 0f) {
@@ -125,7 +124,7 @@ public class TargetHealthBar implements HudRenderCallback {
                     if (expectedLeftPixel < armourX) expectedLeftPixel = armourX + 10;
 
                     int mountHealthX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, mountHealthString, expectedLeftPixel, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true);
-                    drawContext.drawTexture(MOUNT_HEART, mountHealthX, BAR_Y + BAR_HEIGHT + MOUNT_BAR_HEIGHT + 2, 9, 9, 0f, 0f, 9, 9, 9, 9);
+                    drawContext.drawTexture(MOUNT_HEART, mountHealthX, BAR_Y + BAR_HEIGHT + MOUNT_BAR_HEIGHT + 1, 9, 9, 0f, 0f, 9, 9, 9, 9);
                 }
 
                 // Render entity group icon
