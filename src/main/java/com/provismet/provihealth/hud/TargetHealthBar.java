@@ -70,6 +70,7 @@ public class TargetHealthBar implements HudRenderCallback {
                 return;
             }
 
+            this.adjustForScreenHeight();
             HUDType hudType = Options.getHUDFor(this.target);
 
             float healthPercent = MathHelper.clamp(this.target.getHealth() / this.target.getMaxHealth(), 0f, 1f);
@@ -211,6 +212,11 @@ public class TargetHealthBar implements HudRenderCallback {
         this.currentVehicleHealthWidth = 0;
     }
 
+    private void adjustForScreenHeight () {
+        OFFSET_Y = Math.min((int)(MinecraftClient.getInstance().getWindow().getScaledHeight() * (Options.hudOffsetPercent / 100f)), MinecraftClient.getInstance().getWindow().getScaledHeight() - FRAME_LENGTH);
+        BAR_Y = OFFSET_Y + FRAME_LENGTH / 2 - (BAR_HEIGHT + MOUNT_BAR_HEIGHT) / 2;
+    }
+
     // Copied from InventoryScreen because this method does not exist in 1.20.1
     @SuppressWarnings("deprecation")
     private void drawEntity (DrawContext context, float x, float y, int size, Vector3f vector3f, Quaternionf quaternionf, @Nullable Quaternionf quaternionf2, LivingEntity entity) {
@@ -235,13 +241,4 @@ public class TargetHealthBar implements HudRenderCallback {
       context.getMatrices().pop();
       DiffuseLighting.enableGuiDepthLighting();
    }
-
-    public static void updatePortraitY (int offset) {
-        OFFSET_Y = offset;
-        BAR_Y = OFFSET_Y + FRAME_LENGTH / 2 - (BAR_HEIGHT + MOUNT_BAR_HEIGHT) / 2;
-    }
-
-    public static int getOffsetY () {
-        return OFFSET_Y;
-    }
 }

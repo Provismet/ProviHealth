@@ -21,7 +21,6 @@ import org.joml.Vector3f;
 
 import com.google.gson.stream.JsonReader;
 import com.provismet.provihealth.ProviHealthClient;
-import com.provismet.provihealth.hud.TargetHealthBar;
 
 public class Options {
     public static int maxHealthBarTicks = 40;
@@ -49,6 +48,7 @@ public class Options {
 
     public static boolean showHudIcon = true;
     public static boolean useCustomHudPortraits = true;
+    public static int hudOffsetPercent = 0;
 
     public static boolean showTextInWorld = true;
     public static float maxRenderDistance = 24f;
@@ -103,7 +103,7 @@ public class Options {
             .append("hudIcon", showHudIcon).newLine()
             .append("hudPortraits", useCustomHudPortraits).newLine()
             .append("hudGlide", hudGlide).newLine()
-            .append("hudOffsetY", TargetHealthBar.getOffsetY()).newLine()
+            .append("hudOffsetY", hudOffsetPercent).newLine()
             .append("worldGlide", worldGlide).newLine()
             .append("worldHealthText", showTextInWorld).newLine()
             .append("maxRenderDistance", maxRenderDistance).newLine()
@@ -169,7 +169,7 @@ public class Options {
                         break;
                     
                     case "hudOffsetY":
-                        TargetHealthBar.updatePortraitY(parser.nextInt());
+                        hudOffsetPercent = parser.nextInt();
                         break;
                     
                     case "worldGlide":

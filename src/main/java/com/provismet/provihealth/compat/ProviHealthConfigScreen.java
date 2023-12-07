@@ -3,7 +3,6 @@ package com.provismet.provihealth.compat;
 import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.config.Options.HUDType;
 import com.provismet.provihealth.config.Options.VisibilityType;
-import com.provismet.provihealth.hud.TargetHealthBar;
 
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
@@ -59,8 +58,10 @@ public class ProviHealthConfigScreen {
             .build()
         );
 
-        hud.addEntry(entryBuilder.startIntSlider(Text.translatable("entry.provihealth.hudOffsetY"), TargetHealthBar.getOffsetY(), 0, 200)
-            .setSaveConsumer(newValue -> TargetHealthBar.updatePortraitY(newValue))
+        hud.addEntry(entryBuilder.startIntSlider(Text.translatable("entry.provihealth.hudOffsetY"), Options.hudOffsetPercent, 0, 100)
+            .setDefaultValue(0)
+            .setTooltip(Text.translatable("tooltip.provihealth.hudOffsetY"))
+            .setSaveConsumer(newValue -> Options.hudOffsetPercent = newValue)
             .build()
         );
 

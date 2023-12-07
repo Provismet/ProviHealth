@@ -47,6 +47,7 @@
     "tooltip.provihealth.glide": "Determines how quickly the health bar will slide from its old value to new values.\nWarning: Very low values will prevent the health bar visual from catching up with the true value.",
     "tooltip.provihealth.hudPortraits": "Allows mobs to have different HUD portraits based on their group or type.",
     "tooltip.provihealth.maxDistance": "Mobs beyond this distance will not render health bars.",
+    "tooltip.provihealth.hudOffsetY": "As a percentage of the window height.",
 
     "entity.provihealth.unknownPlayer": "[Invisible Player]"
 }
