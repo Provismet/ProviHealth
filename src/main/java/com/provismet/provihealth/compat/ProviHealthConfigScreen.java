@@ -3,6 +3,7 @@ package com.provismet.provihealth.compat;
 import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.config.Options.HUDType;
 import com.provismet.provihealth.config.Options.VisibilityType;
+import com.provismet.provihealth.hud.TargetHealthBar;
 
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
@@ -11,6 +12,7 @@ import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.Arrays;
 
@@ -25,6 +27,7 @@ public class ProviHealthConfigScreen {
 
         ConfigCategory hud = builder.getOrCreateCategory(Text.translatable("category.provihealth.hud"));
         ConfigCategory health = builder.getOrCreateCategory(Text.translatable("category.provihealth.health"));
+        ConfigCategory particles = builder.getOrCreateCategory(Text.translatable("category.provihealth.particles"));
 
         hud.addEntry(entryBuilder.startIntField(Text.translatable("entry.provihealth.hudDuration"), Options.maxHealthBarTicks)
             .setDefaultValue(40)
@@ -53,6 +56,11 @@ public class ProviHealthConfigScreen {
             .setMax(1f)
             .setTooltip(Text.translatable("tooltip.provihealth.glide"))
             .setSaveConsumer(newValue -> Options.hudGlide = newValue)
+            .build()
+        );
+
+        hud.addEntry(entryBuilder.startIntSlider(Text.translatable("entry.provihealth.hudOffsetY"), TargetHealthBar.getOffsetY(), 0, 200)
+            .setSaveConsumer(newValue -> TargetHealthBar.updatePortraitY(newValue))
             .build()
         );
 
@@ -176,6 +184,36 @@ public class ProviHealthConfigScreen {
         health.addEntry(entryBuilder.startStrList(Text.translatable("entry.provihealth.blacklist"), Options.blacklist)
             .setDefaultValue(Arrays.asList("minecraft:armor_stand"))
             .setSaveConsumer(newValue -> Options.blacklist = newValue)
+            .build()
+        );
+
+        particles.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.damageParticles"), Options.spawnDamageParticles)
+            .setDefaultValue(true)
+            .setSaveConsumer(newValue -> Options.spawnDamageParticles = newValue)
+            .build()
+        );
+
+        particles.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.healingParticles"), Options.spawnHealingParticles)
+            .setDefaultValue(false)
+            .setSaveConsumer(newValue -> Options.spawnHealingParticles = newValue)
+            .build()
+        );
+
+        particles.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.damageColour"), Options.damageColour)
+            .setDefaultValue(0xFF0000)
+            .setSaveConsumer(newValue -> {
+                Options.damageColour = newValue;
+                Options.unpackedDamage = Vec3d.unpackRgb(newValue).toVector3f();
+            })
+            .build()
+        );
+
+        particles.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.healingColour"), Options.healingColour)
+            .setDefaultValue(0x00FF00)
+            .setSaveConsumer(newValue -> {
+                Options.healingColour = newValue;
+                Options.unpackedHealing = Vec3d.unpackRgb(newValue).toVector3f();
+            })
             .build()
         );
 

@@ -4,6 +4,7 @@
     "category.provihealth.general": "General",
     "category.provihealth.hud": "HUD",
     "category.provihealth.health": "In-World",
+    "category.provihealth.particles": "Particles",
 
     "subcategory.provihealth.boss": "Bosses",
     "subcategory.provihealth.hostile": "Hostile Mobs",
@@ -24,6 +25,11 @@
     "entry.provihealth.worldText": "Show Health Value",
     "entry.provihealth.maxDistance": "Maximum Render Distance",
     "entry.provihealth.barScale": "Bar Size",
+    "entry.provihealth.hudOffsetY": "HUD Offset Y",
+    "entry.provihealth.damageParticles": "Show Damage Particles",
+    "entry.provihealth.healingParticles": "Show Healing Particles",
+    "entry.provihealth.damageColour": "Damage Particle Colour",
+    "entry.provihealth.healingColour": "Healing Particle Colour",
 
     "enum.provihealth.full": "Full",
     "enum.provihealth.portrait_only": "Portrait Only",
