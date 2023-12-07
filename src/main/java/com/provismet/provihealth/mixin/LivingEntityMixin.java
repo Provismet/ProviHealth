@@ -31,7 +31,7 @@ public abstract class LivingEntityMixin extends Entity implements IMixinLivingEn
     private float currentVehicleHealthPercent = 1f;
 
     @Unique
-    private int prevHealth = (int)this.getHealth();
+    private float prevHealth = -404.404f; // Can't initialise with maxHealth, so use an extremely specific number that is unlikely to occur in reality.
 
     @Shadow
     public abstract float getHealth();
@@ -58,14 +58,16 @@ public abstract class LivingEntityMixin extends Entity implements IMixinLivingEn
 
     @Inject(method="tick", at=@At("TAIL"))
     private void spawnParticles (CallbackInfo info) {
+        if (this.prevHealth == -404.404f) this.prevHealth = this.getMaxHealth();
+
         if ((LivingEntity)(Object)this != MinecraftClient.getInstance().getCameraEntity()) {
-            if ((int)this.getHealth() < this.prevHealth && Options.spawnDamageParticles) {
-                this.getWorld().addParticle(new TextParticleEffect(Options.unpackedDamage, 1f, 0.25f, String.format("%d", this.prevHealth - (int)this.getHealth())), this.getX(), this.getEyeY(), this.getZ(), 0f, 0f, 0f);
+            if (this.getHealth() < this.prevHealth && Options.spawnDamageParticles) {
+                this.getWorld().addParticle(new TextParticleEffect(Options.unpackedDamage, 1f, Options.particleScale, String.format("%d", (int)this.prevHealth - (int)this.getHealth())), this.getX(), this.getEyeY(), this.getZ(), 0f, 0f, 0f);
             }
-            else if ((int)this.getHealth() > this.prevHealth && Options.spawnHealingParticles) {
-                this.getWorld().addParticle(new TextParticleEffect(Options.unpackedHealing, 1f, 0.25f, String.format("%d", (int)this.getHealth() - this.prevHealth)), this.getX(), this.getEyeY(), this.getZ(), 0f, 0f, 0f);
+            else if (this.getHealth() > this.prevHealth && Options.spawnHealingParticles) {
+                this.getWorld().addParticle(new TextParticleEffect(Options.unpackedHealing, 1f, Options.particleScale, String.format("%d", (int)this.getHealth() - (int)this.prevHealth)), this.getX(), this.getEyeY(), this.getZ(), 0f, 0f, 0f);
             }
         }
-        this.prevHealth = (int)this.getHealth();
+        this.prevHealth = this.getHealth();
     }
 }

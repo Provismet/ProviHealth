@@ -217,6 +217,25 @@ public class ProviHealthConfigScreen {
             .build()
         );
 
+        particles.addEntry(entryBuilder.startFloatField(Text.translatable("entry.provihealth.particleScale"), Options.particleScale)
+            .setDefaultValue(0.25f)
+            .setMin(0.01f)
+            .setSaveConsumer(newValue -> Options.particleScale = newValue)
+            .build()
+        );
+
+        particles.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.particleTextShadow"), Options.particleTextShadow)
+            .setDefaultValue(true)
+            .setSaveConsumer(newValue -> Options.particleTextShadow = newValue)
+            .build()
+        );
+
+        particles.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.particleTextColour"), Options.particleTextColour)
+            .setDefaultValue(0xFFFFFF)
+            .setSaveConsumer(newValue -> Options.particleTextColour = newValue)
+            .build()
+        );
+
         builder.setSavingRunnable(Options::save);
         return builder.build();
     }

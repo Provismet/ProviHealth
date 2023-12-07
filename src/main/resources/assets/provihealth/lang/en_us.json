@@ -28,8 +28,11 @@
     "entry.provihealth.hudOffsetY": "HUD Offset Y",
     "entry.provihealth.damageParticles": "Show Damage Particles",
     "entry.provihealth.healingParticles": "Show Healing Particles",
-    "entry.provihealth.damageColour": "Damage Particle Colour",
-    "entry.provihealth.healingColour": "Healing Particle Colour",
+    "entry.provihealth.damageColour": "Damage Particle Color",
+    "entry.provihealth.healingColour": "Healing Particle Color",
+    "entry.provihealth.particleScale": "Particle Size",
+    "entry.provihealth.particleTextShadow": "Text Shadow",
+    "entry.provihealth.particleTextColour": "Text Color",
 
     "enum.provihealth.full": "Full",
     "enum.provihealth.portrait_only": "Portrait Only",
@@ -43,5 +46,7 @@
     "tooltip.provihealth.targetOverride": "Always render health bar when targeting a mob of this type.",
     "tooltip.provihealth.glide": "Determines how quickly the health bar will slide from its old value to new values.\nWarning: Very low values will prevent the health bar visual from catching up with the true value.",
     "tooltip.provihealth.hudPortraits": "Allows mobs to have different HUD portraits based on their group or type.",
-    "tooltip.provihealth.maxDistance": "Mobs beyond this distance will not render health bars."
+    "tooltip.provihealth.maxDistance": "Mobs beyond this distance will not render health bars.",
+
+    "entity.provihealth.unknownPlayer": "[Invisible Player]"
 }

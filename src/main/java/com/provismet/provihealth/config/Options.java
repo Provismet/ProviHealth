@@ -55,11 +55,14 @@ public class Options {
     public static float worldHealthBarScale = 1.5f;
 
     public static boolean spawnDamageParticles = true;
-    public static boolean spawnHealingParticles = true;
+    public static boolean spawnHealingParticles = false;
     public static int damageColour = 0xFF0000;
     public static int healingColour = 0x00FF00;
     public static Vector3f unpackedDamage = Vec3d.unpackRgb(damageColour).toVector3f();
     public static Vector3f unpackedHealing = Vec3d.unpackRgb(healingColour).toVector3f();
+    public static float particleScale = 0.25f;
+    public static boolean particleTextShadow = true;
+    public static int particleTextColour = 0xFFFFFF;
 
     @SuppressWarnings("resource")
     public static boolean shouldRenderHealthFor (LivingEntity livingEntity) {
@@ -121,6 +124,9 @@ public class Options {
             .append("healingParticles", spawnHealingParticles).newLine()
             .append("damageColour", damageColour).newLine()
             .append("healingColour", healingColour).newLine()
+            .append("particleScale", particleScale).newLine()
+            .append("particleTextShadow", particleTextShadow).newLine()
+            .append("particleTextColour", particleTextColour).newLine()
             .createArray("healthBlacklist", blacklist).newLine()
             .createArray("hudBlacklist", blacklistHUD).newLine(false)
             .closeObject()
@@ -246,6 +252,18 @@ public class Options {
                     case "healingColour":
                         healingColour = parser.nextInt();
                         unpackedHealing = Vec3d.unpackRgb(healingColour).toVector3f();
+                        break;
+
+                    case "particleScale":
+                        particleScale = (float)parser.nextDouble();
+                        break;
+
+                    case "particleTextShadow":
+                        particleTextShadow = parser.nextBoolean();
+                        break;
+
+                    case "particleTextColour":
+                        particleTextColour = parser.nextInt();
                         break;
 
                     case "healthBlacklist":
