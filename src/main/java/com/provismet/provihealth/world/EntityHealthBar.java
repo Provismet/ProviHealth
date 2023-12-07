@@ -7,6 +7,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.provismet.provihealth.ProviHealthClient;
 import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.interfaces.IMixinLivingEntity;
+import com.provismet.provihealth.util.Visibility;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -37,7 +38,7 @@ public class EntityHealthBar {
         LivingEntity target;
         if (entity instanceof LivingEntity living) target = living;
         else return;
-        if (!enabled || (target.hasPassengers() && target.getFirstPassenger() instanceof LivingEntity) || target == MinecraftClient.getInstance().player || target.isInvisibleTo(MinecraftClient.getInstance().player)) return;
+        if (!enabled || (target.hasPassengers() && target.getFirstPassenger() instanceof LivingEntity) || target == MinecraftClient.getInstance().player || !Visibility.isVisible(living)) return;
         if (!Options.shouldRenderHealthFor(living)) return;
 
         int light = LightmapTextureManager.pack(15, 15);

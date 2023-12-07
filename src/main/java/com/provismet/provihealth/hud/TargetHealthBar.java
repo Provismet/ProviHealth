@@ -9,6 +9,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.provismet.provihealth.ProviHealthClient;
 import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.config.Options.HUDType;
+import com.provismet.provihealth.util.Visibility;
 import com.provismet.provihealth.world.EntityHealthBar;
 
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
@@ -23,8 +24,11 @@ import net.minecraft.util.math.MathHelper;
 
 public class TargetHealthBar implements HudRenderCallback {
     private static final Identifier BARS = ProviHealthClient.identifier("textures/gui/healthbars/bars.png");
-    private static final Identifier HEARTS = ProviHealthClient.identifier("textures/gui/healthbars/hearts.png");
+    private static final Identifier HEART = ProviHealthClient.identifier("textures/gui/healthbars/icons/heart.png");
+    private static final Identifier MOUNT_HEART = ProviHealthClient.identifier("textures/gui/healthbars/icons/mount_heart.png");
+    private static final Identifier ARMOUR = ProviHealthClient.identifier("textures/gui/healthbars/icons/armour.png");
 
+    private static int OFFSET_Y = 0;
     private static final int BAR_WIDTH = 128;
     private static final int BAR_HEIGHT = 10;
     private static final int MOUNT_BAR_HEIGHT = 6;
@@ -32,7 +36,7 @@ public class TargetHealthBar implements HudRenderCallback {
     private static final int FRAME_LENGTH = 48;
     private static final int LEFT_TEXT_X = FRAME_LENGTH + 2;
     private static final int BAR_X = FRAME_LENGTH - 5;
-    private static final int BAR_Y = FRAME_LENGTH / 2 - (BAR_HEIGHT + MOUNT_BAR_HEIGHT) / 2;
+    private static int BAR_Y = OFFSET_Y + FRAME_LENGTH / 2 - (BAR_HEIGHT + MOUNT_BAR_HEIGHT) / 2;
 
     private LivingEntity target = null;
     private float healthBarDuration = 0f;
@@ -43,12 +47,15 @@ public class TargetHealthBar implements HudRenderCallback {
     @SuppressWarnings("resource")
     @Override
     public void onHudRender (DrawContext drawContext, float tickDelta) {
+        if (this.healthBarDuration > 0f) this.healthBarDuration -= tickDelta;
+        else this.reset();
+
         if (!MinecraftClient.isHudEnabled() || MinecraftClient.getInstance().getDebugHud().shouldShowDebugHud() || MinecraftClient.getInstance().player.isSpectator()) return;
 
         boolean isNew = false;
 
         if (MinecraftClient.getInstance().targetedEntity instanceof LivingEntity living) {
-            if (living.isInvisibleTo(MinecraftClient.getInstance().player)) return;
+            if (!Visibility.isVisible(living)) return;
             if (!living.equals(this.target)) isNew = true;
             this.target = living;
             this.healthBarDuration = Options.maxHealthBarTicks;
@@ -96,17 +103,25 @@ public class TargetHealthBar implements HudRenderCallback {
 
                 // Render health value and heart icons
                 int healthX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("%d/%d", Math.round(this.target.getHealth()), Math.round(this.target.getMaxHealth())), LEFT_TEXT_X, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true); // Health Value
-                drawContext.drawTexture(HEARTS, healthX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 1, 11, 11, 0f, 0f, 9, 9, 9, 18);
+                drawContext.drawTexture(HEART, healthX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 9, 9, 0f, 0f, 9, 9, 9, 9);
+
+                // Render armour icon if necessary
+                int armourX = healthX;
+                if (this.target.getArmor() > 0) {
+                    armourX += 18;
+                    armourX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("%d", this.target.getArmor()), armourX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true);
+                    drawContext.drawTexture(ARMOUR, armourX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 9, 9, 0f, 0f, 9, 9, 9, 9);
+                }
 
                 if (vehicleMaxHealthDeep > 0f) {
                     String mountHealthString = String.format("%d/%d", Math.round(vehicleHealthDeep), Math.round(vehicleMaxHealthDeep));
-                    int mountHealthWidth = MinecraftClient.getInstance().textRenderer.getWidth(mountHealthString) + 11;
+                    int mountHealthWidth = MinecraftClient.getInstance().textRenderer.getWidth(mountHealthString) + 9;
                     int expectedLeftPixel = BAR_X + BAR_WIDTH - mountHealthWidth - 3;
 
-                    if (expectedLeftPixel < healthX) expectedLeftPixel = healthX + 12;
+                    if (expectedLeftPixel < armourX) expectedLeftPixel = armourX + 10;
 
                     int mountHealthX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, mountHealthString, expectedLeftPixel, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true);
-                    drawContext.drawTexture(HEARTS, mountHealthX, BAR_Y + BAR_HEIGHT + MOUNT_BAR_HEIGHT + 1, 11, 11, 0f, 9f, 9, 9, 9, 18);
+                    drawContext.drawTexture(MOUNT_HEART, mountHealthX, BAR_Y + BAR_HEIGHT + MOUNT_BAR_HEIGHT + 2, 9, 9, 0f, 0f, 9, 9, 9, 9);
                 }
 
                 // Render entity group icon
@@ -116,8 +131,8 @@ public class TargetHealthBar implements HudRenderCallback {
             if (hudType != HUDType.NONE) {
                 // Render Portrait
                 RenderSystem.enableBlend();
-                drawContext.drawTexture(BorderRegistry.getBorder(this.target), 0, 0, FRAME_LENGTH, FRAME_LENGTH, 48f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Background
-                drawContext.drawTexture(BorderRegistry.getBorder(this.target), 0, 0, 300, 0f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Foreground
+                drawContext.drawTexture(BorderRegistry.getBorder(this.target), 0, OFFSET_Y, FRAME_LENGTH, FRAME_LENGTH, 48f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Background
+                drawContext.drawTexture(BorderRegistry.getBorder(this.target), 0, OFFSET_Y, 300, 0f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Foreground
                 RenderSystem.disableBlend();
                 drawContext.drawText(MinecraftClient.getInstance().textRenderer, target.getName(), LEFT_TEXT_X, BAR_Y - BAR_HEIGHT, 0xFFFFFF, true); // Name
 
@@ -139,9 +154,9 @@ public class TargetHealthBar implements HudRenderCallback {
                 float renderHeight = this.target.getEyeHeight(this.target.getPose()) + 0.5f;
                 if (renderHeight < 1f) renderHeight = 1f;
 
-                drawContext.enableScissor(0, 0, FRAME_LENGTH, FRAME_LENGTH);
+                drawContext.enableScissor(0, OFFSET_Y, FRAME_LENGTH, OFFSET_Y + FRAME_LENGTH);
                 EntityHealthBar.enabled = false;
-                this.drawEntity(drawContext, 24, 0, 30,
+                this.drawEntity(drawContext, 24, OFFSET_Y, 30,
                     new Vector3f(0f, renderHeight, 0f),
                     (new Quaternionf()).rotateZ(3.1415927f),
                     null,
@@ -157,9 +172,6 @@ public class TargetHealthBar implements HudRenderCallback {
                 this.target.setYaw(prevTargetYaw);
             }
         }
-
-        if (this.healthBarDuration > 0f) this.healthBarDuration -= tickDelta;
-        else this.reset();
     }
 
     private int glideHealth (int trueValue, float glideFactor) {
@@ -188,6 +200,7 @@ public class TargetHealthBar implements HudRenderCallback {
     }
 
     // Copied from InventoryScreen because this method does not exist in 1.20.1
+    @SuppressWarnings("deprecation")
     private void drawEntity (DrawContext context, float x, float y, int size, Vector3f vector3f, Quaternionf quaternionf, @Nullable Quaternionf quaternionf2, LivingEntity entity) {
       context.getMatrices().push();
       context.getMatrices().translate((double)x, (double)y, 50.0);
@@ -210,4 +223,13 @@ public class TargetHealthBar implements HudRenderCallback {
       context.getMatrices().pop();
       DiffuseLighting.enableGuiDepthLighting();
    }
+
+    public static void updatePortraitY (int offset) {
+        OFFSET_Y = offset;
+        BAR_Y = OFFSET_Y + FRAME_LENGTH / 2 - (BAR_HEIGHT + MOUNT_BAR_HEIGHT) / 2;
+    }
+
+    public static int getOffsetY () {
+        return OFFSET_Y;
+    }
 }
