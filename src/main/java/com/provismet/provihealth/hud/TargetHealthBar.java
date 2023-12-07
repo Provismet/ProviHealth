@@ -18,6 +18,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
@@ -153,8 +154,12 @@ public class TargetHealthBar implements HudRenderCallback {
                 this.target.setHeadYaw(this.target.getYaw() + headBodyYawDifference);
                 this.target.prevHeadYaw = this.target.getYaw() + headBodyYawDifference;
 
-                float renderHeight = this.target.getEyeHeight(this.target.getPose()) + 0.5f;
-                if (renderHeight < 1f) renderHeight = 1f;
+                float renderHeight;
+                if (this.target.getEyeHeight(EntityPose.STANDING) >= this.target.getHeight() * 0.6) {
+                    renderHeight = this.target.getEyeHeight(this.target.getPose()) + 0.5f;
+                    if (renderHeight < 1f) renderHeight = 1f;
+                }
+                else renderHeight = this.target.getEyeHeight(this.target.getPose()) + 0.8f;
 
                 drawContext.enableScissor(0, OFFSET_Y, FRAME_LENGTH, OFFSET_Y + FRAME_LENGTH);
                 EntityHealthBar.enabled = false;
