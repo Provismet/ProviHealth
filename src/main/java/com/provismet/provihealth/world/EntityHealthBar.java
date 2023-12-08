@@ -46,7 +46,7 @@ public class EntityHealthBar {
         matrices.push();
         matrices.translate(0f, target.getHeight() + 0.45f - (0.003f / Options.worldHealthBarScale), 0f);
         matrices.scale(Options.worldHealthBarScale, Options.worldHealthBarScale, Options.worldHealthBarScale);
-        matrices.translate(0f, (target.shouldRenderName() || target.hasCustomName() && target == MinecraftClient.getInstance().targetedEntity ? 0.02f + 0.3f / Options.worldHealthBarScale : 0f), 0f);
+        matrices.translate(0f, ((target.shouldRenderName() || target.hasCustomName() && target == MinecraftClient.getInstance().getEntityRenderDispatcher().targetedEntity) && !target.isInvisibleTo(MinecraftClient.getInstance().player) ? 0.02f + 0.3f / Options.worldHealthBarScale : 0f), 0f);
         matrices.multiply(rotation);
 
         Tessellator tessellator = Tessellator.getInstance();

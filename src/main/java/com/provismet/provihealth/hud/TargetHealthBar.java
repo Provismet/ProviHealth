@@ -26,6 +26,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 public class TargetHealthBar implements HudRenderCallback {
+    public static boolean disabledLabels = false;
+
     private static final Identifier BARS = ProviHealthClient.identifier("textures/gui/healthbars/bars.png");
     private static final Identifier HEART = ProviHealthClient.identifier("textures/gui/healthbars/icons/heart.png");
     private static final Identifier MOUNT_HEART = ProviHealthClient.identifier("textures/gui/healthbars/icons/mount_heart.png");
@@ -163,6 +165,7 @@ public class TargetHealthBar implements HudRenderCallback {
 
                 drawContext.enableScissor(0, OFFSET_Y, FRAME_LENGTH, OFFSET_Y + FRAME_LENGTH);
                 EntityHealthBar.enabled = false;
+                disabledLabels = true;
                 this.drawEntity(drawContext, 24, OFFSET_Y, 30,
                     new Vector3f(0f, renderHeight, 0f),
                     (new Quaternionf()).rotateZ(3.1415927f),
@@ -170,6 +173,7 @@ public class TargetHealthBar implements HudRenderCallback {
                     this.target
                 );
                 EntityHealthBar.enabled = true;
+                disabledLabels = false;
                 drawContext.disableScissor();
 
                 this.target.setHeadYaw(prevTargetHeadYaw);
@@ -183,7 +187,7 @@ public class TargetHealthBar implements HudRenderCallback {
 
     private Text getName (LivingEntity entity) {
         if (entity instanceof PlayerEntity && entity.isInvisibleTo(MinecraftClient.getInstance().player)) return Text.translatable("entity.provihealth.unknownPlayer");
-        else return entity.getName();
+        else return entity.getDisplayName();
     }
 
     private int glideHealth (int trueValue, float glideFactor) {
