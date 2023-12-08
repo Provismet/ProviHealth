@@ -244,6 +244,13 @@ public class ProviHealthConfigScreen {
             .build()
         );
 
+        particles.addEntry(entryBuilder.startFloatField(Text.translatable("entry.provihealth.maxParticleDistance"), Options.maxParticleDistance)
+            .setDefaultValue(16f)
+            .setMin(0f)
+            .setSaveConsumer(newValue -> Options.maxParticleDistance = newValue)
+            .build()
+        );
+
         builder.setSavingRunnable(Options::save);
         return builder.build();
     }

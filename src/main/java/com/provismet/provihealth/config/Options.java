@@ -64,6 +64,7 @@ public class Options {
     public static boolean particleTextShadow = true;
     public static int particleTextColour = 0xFFFFFF;
     public static DamageParticleType particleType = DamageParticleType.RISING;
+    public static float maxParticleDistance = 16f;
 
     @SuppressWarnings("resource")
     public static boolean shouldRenderHealthFor (LivingEntity livingEntity) {
@@ -129,6 +130,7 @@ public class Options {
             .append("particleTextShadow", particleTextShadow).newLine()
             .append("particleTextColour", particleTextColour).newLine()
             .append("particleType", particleType.name()).newLine()
+            .append("maxParticleDistance", maxParticleDistance).newLine()
             .createArray("healthBlacklist", blacklist).newLine()
             .createArray("hudBlacklist", blacklistHUD).newLine(false)
             .closeObject()
@@ -270,6 +272,10 @@ public class Options {
 
                     case "particleType":
                         particleType = DamageParticleType.valueOf(parser.nextString());
+                        break;
+
+                    case "maxParticleDistance":
+                        maxParticleDistance = (float)parser.nextDouble();
                         break;
 
                     case "healthBlacklist":
