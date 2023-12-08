@@ -40,3 +40,8 @@ Register your entrypoint:
   "provihealth": ["path.to.your.class"]
 }
 ```
+
+## Official Downloads
+- Github (here)
+- [Modrinth](https://modrinth.com/mod/provis-health-bars)
+- [CurseForge](https://www.curseforge.com/minecraft/mc-mods/provihealth)
