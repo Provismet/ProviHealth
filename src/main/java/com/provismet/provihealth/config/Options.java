@@ -63,6 +63,7 @@ public class Options {
     public static float particleScale = 0.25f;
     public static boolean particleTextShadow = true;
     public static int particleTextColour = 0xFFFFFF;
+    public static DamageParticleType particleType = DamageParticleType.RISING;
 
     @SuppressWarnings("resource")
     public static boolean shouldRenderHealthFor (LivingEntity livingEntity) {
@@ -127,6 +128,7 @@ public class Options {
             .append("particleScale", particleScale).newLine()
             .append("particleTextShadow", particleTextShadow).newLine()
             .append("particleTextColour", particleTextColour).newLine()
+            .append("particleType", particleType.name()).newLine()
             .createArray("healthBlacklist", blacklist).newLine()
             .createArray("hudBlacklist", blacklistHUD).newLine(false)
             .closeObject()
@@ -266,6 +268,10 @@ public class Options {
                         particleTextColour = parser.nextInt();
                         break;
 
+                    case "particleType":
+                        particleType = DamageParticleType.valueOf(parser.nextString());
+                        break;
+
                     case "healthBlacklist":
                         ArrayList<String> tempBlacklist = new ArrayList<>();
                         parser.beginArray();
@@ -343,6 +349,17 @@ public class Options {
         NONE,
         PORTRAIT_ONLY,
         FULL;
+
+        @Override
+        public String toString () {
+            return "enum.provihealth." + super.toString().toLowerCase();
+        }
+    }
+
+    public static enum DamageParticleType {
+        RISING,
+        GRAVITY,
+        STATIC;
 
         @Override
         public String toString () {

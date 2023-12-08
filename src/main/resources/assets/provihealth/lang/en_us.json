@@ -33,6 +33,7 @@
     "entry.provihealth.particleScale": "Particle Size",
     "entry.provihealth.particleTextShadow": "Text Shadow",
     "entry.provihealth.particleTextColour": "Text Color",
+    "entry.provihealth.particleType": "Particle Movement",
 
     "enum.provihealth.full": "Full",
     "enum.provihealth.portrait_only": "Portrait Only",
@@ -41,6 +42,10 @@
     "enum.provihealth.always_show": "Show",
     "enum.provihealth.hide_if_full": "Hide When Full",
     "enum.provihealth.always_hide": "Hide",
+
+    "enum.provihealth.rising": "Rising",
+    "enum.provihealth.gravity": "Has Gravity",
+    "enum.provihealth.static": "None",
 
     "tooltip.provihealth.hudDuration": "How many ticks the HUD display will linger for when not targeting a mob.",
     "tooltip.provihealth.targetOverride": "Always render health bar when targeting a mob of this type.",

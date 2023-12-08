@@ -4,6 +4,7 @@ import org.joml.Quaternionf;
 
 import com.provismet.lilylib.util.MoreMath.RightAngledTriangle;
 import com.provismet.provihealth.config.Options;
+import com.provismet.provihealth.config.Options.DamageParticleType;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
@@ -40,14 +41,37 @@ public class TextParticle extends SpriteBillboardParticle {
         this.rotationSpeed = (float)Math.toRadians((this.random.nextDouble() * 1.5 + 0.5) * (this.random.nextBoolean() ? 10 : -10));
         this.maxScale = particleEffect.scale;
 
-        this.velocityX = 0;
-        this.velocityY = 0.1;
-        this.velocityZ = 0;
-        this.velocityMultiplier = 0.85f;
-
         final double sign = this.random.nextBoolean() ? 1 : -1;
         final RightAngledTriangle triangle = new RightAngledTriangle(new Vec3d(this.x, this.y, this.z), MinecraftClient.getInstance().player.getEyePos());
-        this.setPos(this.x + 0.5 * -triangle.cosine() * sign, this.y, this.z + 0.5 * triangle.sine() * sign);
+
+        switch (Options.particleType) {
+            case RISING:
+                this.setPos(this.x + 0.5 * -triangle.cosine() * sign, this.y, this.z + 0.5 * triangle.sine() * sign);
+                this.velocityX = 0;
+                this.velocityY = 0.1;
+                this.velocityZ = 0;
+                this.velocityMultiplier = 0.85f;       
+                break;
+
+            case GRAVITY:
+                this.setPos(this.x + 0.5 * -triangle.cosine() * sign, this.y + this.random.nextDouble() * 0.5, this.z + 0.5 * triangle.sine() * sign);
+                double velBonus = this.random.nextDouble() * 0.025 + 0.05;
+                this.velocityX = velBonus * -triangle.cosine() * sign;
+                this.velocityY = 0.125;
+                this.velocityZ = velBonus * triangle.sine() * sign;
+                break;
+
+            case STATIC:
+                this.setPos(this.x + 0.5 * -triangle.cosine() * sign, this.y + this.random.nextDouble() * 0.75, this.z + 0.5 * triangle.sine() * sign);
+                this.velocityX = 0;
+                this.velocityY = 0;
+                this.velocityZ = 0;
+                break;
+        
+            default:
+                break;
+        }
+
         this.prevPosX = this.x;
         this.prevPosY = this.y;
         this.prevPosZ = this.z;
@@ -62,6 +86,15 @@ public class TextParticle extends SpriteBillboardParticle {
         
         this.prevAngle = this.angle;
         this.angle += this.rotationSpeed;
+
+        if (Options.particleType == DamageParticleType.GRAVITY) {
+            if (this.onGround) {
+                this.velocityX = 0;
+                this.velocityY = 0;
+                this.velocityZ = 0;
+            }
+            else this.velocityY -= 0.025;
+        }
 	}
 
     @Override

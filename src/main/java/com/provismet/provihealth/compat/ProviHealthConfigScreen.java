@@ -1,6 +1,7 @@
 package com.provismet.provihealth.compat;
 
 import com.provismet.provihealth.config.Options;
+import com.provismet.provihealth.config.Options.DamageParticleType;
 import com.provismet.provihealth.config.Options.HUDType;
 import com.provismet.provihealth.config.Options.VisibilityType;
 
@@ -200,6 +201,12 @@ public class ProviHealthConfigScreen {
             .build()
         );
 
+        particles.addEntry(entryBuilder.startEnumSelector(Text.translatable("entry.provihealth.particleType"), DamageParticleType.class, Options.particleType)
+            .setDefaultValue(DamageParticleType.RISING)
+            .setSaveConsumer(newValue -> Options.particleType = newValue)
+            .build()
+        );
+
         particles.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.damageColour"), Options.damageColour)
             .setDefaultValue(0xFF0000)
             .setSaveConsumer(newValue -> {
@@ -218,10 +225,9 @@ public class ProviHealthConfigScreen {
             .build()
         );
 
-        particles.addEntry(entryBuilder.startFloatField(Text.translatable("entry.provihealth.particleScale"), Options.particleScale)
-            .setDefaultValue(0.25f)
-            .setMin(0.01f)
-            .setSaveConsumer(newValue -> Options.particleScale = newValue)
+        particles.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.particleTextColour"), Options.particleTextColour)
+            .setDefaultValue(0xFFFFFF)
+            .setSaveConsumer(newValue -> Options.particleTextColour = newValue)
             .build()
         );
 
@@ -231,9 +237,10 @@ public class ProviHealthConfigScreen {
             .build()
         );
 
-        particles.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.particleTextColour"), Options.particleTextColour)
-            .setDefaultValue(0xFFFFFF)
-            .setSaveConsumer(newValue -> Options.particleTextColour = newValue)
+        particles.addEntry(entryBuilder.startFloatField(Text.translatable("entry.provihealth.particleScale"), Options.particleScale)
+            .setDefaultValue(0.25f)
+            .setMin(0.01f)
+            .setSaveConsumer(newValue -> Options.particleScale = newValue)
             .build()
         );
 
