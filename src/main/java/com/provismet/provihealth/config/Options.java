@@ -7,6 +7,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.Vec3d;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -15,6 +16,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.joml.Vector3f;
 
 import com.google.gson.stream.JsonReader;
 import com.provismet.provihealth.ProviHealthClient;
@@ -45,10 +48,23 @@ public class Options {
 
     public static boolean showHudIcon = true;
     public static boolean useCustomHudPortraits = true;
+    public static int hudOffsetPercent = 0;
 
     public static boolean showTextInWorld = true;
     public static float maxRenderDistance = 24f;
     public static float worldHealthBarScale = 1.5f;
+
+    public static boolean spawnDamageParticles = true;
+    public static boolean spawnHealingParticles = false;
+    public static int damageColour = 0xFF0000;
+    public static int healingColour = 0x00FF00;
+    public static Vector3f unpackedDamage = Vec3d.unpackRgb(damageColour).toVector3f();
+    public static Vector3f unpackedHealing = Vec3d.unpackRgb(healingColour).toVector3f();
+    public static float particleScale = 0.25f;
+    public static boolean particleTextShadow = true;
+    public static int particleTextColour = 0xFFFFFF;
+    public static DamageParticleType particleType = DamageParticleType.RISING;
+    public static float maxParticleDistance = 16f;
 
     @SuppressWarnings("resource")
     public static boolean shouldRenderHealthFor (LivingEntity livingEntity) {
@@ -89,6 +105,7 @@ public class Options {
             .append("hudIcon", showHudIcon).newLine()
             .append("hudPortraits", useCustomHudPortraits).newLine()
             .append("hudGlide", hudGlide).newLine()
+            .append("hudOffsetY", hudOffsetPercent).newLine()
             .append("worldGlide", worldGlide).newLine()
             .append("worldHealthText", showTextInWorld).newLine()
             .append("maxRenderDistance", maxRenderDistance).newLine()
@@ -105,6 +122,15 @@ public class Options {
             .append("hostileHUD", hostileHUD.name()).newLine()
             .append("playerHUD", playerHUD.name()).newLine()
             .append("otherHUD", otherHUD.name()).newLine()
+            .append("damageParticles", spawnDamageParticles).newLine()
+            .append("healingParticles", spawnHealingParticles).newLine()
+            .append("damageColour", damageColour).newLine()
+            .append("healingColour", healingColour).newLine()
+            .append("particleScale", particleScale).newLine()
+            .append("particleTextShadow", particleTextShadow).newLine()
+            .append("particleTextColour", particleTextColour).newLine()
+            .append("particleType", particleType.name()).newLine()
+            .append("maxParticleDistance", maxParticleDistance).newLine()
             .createArray("healthBlacklist", blacklist).newLine()
             .createArray("hudBlacklist", blacklistHUD).newLine(false)
             .closeObject()
@@ -144,6 +170,10 @@ public class Options {
                     
                     case "hudGlide":
                         hudGlide = (float)parser.nextDouble();
+                        break;
+                    
+                    case "hudOffsetY":
+                        hudOffsetPercent = parser.nextInt();
                         break;
                     
                     case "worldGlide":
@@ -208,6 +238,44 @@ public class Options {
 
                     case "otherHUD":
                         otherHUD = HUDType.valueOf(parser.nextString());
+                        break;
+
+                    case "damageParticles":
+                        spawnDamageParticles = parser.nextBoolean();
+                        break;
+
+                    case "healingParticles":
+                        spawnHealingParticles = parser.nextBoolean();
+                        break;
+
+                    case "damageColour":
+                        damageColour = parser.nextInt();
+                        unpackedDamage = Vec3d.unpackRgb(damageColour).toVector3f();
+                        break;
+
+                    case "healingColour":
+                        healingColour = parser.nextInt();
+                        unpackedHealing = Vec3d.unpackRgb(healingColour).toVector3f();
+                        break;
+
+                    case "particleScale":
+                        particleScale = (float)parser.nextDouble();
+                        break;
+
+                    case "particleTextShadow":
+                        particleTextShadow = parser.nextBoolean();
+                        break;
+
+                    case "particleTextColour":
+                        particleTextColour = parser.nextInt();
+                        break;
+
+                    case "particleType":
+                        particleType = DamageParticleType.valueOf(parser.nextString());
+                        break;
+
+                    case "maxParticleDistance":
+                        maxParticleDistance = (float)parser.nextDouble();
                         break;
 
                     case "healthBlacklist":
@@ -287,6 +355,17 @@ public class Options {
         NONE,
         PORTRAIT_ONLY,
         FULL;
+
+        @Override
+        public String toString () {
+            return "enum.provihealth." + super.toString().toLowerCase();
+        }
+    }
+
+    public static enum DamageParticleType {
+        RISING,
+        GRAVITY,
+        STATIC;
 
         @Override
         public String toString () {
