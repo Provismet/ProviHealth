@@ -1,0 +1,58 @@
+Lily License
+
+Copyright (c) 2023 Provismet
+
+0. Definitions
+   - Software
+      -  Source and binary forms of this software. Including configuration files, source code, binary executables.
+         Includes associated documentation.
+
+   - Assets
+      -  Any images or audio included in the Software.
+
+   - Modified-Software
+      -  A copy of the Software that has been modified. Including modifications for the purpose of maintenance.
+
+1. Permission is hereby granted, free of charge, to any person obtaining a copy of the Software to use,
+   modify and compile the Software, contribute source or Assets to the Software, include the Software as
+   part of a larger work such as a "modpack", subject to the following conditions:
+
+      a) The Software may not be redistributed.
+            i) If a larger work includes or depends on the Software, then the installation or use of said larger
+               work must include or require obtaining a copy of the Software from the copyright holder.
+
+      b) Assets may not be redistributed or used in contexts unrelated to the Software.
+            i) Assets are permitted to be used in Modified-Software.
+
+      c) The copyright holder retains the right to grant exceptions to these conditions to individuals or
+         entities.
+
+2. Distribution of Modified-Software is permitted, subject to the following conditions:
+      a) The Modified-Software must contain prominent notices that it has been modified from the original
+         Software, on both:
+            i) Within the Modified-Software itself.
+            ii) On any webpage where the source or binary of the Modified-Software are distributed or hosted.
+
+      b) Any attribution notices within the Software must remain in the Modified-Software.
+
+      c) Webpages hosting the Modified-Software must contain a prominent hyperlink leading to a webpage
+         (posted or owned by the copyright holder) hosting the Software.
+
+      d) The copyright holder retains the right to grant exceptions to these conditions to individuals or
+         entities.
+
+      e) In the interest of preventing theft, fraud, or otherwise malicious activity, the copyright holder
+         retains the right to revoke this permission from individuals or entities at any time.
+
+The above permissions and exemptions do not apply to files prominently noted as being exempt from these permissions
+or are held under a different license.
+Prominent notices for this purpose include comments at the head of a source file, or a list of exempt file names
+located in a NOTICE or README.
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of
+the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

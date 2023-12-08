@@ -4,6 +4,7 @@
     "category.provihealth.general": "General",
     "category.provihealth.hud": "HUD",
     "category.provihealth.health": "In-World",
+    "category.provihealth.particles": "Particles",
 
     "subcategory.provihealth.boss": "Bosses",
     "subcategory.provihealth.hostile": "Hostile Mobs",
@@ -24,6 +25,16 @@
     "entry.provihealth.worldText": "Show Health Value",
     "entry.provihealth.maxDistance": "Maximum Render Distance",
     "entry.provihealth.barScale": "Bar Size",
+    "entry.provihealth.hudOffsetY": "HUD Offset Y",
+    "entry.provihealth.damageParticles": "Show Damage Particles",
+    "entry.provihealth.healingParticles": "Show Healing Particles",
+    "entry.provihealth.damageColour": "Damage Particle Color",
+    "entry.provihealth.healingColour": "Healing Particle Color",
+    "entry.provihealth.particleScale": "Particle Size",
+    "entry.provihealth.particleTextShadow": "Text Shadow",
+    "entry.provihealth.particleTextColour": "Text Color",
+    "entry.provihealth.particleType": "Particle Movement",
+    "entry.provihealth.maxParticleDistance": "Particle Render Distance",
 
     "enum.provihealth.full": "Full",
     "enum.provihealth.portrait_only": "Portrait Only",
@@ -33,9 +44,16 @@
     "enum.provihealth.hide_if_full": "Hide When Full",
     "enum.provihealth.always_hide": "Hide",
 
+    "enum.provihealth.rising": "Rising",
+    "enum.provihealth.gravity": "Has Gravity",
+    "enum.provihealth.static": "None",
+
     "tooltip.provihealth.hudDuration": "How many ticks the HUD display will linger for when not targeting a mob.",
     "tooltip.provihealth.targetOverride": "Always render health bar when targeting a mob of this type.",
     "tooltip.provihealth.glide": "Determines how quickly the health bar will slide from its old value to new values.\nWarning: Very low values will prevent the health bar visual from catching up with the true value.",
     "tooltip.provihealth.hudPortraits": "Allows mobs to have different HUD portraits based on their group or type.",
-    "tooltip.provihealth.maxDistance": "Mobs beyond this distance will not render health bars."
+    "tooltip.provihealth.maxDistance": "Mobs beyond this distance will not render health bars.",
+    "tooltip.provihealth.hudOffsetY": "As a percentage of the window height.",
+
+    "entity.provihealth.unknownPlayer": "[Invisible Player]"
 }
