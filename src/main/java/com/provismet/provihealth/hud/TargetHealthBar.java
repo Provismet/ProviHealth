@@ -15,7 +15,13 @@ import com.provismet.provihealth.world.EntityHealthBar;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
@@ -137,6 +143,7 @@ public class TargetHealthBar implements HudRenderCallback {
                 // Render Portrait
                 RenderSystem.enableBlend();
                 drawContext.drawTexture(BorderRegistry.getBorder(this.target), 0, OFFSET_Y, FRAME_LENGTH, FRAME_LENGTH, 48f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Background
+                //this.drawHorizontallyMirroredTexturedQuad(BorderRegistry.getBorder(this.target), drawContext, 0, FRAME_LENGTH, OFFSET_Y, FRAME_LENGTH, 0, 0.5f, 1f, 0f, 1f);
                 drawContext.drawTexture(BorderRegistry.getBorder(this.target), 0, OFFSET_Y, 300, 0f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Foreground
                 RenderSystem.disableBlend();
                 drawContext.drawText(MinecraftClient.getInstance().textRenderer, this.getName(this.target), LEFT_TEXT_X, BAR_Y - BAR_HEIGHT, 0xFFFFFF, true); // Name
@@ -223,25 +230,42 @@ public class TargetHealthBar implements HudRenderCallback {
     // Copied from InventoryScreen because this method does not exist in 1.20.1
     @SuppressWarnings("deprecation")
     private void drawEntity (DrawContext context, float x, float y, int size, Vector3f vector3f, Quaternionf quaternionf, @Nullable Quaternionf quaternionf2, LivingEntity entity) {
-      context.getMatrices().push();
-      context.getMatrices().translate((double)x, (double)y, 50.0);
-      context.getMatrices().multiplyPositionMatrix((new Matrix4f()).scaling((float)size, (float)size, (float)(-size)));
-      context.getMatrices().translate(vector3f.x, vector3f.y, vector3f.z);
-      context.getMatrices().multiply(quaternionf);
-      DiffuseLighting.method_34742();
-      EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
-      if (quaternionf2 != null) {
-         quaternionf2.conjugate();
-         entityRenderDispatcher.setRotation(quaternionf2);
-      }
+        context.getMatrices().push();
+        context.getMatrices().translate((double)x, (double)y, 50.0);
+        context.getMatrices().multiplyPositionMatrix((new Matrix4f()).scaling((float)size, (float)size, (float)(-size)));
+        context.getMatrices().translate(vector3f.x, vector3f.y, vector3f.z);
+        context.getMatrices().multiply(quaternionf);
+        DiffuseLighting.method_34742();
+        EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
+        if (quaternionf2 != null) {
+            quaternionf2.conjugate();
+            entityRenderDispatcher.setRotation(quaternionf2);
+        }
 
-      entityRenderDispatcher.setRenderShadows(false);
-      RenderSystem.runAsFancy(() -> {
-         entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, 1.0F, context.getMatrices(), context.getVertexConsumers(), 15728880);
-      });
-      context.draw();
-      entityRenderDispatcher.setRenderShadows(true);
-      context.getMatrices().pop();
-      DiffuseLighting.enableGuiDepthLighting();
-   }
+        entityRenderDispatcher.setRenderShadows(false);
+        RenderSystem.runAsFancy(() -> {
+            entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, 1.0F, context.getMatrices(), context.getVertexConsumers(), 15728880);
+        });
+        context.draw();
+        entityRenderDispatcher.setRenderShadows(true);
+        context.getMatrices().pop();
+        DiffuseLighting.enableGuiDepthLighting();
+    }
+
+    private void drawHorizontallyMirroredTexturedQuad (Identifier texture, DrawContext context, int x1, int x2, int y1, int y2, int z, float u1, float u2, float v1, float v2) {
+        this.drawTexturedQuad(texture, context, x1, x2, y1, y2, z, u2, u1, v1, v2);
+    }
+
+    private void drawTexturedQuad (Identifier texture, DrawContext context, int x1, int x2, int y1, int y2, int z, float u1, float u2, float v1, float v2) {
+        RenderSystem.setShaderTexture(0, texture);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        Matrix4f matrix4f = context.getMatrices().peek().getPositionMatrix();
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        bufferBuilder.vertex(matrix4f, x1, y1, z).texture(u1, v1).next();
+        bufferBuilder.vertex(matrix4f, x1, y2, z).texture(u1, v2).next();
+        bufferBuilder.vertex(matrix4f, x2, y2, z).texture(u2, v2).next();
+        bufferBuilder.vertex(matrix4f, x2, y1, z).texture(u2, v1).next();
+        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+    }
 }

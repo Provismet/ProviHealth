@@ -66,6 +66,8 @@ public class Options {
     public static DamageParticleType particleType = DamageParticleType.RISING;
     public static float maxParticleDistance = 16f;
 
+    public static int boxSize = 10;
+
     @SuppressWarnings("resource")
     public static boolean shouldRenderHealthFor (LivingEntity livingEntity) {
         if (blacklist.contains(EntityType.getId(livingEntity.getType()).toString())) return false;

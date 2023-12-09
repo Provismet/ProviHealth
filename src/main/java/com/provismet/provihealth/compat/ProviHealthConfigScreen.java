@@ -29,6 +29,12 @@ public class ProviHealthConfigScreen {
         ConfigCategory health = builder.getOrCreateCategory(Text.translatable("category.provihealth.health"));
         ConfigCategory particles = builder.getOrCreateCategory(Text.translatable("category.provihealth.particles"));
 
+        hud.addEntry(entryBuilder.startIntField(Text.of("Mob - DisplayEntity Distance"), Options.boxSize)
+            .setMin(0)
+            .setSaveConsumer(newValue -> Options.boxSize = newValue)
+            .build()
+        );
+
         hud.addEntry(entryBuilder.startIntField(Text.translatable("entry.provihealth.hudDuration"), Options.maxHealthBarTicks)
             .setDefaultValue(40)
             .setMin(0)
