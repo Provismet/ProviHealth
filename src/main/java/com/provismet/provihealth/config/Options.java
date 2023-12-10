@@ -49,6 +49,7 @@ public class Options {
     public static boolean showHudIcon = true;
     public static boolean useCustomHudPortraits = true;
     public static int hudOffsetPercent = 0;
+    public static HUDPosition hudPosition = HUDPosition.LEFT;
 
     public static boolean showTextInWorld = true;
     public static float maxRenderDistance = 24f;
@@ -107,6 +108,7 @@ public class Options {
             .append("hudIcon", showHudIcon).newLine()
             .append("hudPortraits", useCustomHudPortraits).newLine()
             .append("hudGlide", hudGlide).newLine()
+            .append("hudPosition", hudPosition.name()).newLine()
             .append("hudOffsetY", hudOffsetPercent).newLine()
             .append("worldGlide", worldGlide).newLine()
             .append("worldHealthText", showTextInWorld).newLine()
@@ -174,6 +176,10 @@ public class Options {
                         hudGlide = (float)parser.nextDouble();
                         break;
                     
+                    case "hudPosition":
+                        hudPosition = HUDPosition.valueOf(parser.nextString());
+                        break;
+
                     case "hudOffsetY":
                         hudOffsetPercent = parser.nextInt();
                         break;
@@ -368,6 +374,22 @@ public class Options {
         RISING,
         GRAVITY,
         STATIC;
+
+        @Override
+        public String toString () {
+            return "enum.provihealth." + super.toString().toLowerCase();
+        }
+    }
+
+    public static enum HUDPosition {
+        LEFT(150f),
+        RIGHT(210f);
+
+        public final float portraitYAW;
+
+        private HUDPosition (float portraitYAW) {
+            this.portraitYAW = portraitYAW;
+        }
 
         @Override
         public String toString () {

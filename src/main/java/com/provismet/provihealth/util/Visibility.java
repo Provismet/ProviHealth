@@ -16,6 +16,6 @@ public class Visibility {
         if (!living.getEquippedStack(EquipmentSlot.CHEST).isEmpty()) return true;
         if (living.isGlowing()) return true;
         if (living.getWorld().getEntitiesByClass(DisplayEntity.class, living.getBoundingBox().expand(Options.boxSize), x -> true).size() > 0) return true;
-        return true;
+        return false;
     }
 }

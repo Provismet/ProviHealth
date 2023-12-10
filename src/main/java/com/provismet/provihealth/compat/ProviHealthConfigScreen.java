@@ -2,6 +2,7 @@ package com.provismet.provihealth.compat;
 
 import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.config.Options.DamageParticleType;
+import com.provismet.provihealth.config.Options.HUDPosition;
 import com.provismet.provihealth.config.Options.HUDType;
 import com.provismet.provihealth.config.Options.VisibilityType;
 
@@ -62,6 +63,12 @@ public class ProviHealthConfigScreen {
             .setMax(1f)
             .setTooltip(Text.translatable("tooltip.provihealth.glide"))
             .setSaveConsumer(newValue -> Options.hudGlide = newValue)
+            .build()
+        );
+
+        hud.addEntry(entryBuilder.startEnumSelector(Text.translatable("entry.provihealth.hudOffsetX"), HUDPosition.class, Options.hudPosition)
+            .setDefaultValue(HUDPosition.LEFT)
+            .setSaveConsumer(newValue -> Options.hudPosition = newValue)
             .build()
         );
 

@@ -38,7 +38,7 @@ public class EntityHealthBar {
         LivingEntity target;
         if (entity instanceof LivingEntity living) target = living;
         else return;
-        if (!enabled || (target.hasPassengers() && target.getFirstPassenger() instanceof LivingEntity) || target == MinecraftClient.getInstance().player || !Visibility.isVisible(living)) return;
+        if (!enabled || (target.hasPassengers() && target.getFirstPassenger() instanceof LivingEntity livingRider && Options.shouldRenderHealthFor(livingRider)) || target == MinecraftClient.getInstance().player || !Visibility.isVisible(living)) return;
         if (!Options.shouldRenderHealthFor(living)) return;
 
         int light = LightmapTextureManager.pack(15, 15);
