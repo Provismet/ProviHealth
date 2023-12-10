@@ -1,5 +1,9 @@
 {
     "entry.provihealth.damageColour": "Damage Particle Colour",
     "entry.provihealth.healingColour": "Healing Particle Colour",
-    "entry.provihealth.particleTextColour": "Text Colour"
+    "entry.provihealth.particleTextColour": "Text Colour",
+    "entry.provihealth.barStartColour": "Full Health Colour",
+    "entry.provihealth.barEndColour": "Low Health Colour",
+
+    "tooltip.provihealth.gradient": "Whether or not the health bar will change colour as it gets lower.\nTurning this off sets the bar colour to the starting value."
 }

@@ -30,12 +30,6 @@ public class ProviHealthConfigScreen {
         ConfigCategory health = builder.getOrCreateCategory(Text.translatable("category.provihealth.health"));
         ConfigCategory particles = builder.getOrCreateCategory(Text.translatable("category.provihealth.particles"));
 
-        hud.addEntry(entryBuilder.startIntField(Text.of("Mob - DisplayEntity Distance"), Options.boxSize)
-            .setMin(0)
-            .setSaveConsumer(newValue -> Options.boxSize = newValue)
-            .build()
-        );
-
         hud.addEntry(entryBuilder.startIntField(Text.translatable("entry.provihealth.hudDuration"), Options.maxHealthBarTicks)
             .setDefaultValue(40)
             .setMin(0)
@@ -76,6 +70,31 @@ public class ProviHealthConfigScreen {
             .setDefaultValue(0)
             .setTooltip(Text.translatable("tooltip.provihealth.hudOffsetY"))
             .setSaveConsumer(newValue -> Options.hudOffsetPercent = newValue)
+            .build()
+        );
+
+        hud.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.gradient"), Options.hudGradient)
+            .setDefaultValue(false)
+            .setTooltip(Text.translatable("tooltip.provihealth.gradient"))
+            .setSaveConsumer(newValue -> Options.hudGradient = newValue)
+            .build()
+        );
+
+        hud.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barStartColour"), Options.hudStartColour)
+            .setDefaultValue(0x00C100)
+            .setSaveConsumer(newValue -> {
+                Options.hudStartColour = newValue;
+                Options.unpackedStartHud = Vec3d.unpackRgb(newValue).toVector3f();
+            })
+            .build()
+        );
+
+        hud.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barEndColour"), Options.hudEndColour)
+            .setDefaultValue(0xFF0000)
+            .setSaveConsumer(newValue -> {
+                Options.hudEndColour = newValue;
+                Options.unpackedEndHud = Vec3d.unpackRgb(newValue).toVector3f();
+            })
             .build()
         );
 
@@ -137,6 +156,31 @@ public class ProviHealthConfigScreen {
             .setMax(3f)
             .setDefaultValue(1.5f)
             .setSaveConsumer(newValue -> Options.worldHealthBarScale = newValue)
+            .build()
+        );
+
+        health.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.gradient"), Options.worldGradient)
+            .setDefaultValue(false)
+            .setTooltip(Text.translatable("tooltip.provihealth.gradient"))
+            .setSaveConsumer(newValue -> Options.worldGradient = newValue)
+            .build()
+        );
+
+        health.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barStartColour"), Options.worldStartColour)
+            .setDefaultValue(0x00C100)
+            .setSaveConsumer(newValue -> {
+                Options.worldStartColour = newValue;
+                Options.unpackedStartWorld = Vec3d.unpackRgb(newValue).toVector3f();
+            })
+            .build()
+        );
+
+        health.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barEndColour"), Options.worldEndColour)
+            .setDefaultValue(0xFF0000)
+            .setSaveConsumer(newValue -> {
+                Options.worldEndColour = newValue;
+                Options.unpackedEndWorld = Vec3d.unpackRgb(newValue).toVector3f();
+            })
             .build()
         );
 

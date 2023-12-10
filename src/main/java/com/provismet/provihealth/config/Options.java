@@ -7,6 +7,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 import java.io.FileNotFoundException;
@@ -23,6 +24,8 @@ import com.google.gson.stream.JsonReader;
 import com.provismet.provihealth.ProviHealthClient;
 
 public class Options {
+    public static final Vector3f WHITE = Vec3d.unpackRgb(0xFFFFFF).toVector3f();
+
     public static int maxHealthBarTicks = 40;
 
     public static List<String> blacklist = Arrays.asList("minecraft:armor_stand");
@@ -50,10 +53,20 @@ public class Options {
     public static boolean useCustomHudPortraits = true;
     public static int hudOffsetPercent = 0;
     public static HUDPosition hudPosition = HUDPosition.LEFT;
+    public static int hudStartColour = 0x00C100;
+    public static int hudEndColour = 0xFF0000;
+    public static Vector3f unpackedStartHud = Vec3d.unpackRgb(hudStartColour).toVector3f();
+    public static Vector3f unpackedEndHud = Vec3d.unpackRgb(hudEndColour).toVector3f();
+    public static boolean hudGradient = false;
 
     public static boolean showTextInWorld = true;
     public static float maxRenderDistance = 24f;
     public static float worldHealthBarScale = 1.5f;
+    public static int worldStartColour = 0x00C100;
+    public static int worldEndColour = 0xFF0000;
+    public static Vector3f unpackedStartWorld = Vec3d.unpackRgb(worldStartColour).toVector3f();
+    public static Vector3f unpackedEndWorld = Vec3d.unpackRgb(worldEndColour).toVector3f();
+    public static boolean worldGradient = false;
 
     public static boolean spawnDamageParticles = true;
     public static boolean spawnHealingParticles = false;
@@ -66,8 +79,6 @@ public class Options {
     public static int particleTextColour = 0xFFFFFF;
     public static DamageParticleType particleType = DamageParticleType.RISING;
     public static float maxParticleDistance = 16f;
-
-    public static int boxSize = 10;
 
     @SuppressWarnings("resource")
     public static boolean shouldRenderHealthFor (LivingEntity livingEntity) {
@@ -101,6 +112,17 @@ public class Options {
         else return otherHUD;
     }
 
+    public static Vector3f getBarColour (float percentage, Vector3f start, Vector3f end, boolean shouldGradient) {
+        if (shouldGradient) {
+            Vector3f colour = new Vector3f();
+            colour.x = MathHelper.lerp(percentage, end.x, start.x);
+            colour.y = MathHelper.lerp(percentage, end.y, start.y);
+            colour.z = MathHelper.lerp(percentage, end.z, start.z);
+            return colour;
+        }
+        else return start;
+    }
+
     public static void save () {
         JsonHelper json = new JsonHelper();
         String jsonData = json.start()
@@ -110,10 +132,16 @@ public class Options {
             .append("hudGlide", hudGlide).newLine()
             .append("hudPosition", hudPosition.name()).newLine()
             .append("hudOffsetY", hudOffsetPercent).newLine()
+            .append("hudGradient", hudGradient).newLine()
+            .append("hudStartColour", hudStartColour).newLine()
+            .append("hudEndColour", hudEndColour).newLine()
             .append("worldGlide", worldGlide).newLine()
             .append("worldHealthText", showTextInWorld).newLine()
             .append("maxRenderDistance", maxRenderDistance).newLine()
             .append("barScale", worldHealthBarScale).newLine()
+            .append("worldGradient", worldGradient).newLine()
+            .append("worldStartColour", worldStartColour).newLine()
+            .append("worldEndColour", worldEndColour).newLine()
             .append("bossHealth", bosses.name()).newLine()
             .append("bossTarget", bossesVisibilityOverride).newLine()
             .append("hostileHealth", hostile.name()).newLine()
@@ -183,6 +211,20 @@ public class Options {
                     case "hudOffsetY":
                         hudOffsetPercent = parser.nextInt();
                         break;
+
+                    case "hudGradient":
+                        hudGradient = parser.nextBoolean();
+                        break;
+                    
+                    case "hudStartColour":
+                        hudStartColour = parser.nextInt();
+                        unpackedStartHud = Vec3d.unpackRgb(hudStartColour).toVector3f();
+                        break;
+
+                    case "hudEndColour":
+                        hudEndColour = parser.nextInt();
+                        unpackedEndHud = Vec3d.unpackRgb(hudEndColour).toVector3f();
+                        break;
                     
                     case "worldGlide":
                         worldGlide = (float)parser.nextDouble();
@@ -198,6 +240,20 @@ public class Options {
 
                     case "barScale":
                         worldHealthBarScale = (float)parser.nextDouble();
+                        break;
+
+                    case "worldGradient":
+                        worldGradient = parser.nextBoolean();
+                        break;
+
+                    case "worldStartColour":
+                        worldStartColour = parser.nextInt();
+                        unpackedStartWorld = Vec3d.unpackRgb(worldStartColour).toVector3f();
+                        break;
+
+                    case "worldEndColour":
+                        worldEndColour = parser.nextInt();
+                        unpackedEndWorld = Vec3d.unpackRgb(worldEndColour).toVector3f();
                         break;
 
                     case "bossHealth":

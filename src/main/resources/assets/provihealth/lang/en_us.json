@@ -36,6 +36,9 @@
     "entry.provihealth.particleType": "Particle Movement",
     "entry.provihealth.maxParticleDistance": "Particle Render Distance",
     "entry.provihealth.hudOffsetX": "HUD Position",
+    "entry.provihealth.gradient": "Dynamic Bar Color",
+    "entry.provihealth.barStartColour": "Full Health Colour",
+    "entry.provihealth.barEndColour": "Low Health Colour",
 
     "enum.provihealth.full": "Full",
     "enum.provihealth.portrait_only": "Portrait Only",
@@ -58,6 +61,7 @@
     "tooltip.provihealth.hudPortraits": "Allows mobs to have different HUD portraits based on their group or type.",
     "tooltip.provihealth.maxDistance": "Mobs beyond this distance will not render health bars.",
     "tooltip.provihealth.hudOffsetY": "As a percentage of the window height.",
+    "tooltip.provihealth.gradient": "Whether or not the health bar will change color as it gets lower.\nTurning this off sets the bar color to the starting value.",
 
     "entity.provihealth.unknownPlayer": "[Invisible Player]"
 }
