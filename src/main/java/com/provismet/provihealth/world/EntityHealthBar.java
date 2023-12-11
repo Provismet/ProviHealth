@@ -2,6 +2,7 @@ package com.provismet.provihealth.world;
 
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.provismet.provihealth.ProviHealthClient;
@@ -22,7 +23,10 @@ import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -38,7 +42,7 @@ public class EntityHealthBar {
         LivingEntity target;
         if (entity instanceof LivingEntity living) target = living;
         else return;
-        if (!enabled || (target.hasPassengers() && target.getFirstPassenger() instanceof LivingEntity) || target == MinecraftClient.getInstance().player || !Visibility.isVisible(living)) return;
+        if (!enabled || (target.hasPassengers() && target.getFirstPassenger() instanceof LivingEntity livingRider && !Options.blacklist.contains(EntityType.getId(livingRider.getType()).toString())) || target == MinecraftClient.getInstance().player || !Visibility.isVisible(living)) return;
         if (!Options.shouldRenderHealthFor(living)) return;
 
         int light = LightmapTextureManager.pack(15, 15);
@@ -46,14 +50,14 @@ public class EntityHealthBar {
         matrices.push();
         matrices.translate(0f, target.getHeight() + 0.45f - (0.003f / Options.worldHealthBarScale), 0f);
         matrices.scale(Options.worldHealthBarScale, Options.worldHealthBarScale, Options.worldHealthBarScale);
-        matrices.translate(0f, ((target.shouldRenderName() || target.hasCustomName() && target == MinecraftClient.getInstance().getEntityRenderDispatcher().targetedEntity) && !target.isInvisibleTo(MinecraftClient.getInstance().player) ? 0.02f + 0.3f / Options.worldHealthBarScale : 0f), 0f);
+        matrices.translate(0f, ((target.shouldRenderName() || target.hasCustomName() && target == MinecraftClient.getInstance().getEntityRenderDispatcher().targetedEntity) && !Options.overrideLabels && !target.isInvisibleTo(MinecraftClient.getInstance().player) ? 0.02f + 0.3f / Options.worldHealthBarScale : 0f), 0f);
         matrices.multiply(rotation);
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder vertexConsumer = tessellator.getBuffer();
 
-        vertexConsumer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        vertexConsumer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
+        RenderSystem.setShader(GameRenderer::getPositionColorTexProgram);
         RenderSystem.setShaderTexture(0, BARS);
         RenderSystem.enableDepthTest();
         RenderSystem.enableBlend();
@@ -93,16 +97,51 @@ public class EntityHealthBar {
             matrices.push();
             matrices.scale(-0.01f, -0.01f, -0.01f);
             Matrix4f textModel = matrices.peek().getPositionMatrix();
-
-            final String healthString = String.format("%d/%d", Math.round(target.getHealth()), Math.round(target.getMaxHealth()));
             final TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-            textRenderer.draw(healthString, -(textRenderer.getWidth(healthString)) / 2f, -8, 0xFFFFFF, true, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
+            final String healthString = String.format("%d/%d", Math.round(target.getHealth()), Math.round(target.getMaxHealth()));
+
+            if (Options.overrideLabels) {
+                final Text targetName = getName(target);
+                final float targetNameWidth = textRenderer.getWidth(targetName);
+
+                float healthX = 50f - textRenderer.getWidth(healthString);
+                final float healthY = -9;
+                float nameX = -50;
+                float nameY = -9;
+                boolean wrapLines = targetNameWidth - 50f > healthX - 2f;
+
+                if (wrapLines) {
+                    healthX = (healthX - 50) / 2f;
+                    nameX = -targetNameWidth / 2f;
+                    nameY -= 9;
+                }
+
+                if (target.shouldRenderName() && !target.isSneaky()) {
+                    textRenderer.draw(targetName, nameX + 1, nameY + 1, 0x404040, false, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
+                    textRenderer.draw(healthString, healthX + 1, healthY + 1, 0x404040, false, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
+
+                    matrices.translate(0, 0, 0.03f);
+                    textModel = matrices.peek().getPositionMatrix();
+                    textRenderer.draw(targetName, nameX, nameY, 0xFFFFFF, false, textModel, vertexConsumers, TextLayerType.SEE_THROUGH, 0, light);
+                    textRenderer.draw(healthString, healthX, healthY, 0xFFFFFF, false, textModel, vertexConsumers, TextLayerType.SEE_THROUGH, 0, light);
+                }
+                else {
+                    textRenderer.draw(targetName, nameX, nameY, 0xFFFFFF, true, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
+                    textRenderer.draw(healthString, healthX, healthY, 0xFFFFFF, true, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
+                }
+            }
+            else textRenderer.draw(healthString, -(textRenderer.getWidth(healthString)) / 2f, -10, 0xFFFFFF, true, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
             matrices.pop();
         }
 
         RenderSystem.disableBlend();
         RenderSystem.disableDepthTest();
         matrices.pop();
+    }
+
+    private static Text getName (LivingEntity entity) {
+        if (entity instanceof PlayerEntity && entity.isInvisibleTo(MinecraftClient.getInstance().player)) return Text.translatable("entity.provihealth.unknownPlayer");
+        else return entity.getDisplayName();
     }
 
     private static void renderBar (Matrix4f model, VertexConsumer vertexConsumer, int index, float percentage, boolean isMount) {
@@ -112,16 +151,20 @@ public class EntityHealthBar {
         final float MAX_U = percentage * (isMount ? 61f / TEXTURE_SIZE : 1f); // Leftmost pixel
         final float MAX_V = MIN_V + (isMount ? 5f : 7f) / TEXTURE_SIZE; // Bottommost pixel
 
-        final float MIN_X = isMount ? 0.5f * (MOUNT_BAR_PIXEL_LENGTH / TEXTURE_SIZE) : 0.5f;
+        // X and Y are block coordinates relative to the matrix shenanigans.
+        final float MIN_X = isMount ? 0.5f * (MOUNT_BAR_PIXEL_LENGTH / TEXTURE_SIZE) : 0.5f; // Pushes the bar half a block to the left, centering it.
         final float MAX_X = MIN_X - percentage * (isMount ? MOUNT_BAR_PIXEL_LENGTH / TEXTURE_SIZE : 1f);
         final float MIN_Y = 0f;
-        final float MAX_Y = -1f * ((isMount ? 5f : 7f) / TEXTURE_SIZE);
+        final float MAX_Y = -1f * ((isMount ? 5f : 7f) / TEXTURE_SIZE); // Mount bar is 5 pixels tall, Health bar is 7 pixels tall.
 
         final float Z = (float)index * 0.0001f;
 
-        vertexConsumer.vertex(model, MAX_X, MAX_Y, Z).texture(MAX_U, MAX_V).next();
-        vertexConsumer.vertex(model, MAX_X, MIN_Y, Z).texture(MAX_U, MIN_V).next();
-        vertexConsumer.vertex(model, MIN_X, MIN_Y, Z).texture(MIN_U, MIN_V).next();
-        vertexConsumer.vertex(model, MIN_X, MAX_Y, Z).texture(MIN_U, MAX_V).next();
+        Vector3f colour = Options.WHITE;
+        if (index == 0) colour = Options.getBarColour(percentage, Options.unpackedStartWorld, Options.unpackedEndWorld, Options.worldGradient);
+
+        vertexConsumer.vertex(model, MAX_X, MAX_Y, Z).color(colour.x, colour.y, colour.z, 1f).texture(MAX_U, MAX_V).next();
+        vertexConsumer.vertex(model, MAX_X, MIN_Y, Z).color(colour.x, colour.y, colour.z, 1f).texture(MAX_U, MIN_V).next();
+        vertexConsumer.vertex(model, MIN_X, MIN_Y, Z).color(colour.x, colour.y, colour.z, 1f).texture(MIN_U, MIN_V).next();
+        vertexConsumer.vertex(model, MIN_X, MAX_Y, Z).color(colour.x, colour.y, colour.z, 1f).texture(MIN_U, MAX_V).next();
     }
 }

@@ -10,6 +10,10 @@ base {
 	archivesName = project.archives_base_name
 }
 
+loom {
+	accessWidenerPath = file("src/main/resources/provihealth.accesswidener")
+}
+
 repositories {
 	maven { url "https://maven.terraformersmc.com/releases/" }
 	maven { url "https://maven.shedaniel.me/" }
