@@ -107,6 +107,7 @@ public class TargetHealthBar implements HudRenderCallback {
                 this.currentVehicleHealthWidth = vehicleHealthWidth;
             }
 
+            final int nameWidth = MinecraftClient.getInstance().textRenderer.getWidth(this.getName(this.target));
             if (hudType == HUDType.FULL) {
                 // Render bars
                 this.renderBar(drawContext, BAR_WIDTH, 1); // Empty space
@@ -119,10 +120,12 @@ public class TargetHealthBar implements HudRenderCallback {
                 int infoLeftX = LEFT_TEXT_X;
                 if (Options.hudPosition == HUDPosition.LEFT) {
                     // Render entity group icon
-                    if (BorderRegistry.getItem(this.target) != null && Options.showHudIcon) drawContext.drawItem(BorderRegistry.getItem(this.target), BAR_X + BAR_WIDTH - 16, BAR_Y - 16);
+                    int expectedNameX = LEFT_TEXT_X + nameWidth + 2; // Starting point + width + 2 pixels of free space.
+                    if (BorderRegistry.getItem(this.target) != null && Options.showHudIcon) drawContext.drawItem(BorderRegistry.getItem(this.target), Math.max(BAR_X + BAR_WIDTH - 16, expectedNameX), BAR_Y - 16);
                 }
                 else {
-                    if (BorderRegistry.getItem(this.target) != null && Options.showHudIcon) drawContext.drawItem(BorderRegistry.getItem(this.target), BAR_X, BAR_Y - 16);
+                    int expectedNameX = OFFSET_X - 18 - nameWidth; // Leftmost pixel of name, then left by 2 pixels, then left by 16 to make space for the icon.
+                    if (BorderRegistry.getItem(this.target) != null && Options.showHudIcon) drawContext.drawItem(BorderRegistry.getItem(this.target), Math.min(BAR_X, expectedNameX), BAR_Y - 16);
                     infoLeftX = BAR_X + 3;
                 }
 
@@ -164,7 +167,7 @@ public class TargetHealthBar implements HudRenderCallback {
                     this.drawHorizontallyMirroredTexturedQuad(BorderRegistry.getBorder(this.target), drawContext, OFFSET_X, OFFSET_X + FRAME_LENGTH, OFFSET_Y, OFFSET_Y + FRAME_LENGTH, 300, 0f, 0.5f, 0f, 1f); // Foreground
                     RenderSystem.disableBlend();
 
-                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, this.getName(this.target), OFFSET_X - 1 - MinecraftClient.getInstance().textRenderer.getWidth(this.getName(this.target)), BAR_Y - BAR_HEIGHT, 0xFFFFFF, true); // Name
+                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, this.getName(this.target), OFFSET_X - 1 - nameWidth, BAR_Y - BAR_HEIGHT, 0xFFFFFF, true); // Name
                 }
 
                 // Render Paper Doll
