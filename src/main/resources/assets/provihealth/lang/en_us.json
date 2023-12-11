@@ -35,6 +35,11 @@
     "entry.provihealth.particleTextColour": "Text Color",
     "entry.provihealth.particleType": "Particle Movement",
     "entry.provihealth.maxParticleDistance": "Particle Render Distance",
+    "entry.provihealth.hudOffsetX": "HUD Position",
+    "entry.provihealth.gradient": "Dynamic Bar Color",
+    "entry.provihealth.barStartColour": "Full Health Colour",
+    "entry.provihealth.barEndColour": "Low Health Colour",
+    "entry.provihealth.overrideLabels": "Replace Nameplates",
 
     "enum.provihealth.full": "Full",
     "enum.provihealth.portrait_only": "Portrait Only",
@@ -48,12 +53,17 @@
     "enum.provihealth.gravity": "Has Gravity",
     "enum.provihealth.static": "None",
 
+    "enum.provihealth.left": "Left",
+    "enum.provihealth.right": "Right",
+
     "tooltip.provihealth.hudDuration": "How many ticks the HUD display will linger for when not targeting a mob.",
     "tooltip.provihealth.targetOverride": "Always render health bar when targeting a mob of this type.",
     "tooltip.provihealth.glide": "Determines how quickly the health bar will slide from its old value to new values.\nWarning: Very low values will prevent the health bar visual from catching up with the true value.",
     "tooltip.provihealth.hudPortraits": "Allows mobs to have different HUD portraits based on their group or type.",
     "tooltip.provihealth.maxDistance": "Mobs beyond this distance will not render health bars.",
     "tooltip.provihealth.hudOffsetY": "As a percentage of the window height.",
+    "tooltip.provihealth.gradient": "Whether or not the health bar will change color as it gets lower.\nTurning this off sets the bar color to the starting value.",
+    "tooltip.provihealth.overrideLabels": "When true health bar text will include the name of the mob and nameplates will not be rendered.\nWhen false health bar text will only show the health values, and the bar will move upwards when a nameplate is being rendered.\nWarning: Only the name of the mob is added to the health bar, if a mod/plugin/scoreboard adds additional lines of text to the nameplate then that text will be lost.",
 
     "entity.provihealth.unknownPlayer": "[Invisible Player]"
 }

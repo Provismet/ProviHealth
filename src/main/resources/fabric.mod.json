@@ -23,6 +23,7 @@
 	"mixins": [
 		"provihealth.mixins.json"
 	],
+	"accessWidener": "provihealth.accesswidener",
 	"depends": {
 		"fabricloader": ">=0.14.20",
 		"minecraft": "~1.20 <1.20.2",

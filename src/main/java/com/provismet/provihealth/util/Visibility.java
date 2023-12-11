@@ -11,6 +11,7 @@ public class Visibility {
         if (living.hasPassengers()) return true;
         if (!living.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) return true;
         if (!living.getEquippedStack(EquipmentSlot.CHEST).isEmpty()) return true;
+        if (living.isGlowing()) return true;
         return false;
     }
 }

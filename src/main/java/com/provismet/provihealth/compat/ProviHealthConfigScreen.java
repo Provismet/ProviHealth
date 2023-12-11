@@ -2,6 +2,7 @@ package com.provismet.provihealth.compat;
 
 import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.config.Options.DamageParticleType;
+import com.provismet.provihealth.config.Options.HUDPosition;
 import com.provismet.provihealth.config.Options.HUDType;
 import com.provismet.provihealth.config.Options.VisibilityType;
 
@@ -59,10 +60,41 @@ public class ProviHealthConfigScreen {
             .build()
         );
 
+        hud.addEntry(entryBuilder.startEnumSelector(Text.translatable("entry.provihealth.hudOffsetX"), HUDPosition.class, Options.hudPosition)
+            .setDefaultValue(HUDPosition.LEFT)
+            .setSaveConsumer(newValue -> Options.hudPosition = newValue)
+            .build()
+        );
+
         hud.addEntry(entryBuilder.startIntSlider(Text.translatable("entry.provihealth.hudOffsetY"), Options.hudOffsetPercent, 0, 100)
             .setDefaultValue(0)
             .setTooltip(Text.translatable("tooltip.provihealth.hudOffsetY"))
             .setSaveConsumer(newValue -> Options.hudOffsetPercent = newValue)
+            .build()
+        );
+
+        hud.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.gradient"), Options.hudGradient)
+            .setDefaultValue(false)
+            .setTooltip(Text.translatable("tooltip.provihealth.gradient"))
+            .setSaveConsumer(newValue -> Options.hudGradient = newValue)
+            .build()
+        );
+
+        hud.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barStartColour"), Options.hudStartColour)
+            .setDefaultValue(0x00C100)
+            .setSaveConsumer(newValue -> {
+                Options.hudStartColour = newValue;
+                Options.unpackedStartHud = Vec3d.unpackRgb(newValue).toVector3f();
+            })
+            .build()
+        );
+
+        hud.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barEndColour"), Options.hudEndColour)
+            .setDefaultValue(0xFF0000)
+            .setSaveConsumer(newValue -> {
+                Options.hudEndColour = newValue;
+                Options.unpackedEndHud = Vec3d.unpackRgb(newValue).toVector3f();
+            })
             .build()
         );
 
@@ -96,6 +128,13 @@ public class ProviHealthConfigScreen {
             .build()
         );
 
+        health.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.overrideLabels"), Options.overrideLabels)
+            .setDefaultValue(false)
+            .setSaveConsumer(newValue -> Options.overrideLabels = newValue)
+            .setTooltip(Text.translatable("tooltip.provihealth.overrideLabels"))
+            .build()
+        );
+
         health.addEntry(entryBuilder.startFloatField(Text.translatable("entry.provihealth.hudGlide"), Options.worldGlide)
             .setDefaultValue(0.5f)
             .setMin(0.01f)
@@ -124,6 +163,31 @@ public class ProviHealthConfigScreen {
             .setMax(3f)
             .setDefaultValue(1.5f)
             .setSaveConsumer(newValue -> Options.worldHealthBarScale = newValue)
+            .build()
+        );
+
+        health.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.gradient"), Options.worldGradient)
+            .setDefaultValue(false)
+            .setTooltip(Text.translatable("tooltip.provihealth.gradient"))
+            .setSaveConsumer(newValue -> Options.worldGradient = newValue)
+            .build()
+        );
+
+        health.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barStartColour"), Options.worldStartColour)
+            .setDefaultValue(0x00C100)
+            .setSaveConsumer(newValue -> {
+                Options.worldStartColour = newValue;
+                Options.unpackedStartWorld = Vec3d.unpackRgb(newValue).toVector3f();
+            })
+            .build()
+        );
+
+        health.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barEndColour"), Options.worldEndColour)
+            .setDefaultValue(0xFF0000)
+            .setSaveConsumer(newValue -> {
+                Options.worldEndColour = newValue;
+                Options.unpackedEndWorld = Vec3d.unpackRgb(newValue).toVector3f();
+            })
             .build()
         );
 
