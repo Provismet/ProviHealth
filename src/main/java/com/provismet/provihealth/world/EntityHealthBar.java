@@ -116,10 +116,19 @@ public class EntityHealthBar {
                     nameY -= 9;
                 }
 
-                final TextLayerType layer = target.shouldRenderName() && !target.isSneaky() ? TextLayerType.SEE_THROUGH : TextLayerType.NORMAL;
-                // TODO: Make text render through walls without messing up the text shadow.
-                textRenderer.draw(targetName, nameX, nameY, 0xFFFFFF, true, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
-                textRenderer.draw(healthString, healthX, healthY, 0xFFFFFF, true, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
+                if (target.shouldRenderName() && !target.isSneaky()) {
+                    textRenderer.draw(targetName, nameX + 1, nameY + 1, 0x404040, false, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
+                    textRenderer.draw(healthString, healthX + 1, healthY + 1, 0x404040, false, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
+
+                    matrices.translate(0, 0, 0.03f);
+                    textModel = matrices.peek().getPositionMatrix();
+                    textRenderer.draw(targetName, nameX, nameY, 0xFFFFFF, false, textModel, vertexConsumers, TextLayerType.SEE_THROUGH, 0, light);
+                    textRenderer.draw(healthString, healthX, healthY, 0xFFFFFF, false, textModel, vertexConsumers, TextLayerType.SEE_THROUGH, 0, light);
+                }
+                else {
+                    textRenderer.draw(targetName, nameX, nameY, 0xFFFFFF, true, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
+                    textRenderer.draw(healthString, healthX, healthY, 0xFFFFFF, true, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
+                }
             }
             else textRenderer.draw(healthString, -(textRenderer.getWidth(healthString)) / 2f, -10, 0xFFFFFF, true, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
             matrices.pop();
