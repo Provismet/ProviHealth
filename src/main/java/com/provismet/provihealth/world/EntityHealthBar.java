@@ -25,6 +25,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -48,7 +50,7 @@ public class EntityHealthBar {
         matrices.push();
         matrices.translate(0f, target.getHeight() + 0.45f - (0.003f / Options.worldHealthBarScale), 0f);
         matrices.scale(Options.worldHealthBarScale, Options.worldHealthBarScale, Options.worldHealthBarScale);
-        matrices.translate(0f, ((target.shouldRenderName() || target.hasCustomName() && target == MinecraftClient.getInstance().getEntityRenderDispatcher().targetedEntity) && !target.isInvisibleTo(MinecraftClient.getInstance().player) ? 0.02f + 0.3f / Options.worldHealthBarScale : 0f), 0f);
+        matrices.translate(0f, ((target.shouldRenderName() || target.hasCustomName() && target == MinecraftClient.getInstance().getEntityRenderDispatcher().targetedEntity) && !Options.overrideLabels && !target.isInvisibleTo(MinecraftClient.getInstance().player) ? 0.02f + 0.3f / Options.worldHealthBarScale : 0f), 0f);
         matrices.multiply(rotation);
 
         Tessellator tessellator = Tessellator.getInstance();
@@ -95,16 +97,42 @@ public class EntityHealthBar {
             matrices.push();
             matrices.scale(-0.01f, -0.01f, -0.01f);
             Matrix4f textModel = matrices.peek().getPositionMatrix();
-
-            final String healthString = String.format("%d/%d", Math.round(target.getHealth()), Math.round(target.getMaxHealth()));
             final TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-            textRenderer.draw(healthString, -(textRenderer.getWidth(healthString)) / 2f, -8, 0xFFFFFF, true, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
+            final String healthString = String.format("%d/%d", Math.round(target.getHealth()), Math.round(target.getMaxHealth()));
+
+            if (Options.overrideLabels) {
+                final Text targetName = getName(target);
+                final float targetNameWidth = textRenderer.getWidth(targetName);
+
+                float healthX = 50f - textRenderer.getWidth(healthString);
+                final float healthY = -9;
+                float nameX = -50;
+                float nameY = -9;
+                boolean wrapLines = targetNameWidth - 50f > healthX - 2f;
+
+                if (wrapLines) {
+                    healthX = (healthX - 50) / 2f;
+                    nameX = -targetNameWidth / 2f;
+                    nameY -= 9;
+                }
+
+                final TextLayerType layer = target.shouldRenderName() && !target.isSneaky() ? TextLayerType.SEE_THROUGH : TextLayerType.NORMAL;
+                // TODO: Make text render through walls without messing up the text shadow.
+                textRenderer.draw(targetName, nameX, nameY, 0xFFFFFF, true, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
+                textRenderer.draw(healthString, healthX, healthY, 0xFFFFFF, true, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
+            }
+            else textRenderer.draw(healthString, -(textRenderer.getWidth(healthString)) / 2f, -10, 0xFFFFFF, true, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
             matrices.pop();
         }
 
         RenderSystem.disableBlend();
         RenderSystem.disableDepthTest();
         matrices.pop();
+    }
+
+    private static Text getName (LivingEntity entity) {
+        if (entity instanceof PlayerEntity && entity.isInvisibleTo(MinecraftClient.getInstance().player)) return Text.translatable("entity.provihealth.unknownPlayer");
+        else return entity.getDisplayName();
     }
 
     private static void renderBar (Matrix4f model, VertexConsumer vertexConsumer, int index, float percentage, boolean isMount) {
@@ -114,10 +142,11 @@ public class EntityHealthBar {
         final float MAX_U = percentage * (isMount ? 61f / TEXTURE_SIZE : 1f); // Leftmost pixel
         final float MAX_V = MIN_V + (isMount ? 5f : 7f) / TEXTURE_SIZE; // Bottommost pixel
 
-        final float MIN_X = isMount ? 0.5f * (MOUNT_BAR_PIXEL_LENGTH / TEXTURE_SIZE) : 0.5f;
+        // X and Y are block coordinates relative to the matrix shenanigans.
+        final float MIN_X = isMount ? 0.5f * (MOUNT_BAR_PIXEL_LENGTH / TEXTURE_SIZE) : 0.5f; // Pushes the bar half a block to the left, centering it.
         final float MAX_X = MIN_X - percentage * (isMount ? MOUNT_BAR_PIXEL_LENGTH / TEXTURE_SIZE : 1f);
         final float MIN_Y = 0f;
-        final float MAX_Y = -1f * ((isMount ? 5f : 7f) / TEXTURE_SIZE);
+        final float MAX_Y = -1f * ((isMount ? 5f : 7f) / TEXTURE_SIZE); // Mount bar is 5 pixels tall, Health bar is 7 pixels tall.
 
         final float Z = (float)index * 0.0001f;
 

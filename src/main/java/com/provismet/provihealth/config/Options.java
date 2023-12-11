@@ -67,6 +67,7 @@ public class Options {
     public static Vector3f unpackedStartWorld = Vec3d.unpackRgb(worldStartColour).toVector3f();
     public static Vector3f unpackedEndWorld = Vec3d.unpackRgb(worldEndColour).toVector3f();
     public static boolean worldGradient = false;
+    public static boolean overrideLabels = false;
 
     public static boolean spawnDamageParticles = true;
     public static boolean spawnHealingParticles = false;
@@ -135,6 +136,7 @@ public class Options {
             .append("hudGradient", hudGradient).newLine()
             .append("hudStartColour", hudStartColour).newLine()
             .append("hudEndColour", hudEndColour).newLine()
+            .append("replaceLabels", overrideLabels).newLine()
             .append("worldGlide", worldGlide).newLine()
             .append("worldHealthText", showTextInWorld).newLine()
             .append("maxRenderDistance", maxRenderDistance).newLine()
@@ -224,6 +226,10 @@ public class Options {
                     case "hudEndColour":
                         hudEndColour = parser.nextInt();
                         unpackedEndHud = Vec3d.unpackRgb(hudEndColour).toVector3f();
+                        break;
+
+                    case "replaceLabels":
+                        overrideLabels = parser.nextBoolean();
                         break;
                     
                     case "worldGlide":

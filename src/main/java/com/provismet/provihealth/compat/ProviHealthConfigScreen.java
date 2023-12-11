@@ -128,6 +128,13 @@ public class ProviHealthConfigScreen {
             .build()
         );
 
+        health.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.overrideLabels"), Options.overrideLabels)
+            .setDefaultValue(false)
+            .setSaveConsumer(newValue -> Options.overrideLabels = newValue)
+            .setTooltip(Text.translatable("tooltip.provihealth.overrideLabels"))
+            .build()
+        );
+
         health.addEntry(entryBuilder.startFloatField(Text.translatable("entry.provihealth.hudGlide"), Options.worldGlide)
             .setDefaultValue(0.5f)
             .setMin(0.01f)

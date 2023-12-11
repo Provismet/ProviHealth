@@ -5,6 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.hud.TargetHealthBar;
 
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -13,6 +14,6 @@ import net.minecraft.client.render.entity.EntityRenderer;
 public abstract class EntityRendererMixin {
     @Inject(method="renderLabelIfPresent", at=@At("HEAD"), cancellable=true)
     private void cancelLabel (CallbackInfo info) {
-        if (TargetHealthBar.disabledLabels) info.cancel();
+        if (TargetHealthBar.disabledLabels || Options.overrideLabels) info.cancel();
     }
 }
