@@ -68,6 +68,7 @@ public class Options {
     public static Vector3f unpackedEndWorld = Vec3d.unpackRgb(worldEndColour).toVector3f();
     public static boolean worldGradient = false;
     public static boolean overrideLabels = false;
+    public static boolean worldShadows = true;
 
     public static boolean spawnDamageParticles = true;
     public static boolean spawnHealingParticles = false;
@@ -80,6 +81,8 @@ public class Options {
     public static int particleTextColour = 0xFFFFFF;
     public static DamageParticleType particleType = DamageParticleType.RISING;
     public static float maxParticleDistance = 16f;
+
+    public static boolean noSeeThroughText = false;
 
     @SuppressWarnings("resource")
     public static boolean shouldRenderHealthFor (LivingEntity livingEntity) {
@@ -139,6 +142,7 @@ public class Options {
             .append("replaceLabels", overrideLabels).newLine()
             .append("worldGlide", worldGlide).newLine()
             .append("worldHealthText", showTextInWorld).newLine()
+            .append("worldTextShadows", worldShadows).newLine()
             .append("maxRenderDistance", maxRenderDistance).newLine()
             .append("barScale", worldHealthBarScale).newLine()
             .append("worldGradient", worldGradient).newLine()
@@ -165,6 +169,7 @@ public class Options {
             .append("particleTextColour", particleTextColour).newLine()
             .append("particleType", particleType.name()).newLine()
             .append("maxParticleDistance", maxParticleDistance).newLine()
+            .append("topLayerText", noSeeThroughText).newLine()
             .createArray("healthBlacklist", blacklist).newLine()
             .createArray("hudBlacklist", blacklistHUD).newLine(false)
             .closeObject()
@@ -238,6 +243,10 @@ public class Options {
 
                     case "worldHealthText":
                         showTextInWorld = parser.nextBoolean();
+                        break;
+
+                    case "worldTextShadows":
+                        worldShadows = parser.nextBoolean();
                         break;
                     
                     case "maxRenderDistance":
@@ -346,6 +355,10 @@ public class Options {
 
                     case "maxParticleDistance":
                         maxParticleDistance = (float)parser.nextDouble();
+                        break;
+
+                    case "topLayerText":
+                        noSeeThroughText = parser.nextBoolean();
                         break;
 
                     case "healthBlacklist":

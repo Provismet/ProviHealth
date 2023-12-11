@@ -116,9 +116,11 @@ public class EntityHealthBar {
                     nameY -= 9;
                 }
 
-                if (target.shouldRenderName() && !target.isSneaky()) {
-                    textRenderer.draw(targetName, nameX + 1, nameY + 1, 0x404040, false, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
-                    textRenderer.draw(healthString, healthX + 1, healthY + 1, 0x404040, false, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
+                if (target.shouldRenderName() && !target.isSneaky() && !Options.noSeeThroughText) {
+                    if (Options.worldShadows) {
+                        textRenderer.draw(targetName, nameX + 1, nameY + 1, 0x404040, false, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
+                        textRenderer.draw(healthString, healthX + 1, healthY + 1, 0x404040, false, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
+                    }
 
                     matrices.translate(0, 0, 0.03f);
                     textModel = matrices.peek().getPositionMatrix();
@@ -126,11 +128,11 @@ public class EntityHealthBar {
                     textRenderer.draw(healthString, healthX, healthY, 0xFFFFFF, false, textModel, vertexConsumers, TextLayerType.SEE_THROUGH, 0, light);
                 }
                 else {
-                    textRenderer.draw(targetName, nameX, nameY, 0xFFFFFF, true, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
-                    textRenderer.draw(healthString, healthX, healthY, 0xFFFFFF, true, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
+                    textRenderer.draw(targetName, nameX, nameY, 0xFFFFFF, Options.worldShadows, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
+                    textRenderer.draw(healthString, healthX, healthY, 0xFFFFFF, Options.worldShadows, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
                 }
             }
-            else textRenderer.draw(healthString, -(textRenderer.getWidth(healthString)) / 2f, -10, 0xFFFFFF, true, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
+            else textRenderer.draw(healthString, -(textRenderer.getWidth(healthString)) / 2f, -10, 0xFFFFFF, Options.worldShadows, textModel, vertexConsumers, TextLayerType.NORMAL, 0, light);
             matrices.pop();
         }
 
