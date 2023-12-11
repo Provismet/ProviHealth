@@ -29,6 +29,7 @@ public class ProviHealthConfigScreen {
         ConfigCategory hud = builder.getOrCreateCategory(Text.translatable("category.provihealth.hud"));
         ConfigCategory health = builder.getOrCreateCategory(Text.translatable("category.provihealth.health"));
         ConfigCategory particles = builder.getOrCreateCategory(Text.translatable("category.provihealth.particles"));
+        ConfigCategory compatibility = builder.getOrCreateCategory(Text.translatable("category.provihealth.compat"));
 
         hud.addEntry(entryBuilder.startIntField(Text.translatable("entry.provihealth.hudDuration"), Options.maxHealthBarTicks)
             .setDefaultValue(40)
@@ -147,6 +148,12 @@ public class ProviHealthConfigScreen {
         health.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.worldText"), Options.showTextInWorld)
             .setDefaultValue(true)
             .setSaveConsumer(newValue -> Options.showTextInWorld = newValue)
+            .build()
+        );
+
+        health.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.worldShadows"), Options.worldShadows)
+            .setDefaultValue(true)
+            .setSaveConsumer(newValue -> Options.worldShadows = newValue)
             .build()
         );
 
@@ -312,6 +319,13 @@ public class ProviHealthConfigScreen {
             .setDefaultValue(16f)
             .setMin(0f)
             .setSaveConsumer(newValue -> Options.maxParticleDistance = newValue)
+            .build()
+        );
+
+        compatibility.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.compatText"), Options.noSeeThroughText)
+            .setDefaultValue(false)
+            .setTooltip(Text.translatable("tooltip.provihealth.compatText"))
+            .setSaveConsumer(newValue -> Options.noSeeThroughText = newValue)
             .build()
         );
 
