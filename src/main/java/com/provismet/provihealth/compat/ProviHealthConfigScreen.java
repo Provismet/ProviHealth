@@ -294,12 +294,28 @@ public class ProviHealthConfigScreen {
             .build()
         );
 
+        particles.addEntry(entryBuilder.startFloatField(Text.translatable("entry.provihealth.damageAlpha"), Options.damageAlpha)
+            .setDefaultValue(1f)
+            .setMin(0f)
+            .setMax(1f)
+            .setSaveConsumer(newValue -> Options.damageAlpha = newValue)
+            .build()
+        );
+
         particles.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.healingColour"), Options.healingColour)
             .setDefaultValue(0x00FF00)
             .setSaveConsumer(newValue -> {
                 Options.healingColour = newValue;
                 Options.unpackedHealing = Vec3d.unpackRgb(newValue).toVector3f();
             })
+            .build()
+        );
+
+        particles.addEntry(entryBuilder.startFloatField(Text.translatable("entry.provihealth.healingAlpha"), Options.healingAlpha)
+            .setDefaultValue(1f)
+            .setMin(0f)
+            .setMax(1f)
+            .setSaveConsumer(newValue -> Options.healingAlpha = newValue)
             .build()
         );
 

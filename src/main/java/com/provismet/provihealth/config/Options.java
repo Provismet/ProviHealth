@@ -82,6 +82,8 @@ public class Options {
     public static int particleTextColour = 0xFFFFFF;
     public static DamageParticleType particleType = DamageParticleType.RISING;
     public static float maxParticleDistance = 16f;
+    public static float damageAlpha = 1f;
+    public static float healingAlpha = 1f;
 
     public static SeeThroughText seeThroughTextType = SeeThroughText.STANDARD;
     public static boolean compatInWorld = false;
@@ -167,7 +169,9 @@ public class Options {
             .append("damageParticles", spawnDamageParticles).newLine()
             .append("healingParticles", spawnHealingParticles).newLine()
             .append("damageColour", damageColour).newLine()
+            .append("damageAlpha", damageAlpha).newLine()
             .append("healingColour", healingColour).newLine()
+            .append("healingAlpha", healingAlpha).newLine()
             .append("particleScale", particleScale).newLine()
             .append("particleTextShadow", particleTextShadow).newLine()
             .append("particleTextColour", particleTextColour).newLine()
@@ -341,9 +345,17 @@ public class Options {
                         unpackedDamage = Vec3d.unpackRgb(damageColour).toVector3f();
                         break;
 
+                    case "damageAlpha":
+                        damageAlpha = (float)parser.nextDouble();
+                        break;
+
                     case "healingColour":
                         healingColour = parser.nextInt();
                         unpackedHealing = Vec3d.unpackRgb(healingColour).toVector3f();
+                        break;
+
+                    case "healingAlpha":
+                        healingAlpha = (float)parser.nextDouble();
                         break;
 
                     case "particleScale":

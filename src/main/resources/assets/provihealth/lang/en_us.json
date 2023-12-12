@@ -45,6 +45,8 @@
     "entry.provihealth.compatText": "In-World Health Bar SeeThrough Text Mode",
     "entry.provihealth.compatWorld": "In-World Health Bar Shader Compatibility",
     "entry.provihealth.worldOffsetY": "Health Bar Offset Y",
+    "entry.provihealth.damageAlpha": "Damage Particle Alpha",
+    "entry.provihealth.healingAlpha": "Healing Particle Alpha",
 
     "enum.provihealth.full": "Full",
     "enum.provihealth.portrait_only": "Portrait Only",
