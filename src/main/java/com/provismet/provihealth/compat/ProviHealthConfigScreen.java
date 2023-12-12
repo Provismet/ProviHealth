@@ -4,6 +4,7 @@ import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.config.Options.DamageParticleType;
 import com.provismet.provihealth.config.Options.HUDPosition;
 import com.provismet.provihealth.config.Options.HUDType;
+import com.provismet.provihealth.config.Options.SeeThroughText;
 import com.provismet.provihealth.config.Options.VisibilityType;
 
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
@@ -173,6 +174,12 @@ public class ProviHealthConfigScreen {
             .build()
         );
 
+        health.addEntry(entryBuilder.startFloatField(Text.translatable("entry.provihealth.worldOffsetY"), Options.worldOffsetY)
+            .setDefaultValue(0f)
+            .setSaveConsumer(newValue -> Options.worldOffsetY = newValue)
+            .build()
+        );
+
         health.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.gradient"), Options.worldGradient)
             .setDefaultValue(false)
             .setTooltip(Text.translatable("tooltip.provihealth.gradient"))
@@ -287,12 +294,28 @@ public class ProviHealthConfigScreen {
             .build()
         );
 
+        particles.addEntry(entryBuilder.startFloatField(Text.translatable("entry.provihealth.damageAlpha"), Options.damageAlpha)
+            .setDefaultValue(1f)
+            .setMin(0f)
+            .setMax(1f)
+            .setSaveConsumer(newValue -> Options.damageAlpha = newValue)
+            .build()
+        );
+
         particles.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.healingColour"), Options.healingColour)
             .setDefaultValue(0x00FF00)
             .setSaveConsumer(newValue -> {
                 Options.healingColour = newValue;
                 Options.unpackedHealing = Vec3d.unpackRgb(newValue).toVector3f();
             })
+            .build()
+        );
+
+        particles.addEntry(entryBuilder.startFloatField(Text.translatable("entry.provihealth.healingAlpha"), Options.healingAlpha)
+            .setDefaultValue(1f)
+            .setMin(0f)
+            .setMax(1f)
+            .setSaveConsumer(newValue -> Options.healingAlpha = newValue)
             .build()
         );
 
@@ -322,10 +345,17 @@ public class ProviHealthConfigScreen {
             .build()
         );
 
-        compatibility.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.compatText"), Options.noSeeThroughText)
-            .setDefaultValue(false)
+        compatibility.addEntry(entryBuilder.startEnumSelector(Text.translatable("entry.provihealth.compatText"), SeeThroughText.class, Options.seeThroughTextType)
+            .setDefaultValue(SeeThroughText.STANDARD)
             .setTooltip(Text.translatable("tooltip.provihealth.compatText"))
-            .setSaveConsumer(newValue -> Options.noSeeThroughText = newValue)
+            .setSaveConsumer(newValue -> Options.seeThroughTextType = newValue)
+            .build()
+        );
+
+        compatibility.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.compatWorld"), Options.compatInWorld)
+            .setDefaultValue(false)
+            .setTooltip(Text.translatable("tooltip.provihealth.compatWorld"))
+            .setSaveConsumer(newValue -> Options.compatInWorld = newValue)
             .build()
         );
 

@@ -5,5 +5,6 @@
     "entry.provihealth.barStartColour": "Full Health Colour",
     "entry.provihealth.barEndColour": "Low Health Colour",
 
-    "tooltip.provihealth.gradient": "Whether or not the health bar will change colour as it gets lower.\nTurning this off sets the bar colour to the starting value."
+    "tooltip.provihealth.gradient": "Whether or not the health bar will change colour as it gets lower.\nTurning this off sets the bar colour to the starting value.",
+    "tooltip.provihealth.compatWorld": "Uses a different rendering program for in-world health bars. Only turn this on if shaders are preventing the bars from rendering.\nWarning: This option disables any colour-related settings for in-world health bars."
 }
