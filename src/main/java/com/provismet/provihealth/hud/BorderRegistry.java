@@ -21,8 +21,8 @@ public class BorderRegistry {
 
     private static final Identifier DEFAULT = ProviHealthClient.identifier("textures/gui/healthbars/default.png");
 
-    public static boolean registerBorder (EntityGroup group, Identifier border, boolean force) {
-        if (group == null || border == null) {
+    public static boolean registerBorder (EntityGroup group, @Nullable Identifier border, boolean force) {
+        if (group == null) {
             ProviHealthClient.LOGGER.error("Attempted to register a null object to the border registry.");
             return false;
         }
@@ -35,9 +35,9 @@ public class BorderRegistry {
         }
     }
 
-    public static boolean registerItem (EntityGroup group, ItemStack item, boolean force) {
-        if (group == null || item == null) {
-            ProviHealthClient.LOGGER.error("Attempted to register a null object to the icon registry.");
+    public static boolean registerItem (EntityGroup group, @Nullable ItemStack item, boolean force) {
+        if (group == null) {
+            ProviHealthClient.LOGGER.error("Attempted to register a null EntityGroup to the icon registry.");
             return false;
         }
         else if (groupItems.containsKey(group) && !force) {
@@ -49,9 +49,9 @@ public class BorderRegistry {
         }
     }
 
-    public static boolean registerBorder (EntityType<?> type, Identifier border, boolean force) {
-        if (type == null || border == null) {
-            ProviHealthClient.LOGGER.error("Attempted to register a null object to the border registry.");
+    public static boolean registerBorder (EntityType<?> type, @Nullable Identifier border, boolean force) {
+        if (type == null) {
+            ProviHealthClient.LOGGER.error("Attempted to register a null EntityType to the border registry.");
             return false;
         }
         else if (overrideBorders.containsKey(type) && !force) {
@@ -63,9 +63,9 @@ public class BorderRegistry {
         }
     }
 
-    public static boolean registerItem (EntityType<?> type, ItemStack item, boolean force) {
-        if (type == null || item == null) {
-            ProviHealthClient.LOGGER.error("Attempted to register a null object to the icon registry.");
+    public static boolean registerItem (EntityType<?> type, @Nullable ItemStack item, boolean force) {
+        if (type == null) {
+            ProviHealthClient.LOGGER.error("Attempted to register a null EntityType to the icon registry.");
             return false;
         }
         else if (overrideItems.containsKey(type) && !force) {
@@ -79,9 +79,14 @@ public class BorderRegistry {
 
     public static Identifier getBorder (@Nullable LivingEntity entity) {
         if (entity == null || !Options.useCustomHudPortraits) return DEFAULT;
-        else if (overrideBorders.containsKey(entity.getType())) return overrideBorders.get(entity.getType());
-        else if (groupBorders.containsKey(entity.getGroup())) return groupBorders.get(entity.getGroup());
-        else return DEFAULT;
+        else {
+            Identifier border = null;
+            if (overrideBorders.containsKey(entity.getType())) border = overrideBorders.get(entity.getType());
+            else if (groupBorders.containsKey(entity.getGroup())) border = groupBorders.get(entity.getGroup());
+
+            if (border == null) return DEFAULT;
+            else return border;
+        }
     }
 
     @Nullable

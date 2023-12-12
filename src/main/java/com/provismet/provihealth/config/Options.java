@@ -69,6 +69,7 @@ public class Options {
     public static boolean worldGradient = false;
     public static boolean overrideLabels = false;
     public static boolean worldShadows = true;
+    public static float worldOffsetY = 0f;
 
     public static boolean spawnDamageParticles = true;
     public static boolean spawnHealingParticles = false;
@@ -81,8 +82,12 @@ public class Options {
     public static int particleTextColour = 0xFFFFFF;
     public static DamageParticleType particleType = DamageParticleType.RISING;
     public static float maxParticleDistance = 16f;
+    public static float damageAlpha = 1f;
+    public static float healingAlpha = 1f;
 
-    public static boolean noSeeThroughText = false;
+    public static SeeThroughText seeThroughTextType = SeeThroughText.STANDARD;
+    public static boolean compatInWorld = false;
+    public static boolean compatInHUD = false;
 
     @SuppressWarnings("resource")
     public static boolean shouldRenderHealthFor (LivingEntity livingEntity) {
@@ -145,6 +150,7 @@ public class Options {
             .append("worldTextShadows", worldShadows).newLine()
             .append("maxRenderDistance", maxRenderDistance).newLine()
             .append("barScale", worldHealthBarScale).newLine()
+            .append("worldOffsetY", worldOffsetY).newLine()
             .append("worldGradient", worldGradient).newLine()
             .append("worldStartColour", worldStartColour).newLine()
             .append("worldEndColour", worldEndColour).newLine()
@@ -163,13 +169,16 @@ public class Options {
             .append("damageParticles", spawnDamageParticles).newLine()
             .append("healingParticles", spawnHealingParticles).newLine()
             .append("damageColour", damageColour).newLine()
+            .append("damageAlpha", damageAlpha).newLine()
             .append("healingColour", healingColour).newLine()
+            .append("healingAlpha", healingAlpha).newLine()
             .append("particleScale", particleScale).newLine()
             .append("particleTextShadow", particleTextShadow).newLine()
             .append("particleTextColour", particleTextColour).newLine()
             .append("particleType", particleType.name()).newLine()
             .append("maxParticleDistance", maxParticleDistance).newLine()
-            .append("topLayerText", noSeeThroughText).newLine()
+            .append("topLayerTextType", seeThroughTextType.name()).newLine()
+            .append("compatWorldBar", compatInWorld).newLine()
             .createArray("healthBlacklist", blacklist).newLine()
             .createArray("hudBlacklist", blacklistHUD).newLine(false)
             .closeObject()
@@ -257,6 +266,10 @@ public class Options {
                         worldHealthBarScale = (float)parser.nextDouble();
                         break;
 
+                    case "worldOffsetY":
+                        worldOffsetY = (float)parser.nextDouble();
+                        break;
+
                     case "worldGradient":
                         worldGradient = parser.nextBoolean();
                         break;
@@ -332,9 +345,17 @@ public class Options {
                         unpackedDamage = Vec3d.unpackRgb(damageColour).toVector3f();
                         break;
 
+                    case "damageAlpha":
+                        damageAlpha = (float)parser.nextDouble();
+                        break;
+
                     case "healingColour":
                         healingColour = parser.nextInt();
                         unpackedHealing = Vec3d.unpackRgb(healingColour).toVector3f();
+                        break;
+
+                    case "healingAlpha":
+                        healingAlpha = (float)parser.nextDouble();
                         break;
 
                     case "particleScale":
@@ -357,8 +378,12 @@ public class Options {
                         maxParticleDistance = (float)parser.nextDouble();
                         break;
 
-                    case "topLayerText":
-                        noSeeThroughText = parser.nextBoolean();
+                    case "topLayerTextType":
+                        seeThroughTextType = SeeThroughText.valueOf(parser.nextString());
+                        break;
+
+                    case "compatWorldBar":
+                        compatInWorld = parser.nextBoolean();
                         break;
 
                     case "healthBlacklist":
@@ -383,6 +408,7 @@ public class Options {
                 
                     default:
                         ProviHealthClient.LOGGER.warn("Unknown label \"" + label + "\" found in config.");
+                        parser.skipValue();
                         break;
                 }
             }
@@ -469,6 +495,17 @@ public class Options {
         @Override
         public String toString () {
             return "enum.provihealth." + super.toString().toLowerCase();
+        }
+    }
+
+    public static enum SeeThroughText {
+        STANDARD,
+        NONE,
+        FULL;
+
+        @Override
+        public String toString () {
+            return "enum.provihealth.seethroughtext." + super.toString().toLowerCase();
         }
     }
 }
