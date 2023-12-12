@@ -30,6 +30,7 @@ public class TargetHealthBar implements HudRenderCallback {
     public static boolean disabledLabels = false;
 
     private static final Identifier BARS = ProviHealthClient.identifier("textures/gui/healthbars/bars.png");
+    private static final Identifier COMPAT_BARS = ProviHealthClient.identifier("textures/gui/healthbars/bars_coloured.png");
     private static final Identifier HEART = ProviHealthClient.identifier("textures/gui/healthbars/icons/heart.png");
     private static final Identifier MOUNT_HEART = ProviHealthClient.identifier("textures/gui/healthbars/icons/mount_heart.png");
     private static final Identifier ARMOUR = ProviHealthClient.identifier("textures/gui/healthbars/icons/armour.png");
