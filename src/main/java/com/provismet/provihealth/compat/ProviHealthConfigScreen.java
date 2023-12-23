@@ -319,9 +319,15 @@ public class ProviHealthConfigScreen {
             .build()
         );
 
-        particles.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.particleTextColour"), Options.particleTextColour)
+        particles.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.damageParticleTextColour"), Options.damageParticleTextColour)
             .setDefaultValue(0xFFFFFF)
-            .setSaveConsumer(newValue -> Options.particleTextColour = newValue)
+            .setSaveConsumer(newValue -> Options.damageParticleTextColour = newValue)
+            .build()
+        );
+
+        particles.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.healingParticleTextColour"), Options.healingParticleTextColour)
+            .setDefaultValue(0xFFFFFF)
+            .setSaveConsumer(newValue -> Options.healingParticleTextColour = newValue)
             .build()
         );
 

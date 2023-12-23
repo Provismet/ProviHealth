@@ -63,10 +63,10 @@ public abstract class LivingEntityMixin extends Entity implements IMixinLivingEn
         final Entity cameraEntity = MinecraftClient.getInstance().getCameraEntity();
         if (cameraEntity != null && (LivingEntity)(Object)this != cameraEntity && this.distanceTo(MinecraftClient.getInstance().getCameraEntity()) <= Options.maxParticleDistance) {
             if (this.getHealth() < this.prevHealth && Options.spawnDamageParticles) {
-                this.getWorld().addParticle(new TextParticleEffect(Options.unpackedDamage, Options.damageAlpha, Options.particleScale, String.format("%d", (int)this.prevHealth - (int)this.getHealth())), this.getX(), this.getEyeY(), this.getZ(), 0f, 0f, 0f);
+                this.getWorld().addParticle(new TextParticleEffect(Options.unpackedDamage, Options.damageAlpha, Options.particleScale, Options.damageParticleTextColour, String.format("%d", (int)this.prevHealth - (int)this.getHealth())), this.getX(), this.getEyeY(), this.getZ(), 0f, 0f, 0f);
             }
             else if (this.getHealth() > this.prevHealth && Options.spawnHealingParticles) {
-                this.getWorld().addParticle(new TextParticleEffect(Options.unpackedHealing, Options.healingAlpha, Options.particleScale, String.format("%d", (int)this.getHealth() - (int)this.prevHealth)), this.getX(), this.getEyeY(), this.getZ(), 0f, 0f, 0f);
+                this.getWorld().addParticle(new TextParticleEffect(Options.unpackedHealing, Options.healingAlpha, Options.particleScale, Options.healingParticleTextColour, String.format("%d", (int)this.getHealth() - (int)this.prevHealth)), this.getX(), this.getEyeY(), this.getZ(), 0f, 0f, 0f);
             }
         }
         this.prevHealth = this.getHealth();
