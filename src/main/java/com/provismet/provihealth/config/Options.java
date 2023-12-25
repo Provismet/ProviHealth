@@ -79,7 +79,8 @@ public class Options {
     public static Vector3f unpackedHealing = Vec3d.unpackRgb(healingColour).toVector3f();
     public static float particleScale = 0.25f;
     public static boolean particleTextShadow = true;
-    public static int particleTextColour = 0xFFFFFF;
+    public static int damageParticleTextColour = 0xFFFFFF;
+    public static int healingParticleTextColour = 0xFFFFFF;
     public static DamageParticleType particleType = DamageParticleType.RISING;
     public static float maxParticleDistance = 16f;
     public static float damageAlpha = 1f;
@@ -174,7 +175,8 @@ public class Options {
             .append("healingAlpha", healingAlpha).newLine()
             .append("particleScale", particleScale).newLine()
             .append("particleTextShadow", particleTextShadow).newLine()
-            .append("particleTextColour", particleTextColour).newLine()
+            .append("damageParticleTextColour", damageParticleTextColour).newLine()
+            .append("healingParticleTextColour", healingParticleTextColour).newLine()
             .append("particleType", particleType.name()).newLine()
             .append("maxParticleDistance", maxParticleDistance).newLine()
             .append("topLayerTextType", seeThroughTextType.name()).newLine()
@@ -366,8 +368,12 @@ public class Options {
                         particleTextShadow = parser.nextBoolean();
                         break;
 
-                    case "particleTextColour":
-                        particleTextColour = parser.nextInt();
+                    case "damageParticleTextColour":
+                        damageParticleTextColour = parser.nextInt();
+                        break;
+
+                    case "healingParticleTextColour":
+                        healingParticleTextColour = parser.nextInt();
                         break;
 
                     case "particleType":

@@ -17,12 +17,14 @@ public class TextParticleEffect implements ParticleEffect {
     public final float alpha;
     public final float scale;
     public final String text;
+    public final int textColour;
 
-    public TextParticleEffect (Vector3f colour, float alpha, float scale, String text) {
+    public TextParticleEffect (Vector3f colour, float alpha, float scale, int textColour, String text) {
         this.colour = colour;
         this.alpha = alpha;
         this.scale = scale;
         this.text = text;
+        this.textColour = textColour;
     }
 
     @SuppressWarnings("deprecation")
@@ -35,25 +37,28 @@ public class TextParticleEffect implements ParticleEffect {
             stringReader.expect(' ');
             float scale = stringReader.readFloat();
             stringReader.expect(' ');
+            int textColour = stringReader.readInt();
+            stringReader.expect(' ');
             String text = stringReader.getRemaining();
-            return new TextParticleEffect(colour, alpha, scale, text);
+            return new TextParticleEffect(colour, alpha, scale, textColour, text);
         }
 
         @Override
         public TextParticleEffect read (ParticleType<TextParticleEffect> type, PacketByteBuf buffer) {
-            return new TextParticleEffect(AbstractDustParticleEffect.readColor(buffer), buffer.readFloat(), buffer.readFloat(), buffer.readString());
+            return new TextParticleEffect(AbstractDustParticleEffect.readColor(buffer), buffer.readFloat(), buffer.readFloat(), buffer.readInt(), buffer.readString());
         }
     };
 
     @Override
     public String asString () {
-        return String.format("%s %.2 %.2 %.2 %.2 %.2 %s",
+        return String.format("%s %.2 %.2 %.2 %.2 %.2 %d %s",
             Registries.PARTICLE_TYPE.getId(this.getType()),
             this.colour.x(),
             this.colour.y(),
             this.colour.z(),
             this.alpha,
             this.scale,
+            this.textColour,
             this.text
         );
     }
@@ -70,6 +75,7 @@ public class TextParticleEffect implements ParticleEffect {
         buffer.writeFloat(this.colour.z());
         buffer.writeFloat(this.alpha);
         buffer.writeFloat(this.scale);
+        buffer.writeInt(this.textColour);
         buffer.writeString(this.text);
     }
     

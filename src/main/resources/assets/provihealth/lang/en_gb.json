@@ -1,7 +1,8 @@
 {
     "entry.provihealth.damageColour": "Damage Particle Colour",
     "entry.provihealth.healingColour": "Healing Particle Colour",
-    "entry.provihealth.particleTextColour": "Text Colour",
+    "entry.provihealth.damageParticleTextColour": "Damage Text Colour",
+    "entry.provihealth.healingParticleTextColour": "Healing Text Colour",
     "entry.provihealth.barStartColour": "Full Health Colour",
     "entry.provihealth.barEndColour": "Low Health Colour",
 
