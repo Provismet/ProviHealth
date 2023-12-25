@@ -26,6 +26,7 @@ public class TextParticle extends SpriteBillboardParticle {
     private final String text;
     private final float rotationSpeed;
     private final float maxScale;
+    private final int textColour;
 
     protected TextParticle (ClientWorld clientWorld, double x, double y, double z, TextParticleEffect particleEffect) {
         super(clientWorld, x, y, z);
@@ -35,6 +36,7 @@ public class TextParticle extends SpriteBillboardParticle {
         this.blue = particleEffect.getColour().z();
         this.scale = 0f;
         this.alpha = particleEffect.alpha;
+        this.textColour = particleEffect.textColour;
         this.text = particleEffect.text;
         this.maxAge = 40;
 
@@ -123,7 +125,7 @@ public class TextParticle extends SpriteBillboardParticle {
         float scaleSize = this.getSize(tickDelta) / 6f;
         matrices.scale(-scaleSize, -scaleSize, -scaleSize);
 
-        MinecraftClient.getInstance().textRenderer.draw(this.text, 0f, 0f, Options.particleTextColour, Options.particleTextShadow, matrices.peek().getPositionMatrix(), MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers(), TextLayerType.POLYGON_OFFSET, 0, this.getBrightness(tickDelta));
+        MinecraftClient.getInstance().textRenderer.draw(this.text, 0f, 0f, this.textColour, Options.particleTextShadow, matrices.peek().getPositionMatrix(), MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers(), TextLayerType.POLYGON_OFFSET, 0, this.getBrightness(tickDelta));
     }
 
    @Override
