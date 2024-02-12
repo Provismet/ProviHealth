@@ -6,7 +6,8 @@
 	],
 	"client": [
 		"LivingEntityMixin",
-		"EntityRendererMixin"
+		"EntityRendererMixin",
+		"ParticleManagerMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
