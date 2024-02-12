@@ -1,4 +1,9 @@
+<div align="center">
+
 # Provi's Health Bars
+[![](https://img.shields.io/jitpack/version/com.github.Provismet/ProviHealth?style=flat-square&logo=jitpack&color=F6F6F6)](https://jitpack.io/#Provismet/ProviHealth) [![](https://img.shields.io/modrinth/dt/4wDQsby8?style=flat-square&logo=modrinth&color=F6F6F6)](https://modrinth.com/mod/provis-health-bars) [![](https://img.shields.io/curseforge/dt/945133?style=flat-square&logo=curseforge&color=F6F6F6)](https://www.curseforge.com/minecraft/mc-mods/provihealth)
+
+</div>
 
 Adds health bar damage indicators to Minecraft.  
 
