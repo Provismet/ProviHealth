@@ -65,7 +65,7 @@ public class TargetHealthBar implements HudRenderCallback {
         if (this.healthBarDuration > 0f) this.healthBarDuration -= tickDelta;
         else this.reset();
 
-        if (!MinecraftClient.isHudEnabled() || MinecraftClient.getInstance().getDebugHud().shouldShowDebugHud() || MinecraftClient.getInstance().player.isSpectator()) return;
+        if (!MinecraftClient.isHudEnabled() || MinecraftClient.getInstance().options.debugEnabled || MinecraftClient.getInstance().player.isSpectator()) return;
 
         boolean isNew = false;
 
