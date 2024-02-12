@@ -215,6 +215,7 @@ public class TargetHealthBar implements HudRenderCallback {
         }
     }
 
+    @SuppressWarnings("resource")
     private Text getName (LivingEntity entity) {
         if (entity instanceof PlayerEntity && entity.isInvisibleTo(MinecraftClient.getInstance().player)) return Text.translatable("entity.provihealth.unknownPlayer");
         else return entity.getDisplayName();
