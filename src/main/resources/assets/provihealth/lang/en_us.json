@@ -48,6 +48,7 @@
     "entry.provihealth.worldOffsetY": "Health Bar Offset Y",
     "entry.provihealth.damageAlpha": "Damage Particle Alpha",
     "entry.provihealth.healingAlpha": "Healing Particle Alpha",
+    "entry.provihealth.compatHud": "HUD Paperdoll Render Mode",
 
     "enum.provihealth.full": "Full",
     "enum.provihealth.portrait_only": "Portrait Only",
@@ -67,6 +68,10 @@
     "enum.provihealth.seethroughtext.standard": "SeeThrough Text, Normal Shadows",
     "enum.provihealth.seethroughtext.none": "Normal Text/Shadows",
     "enum.provihealth.seethroughtext.full": "SeeThrough Text/Shadows",
+
+    "enum.provihealth.hudportraitcompatmode.standard": "Standard",
+    "enum.provihealth.hudportraitcompatmode.compat": "Compatibility",
+    "enum.provihealth.hudportraitcompatmode.none": "None",
 
     "tooltip.provihealth.hudDuration": "How many ticks the HUD display will linger for when not targeting a mob.",
     "tooltip.provihealth.targetOverride": "Always render health bar when targeting a mob of this type.",

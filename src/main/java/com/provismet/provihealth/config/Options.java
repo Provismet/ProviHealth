@@ -89,6 +89,7 @@ public class Options {
     public static SeeThroughText seeThroughTextType = SeeThroughText.STANDARD;
     public static boolean compatInWorld = false;
     public static boolean compatInHUD = false;
+    public static HUDPortraitCompatMode HUDCompat = HUDPortraitCompatMode.STANDARD;
 
     @SuppressWarnings("resource")
     public static boolean shouldRenderHealthFor (LivingEntity livingEntity) {
@@ -181,6 +182,7 @@ public class Options {
             .append("maxParticleDistance", maxParticleDistance).newLine()
             .append("topLayerTextType", seeThroughTextType.name()).newLine()
             .append("compatWorldBar", compatInWorld).newLine()
+            .append("compatHudPaperdoll", HUDCompat.name()).newLine()
             .createArray("healthBlacklist", blacklist).newLine()
             .createArray("hudBlacklist", blacklistHUD).newLine(false)
             .closeObject()
@@ -392,6 +394,10 @@ public class Options {
                         compatInWorld = parser.nextBoolean();
                         break;
 
+                    case "compatHudPaperdoll":
+                        HUDCompat = HUDPortraitCompatMode.valueOf(parser.nextString());
+                        break;
+
                     case "healthBlacklist":
                         ArrayList<String> tempBlacklist = new ArrayList<>();
                         parser.beginArray();
@@ -512,6 +518,17 @@ public class Options {
         @Override
         public String toString () {
             return "enum.provihealth.seethroughtext." + super.toString().toLowerCase();
+        }
+    }
+
+    public static enum HUDPortraitCompatMode {
+        STANDARD,
+        COMPAT,
+        NONE;
+
+        @Override
+        public String toString () {
+            return "enum.provihealth.hudportraitcompatmode." + super.toString().toLowerCase();
         }
     }
 }

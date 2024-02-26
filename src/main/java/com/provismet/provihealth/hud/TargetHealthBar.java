@@ -8,6 +8,7 @@ import org.joml.Vector3f;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.provismet.provihealth.ProviHealthClient;
 import com.provismet.provihealth.config.Options;
+import com.provismet.provihealth.config.Options.HUDPortraitCompatMode;
 import com.provismet.provihealth.config.Options.HUDPosition;
 import com.provismet.provihealth.config.Options.HUDType;
 import com.provismet.provihealth.util.Visibility;
@@ -172,45 +173,65 @@ public class TargetHealthBar implements HudRenderCallback {
                 }
 
                 // Render Paper Doll
-                float prevTargetHeadYaw = this.target.getHeadYaw();
-                float prevPrevTargetHeadYaw = this.target.prevHeadYaw;
-                float prevTargetBodyYaw = this.target.getBodyYaw();
-                float prevPrevTargetBodyYaw = this.target.prevBodyYaw;
-                float prevTargetYaw = this.target.getYaw();
+                if (Options.HUDCompat == HUDPortraitCompatMode.STANDARD) {
+                    float prevTargetHeadYaw = this.target.headYaw;
+                    float prevPrevTargetHeadYaw = this.target.prevHeadYaw;
+                    float prevTargetBodyYaw = this.target.bodyYaw;
+                    float prevPrevTargetBodyYaw = this.target.prevBodyYaw;
 
-                float headBodyYawDifference = this.target.getHeadYaw() - this.target.getBodyYaw();
+                    this.target.bodyYaw = Options.hudPosition.portraitYAW;
+                    this.target.prevBodyYaw = Options.hudPosition.portraitYAW;
+                    this.target.headYaw = Options.hudPosition.portraitYAW;
+                    this.target.prevHeadYaw = Options.hudPosition.portraitYAW;
 
-                this.target.setYaw(Options.hudPosition.portraitYAW);
-                this.target.setBodyYaw(this.target.getYaw());
-                this.target.prevBodyYaw = this.target.getYaw();
-                this.target.setHeadYaw(this.target.getYaw() + headBodyYawDifference);
-                this.target.prevHeadYaw = this.target.getYaw() + headBodyYawDifference;
+                    float renderHeight;
+                    if (this.target.getEyeHeight(EntityPose.STANDING) >= this.target.getHeight() * 0.6) {
+                        renderHeight = this.target.getEyeHeight(this.target.getPose()) + 0.5f;
+                        if (renderHeight < 1f) renderHeight = 1f;
+                    }
+                    else renderHeight = this.target.getEyeHeight(this.target.getPose()) + 0.8f;
 
-                float renderHeight;
-                if (this.target.getEyeHeight(EntityPose.STANDING) >= this.target.getHeight() * 0.6) {
-                    renderHeight = this.target.getEyeHeight(this.target.getPose()) + 0.5f;
-                    if (renderHeight < 1f) renderHeight = 1f;
+                    drawContext.enableScissor(OFFSET_X, OFFSET_Y, OFFSET_X + FRAME_LENGTH, OFFSET_Y + FRAME_LENGTH);
+                    EntityHealthBar.enabled = false;
+                    disabledLabels = true;
+                    this.drawEntity(drawContext, 24 + OFFSET_X, OFFSET_Y, 30,
+                        new Vector3f(0f, renderHeight, 0f),
+                        (new Quaternionf()).rotateZ(3.1415927f),
+                        null,
+                        this.target
+                    );
+                    EntityHealthBar.enabled = true;
+                    disabledLabels = false;
+                    drawContext.disableScissor();
+
+                    this.target.headYaw = prevTargetHeadYaw;
+                    this.target.prevHeadYaw = prevPrevTargetHeadYaw;
+                    this.target.bodyYaw = prevTargetBodyYaw;
+                    this.target.prevBodyYaw = prevPrevTargetBodyYaw;
                 }
-                else renderHeight = this.target.getEyeHeight(this.target.getPose()) + 0.8f;
+                else if (Options.HUDCompat == HUDPortraitCompatMode.COMPAT) {
+                    float yawOffset = -(Options.hudPosition.portraitYAW - this.target.getBodyYaw()) / MathHelper.DEGREES_PER_RADIAN;
 
-                drawContext.enableScissor(OFFSET_X, OFFSET_Y, OFFSET_X + FRAME_LENGTH, OFFSET_Y + FRAME_LENGTH);
-                EntityHealthBar.enabled = false;
-                disabledLabels = true;
-                this.drawEntity(drawContext, 24 + OFFSET_X, OFFSET_Y, 30,
-                    new Vector3f(0f, renderHeight, 0f),
-                    (new Quaternionf()).rotateZ(3.1415927f),
-                    null,
-                    this.target
-                );
-                EntityHealthBar.enabled = true;
-                disabledLabels = false;
-                drawContext.disableScissor();
+                    float renderHeight;
+                    if (this.target.getEyeHeight(EntityPose.STANDING) >= this.target.getHeight() * 0.6) {
+                        renderHeight = this.target.getEyeHeight(this.target.getPose()) + 0.5f;
+                        if (renderHeight < 1f) renderHeight = 1f;
+                    }
+                    else renderHeight = this.target.getEyeHeight(this.target.getPose()) + 0.8f;
 
-                this.target.setHeadYaw(prevTargetHeadYaw);
-                this.target.prevHeadYaw = prevPrevTargetHeadYaw;
-                this.target.setBodyYaw(prevTargetBodyYaw);
-                this.target.prevBodyYaw = prevPrevTargetBodyYaw;
-                this.target.setYaw(prevTargetYaw);
+                    drawContext.enableScissor(OFFSET_X, OFFSET_Y, OFFSET_X + FRAME_LENGTH, OFFSET_Y + FRAME_LENGTH);
+                    EntityHealthBar.enabled = false;
+                    disabledLabels = true;
+                    this.drawEntity(drawContext, 24 + OFFSET_X, OFFSET_Y, 30,
+                        new Vector3f(0f, renderHeight, 0f),
+                        (new Quaternionf()).rotateZ(3.1415927f).rotateY(yawOffset),
+                        null,
+                        this.target
+                    );
+                    EntityHealthBar.enabled = true;
+                    disabledLabels = false;
+                    drawContext.disableScissor();
+                }
             }
         }
     }
