@@ -12,6 +12,7 @@ import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class TextParticle extends SpriteBillboardParticle {
@@ -19,6 +20,8 @@ public class TextParticle extends SpriteBillboardParticle {
     private final float rotationSpeed;
     private final float maxScale;
     private final int textColour;
+
+    private float prevScale;
 
     @SuppressWarnings("resource")
     protected TextParticle (ClientWorld clientWorld, double x, double y, double z, TextParticleEffect particleEffect) {
@@ -28,6 +31,7 @@ public class TextParticle extends SpriteBillboardParticle {
         this.green = particleEffect.getColour().y();
         this.blue = particleEffect.getColour().z();
         this.scale = 0f;
+        this.prevScale = 0f;
         this.alpha = particleEffect.alpha;
         this.textColour = particleEffect.textColour;
         this.text = particleEffect.text;
@@ -75,6 +79,7 @@ public class TextParticle extends SpriteBillboardParticle {
     @Override
 	public void tick () {
         super.tick();
+        this.prevScale = this.scale;
 
         if (this.age > this.maxAge / 2) this.scale -= this.maxScale / (this.maxAge / 2f);
         else if (this.scale < this.maxScale) this.scale += this.maxScale / 5f;
@@ -108,6 +113,11 @@ public class TextParticle extends SpriteBillboardParticle {
 
     public int getColour () {
         return this.textColour;
+    }
+
+    @Override
+    public float getSize (float tickDelta) {
+        return MathHelper.lerp(tickDelta, this.prevScale, this.scale);
     }
 
     public Vec3d getPos () {

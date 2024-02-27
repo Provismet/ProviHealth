@@ -2,6 +2,7 @@ package com.provismet.provihealth.compat;
 
 import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.config.Options.DamageParticleType;
+import com.provismet.provihealth.config.Options.HUDPortraitCompatMode;
 import com.provismet.provihealth.config.Options.HUDPosition;
 import com.provismet.provihealth.config.Options.HUDType;
 import com.provismet.provihealth.config.Options.SeeThroughText;
@@ -362,6 +363,12 @@ public class ProviHealthConfigScreen {
             .setDefaultValue(false)
             .setTooltip(Text.translatable("tooltip.provihealth.compatWorld"))
             .setSaveConsumer(newValue -> Options.compatInWorld = newValue)
+            .build()
+        );
+
+        compatibility.addEntry(entryBuilder.startEnumSelector(Text.translatable("entry.provihealth.compatHud"), HUDPortraitCompatMode.class, Options.HUDCompat)
+            .setDefaultValue(HUDPortraitCompatMode.STANDARD)
+            .setSaveConsumer(newValue -> Options.HUDCompat = newValue)
             .build()
         );
 

@@ -35,7 +35,6 @@ public class EntityHealthBar {
     private static final Identifier BARS = ProviHealthClient.identifier("textures/gui/healthbars/in_world.png");
     private static final Identifier COMPAT_BARS = ProviHealthClient.identifier("textures/gui/healthbars/in_world_coloured.png");
     private static final float TEXTURE_SIZE = 64;
-    private static final float MOUNT_BAR_PIXEL_LENGTH = 58;
 
     public static boolean enabled = true;
 
@@ -163,15 +162,17 @@ public class EntityHealthBar {
     }
 
     private static void renderBar (Matrix4f model, VertexConsumer vertexConsumer, int index, float percentage, boolean isMount) {
+        if (isMount) percentage = MathHelper.lerp(percentage, 3f / TEXTURE_SIZE, 61f / TEXTURE_SIZE);
+
         // All U and V values are a percentage.
-        final float MIN_U = isMount ? 3f / TEXTURE_SIZE : 0f; // Leftmost pixel
+        final float MIN_U = 0f; // Leftmost pixel
         final float MIN_V = ((index * 12f) / TEXTURE_SIZE) + (isMount ? 7f / TEXTURE_SIZE : 0f); // Topmost pixel
-        final float MAX_U = percentage * (isMount ? 61f / TEXTURE_SIZE : 1f); // Leftmost pixel
+        final float MAX_U = percentage; // Rightmost pixel
         final float MAX_V = MIN_V + (isMount ? 5f : 7f) / TEXTURE_SIZE; // Bottommost pixel
 
         // X and Y are block coordinates relative to the matrix shenanigans.
-        final float MIN_X = isMount ? 0.5f * (MOUNT_BAR_PIXEL_LENGTH / TEXTURE_SIZE) : 0.5f; // Pushes the bar half a block to the left, centering it.
-        final float MAX_X = MIN_X - percentage * (isMount ? MOUNT_BAR_PIXEL_LENGTH / TEXTURE_SIZE : 1f);
+        final float MIN_X = 0.5f; // Pushes the bar half a block to the left, centering it.
+        final float MAX_X = MIN_X - percentage;
         final float MIN_Y = 0f;
         final float MAX_Y = -1f * ((isMount ? 5f : 7f) / TEXTURE_SIZE); // Mount bar is 5 pixels tall, Health bar is 7 pixels tall.
 
