@@ -34,17 +34,11 @@ body:
       placeholder: Affected mod version or versions. Do NOT simply write "latest".
     validations:
       required: true
-  - type: dropdown
+  - type: input
     id: mc-ver
     attributes:
       label: Minecraft Version
-      multiple: true
-      options:
-        - 1.20.4
-        - 1.20.3
-        - 1.20.2
-        - 1.20.1
-        - 1.20
+      placeholder: Affected Minecraft version or versions. Do NOT simply write "latest".
     validations:
       required: true
   - type: dropdown
@@ -63,7 +57,6 @@ body:
     attributes:
       label: Steps to Reproduce
       placeholder: Write steps out here, e.g. in bullet points...
-      render: bash
     validations:
       required: true
   - type: textarea
