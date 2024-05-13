@@ -147,7 +147,6 @@ public class EntityHealthBar {
             matrices.pop();
         }
 
-        RenderSystem.disableBlend();
         RenderSystem.disableDepthTest();
         matrices.pop();
     }
