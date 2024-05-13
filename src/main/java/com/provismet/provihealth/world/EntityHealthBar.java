@@ -66,7 +66,6 @@ public class EntityHealthBar {
             RenderSystem.setShaderTexture(0, BARS);
         }
         RenderSystem.enableDepthTest();
-        RenderSystem.enableBlend();
 
         Matrix4f model = matrices.peek().getPositionMatrix();
         renderBar(model, vertexConsumer, 1, 1f, false); // Empty
