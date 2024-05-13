@@ -4,13 +4,9 @@ import com.provismet.provihealth.ProviHealthClient;
 import com.provismet.provihealth.api.ProviHealthApi;
 
 import net.minecraft.entity.EntityGroup;
-import net.minecraft.entity.EntityType;
 import net.minecraft.item.Items;
-import net.minecraft.tag.EntityTypeTags;
 
 public class SelfApiHook implements ProviHealthApi {
-    private static final int DEFAULT_PRIORITY = -999;
-
     @Override
     public void onInitialize () {
         this.registerIcon(EntityGroup.AQUATIC, Items.COD);

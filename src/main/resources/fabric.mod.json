@@ -7,6 +7,9 @@
 	"authors": [
 		"Provismet"
 	],
+	"contributors": [
+		"HarryNull"
+	],
 	"contact": {
 		"homepage": "https://github.com/Provismet/ProviHealth",
 		"sources": "https://github.com/Provismet/ProviHealth",
@@ -23,7 +26,6 @@
 	"mixins": [
 		"provihealth.mixins.json"
 	],
-	"accessWidener": "provihealth.accesswidener",
 	"depends": {
 		"fabricloader": ">=0.14.0",
 		"minecraft": "~1.19.2",

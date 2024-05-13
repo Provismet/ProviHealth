@@ -4,7 +4,6 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.particle.TextParticle;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.render.Camera;
