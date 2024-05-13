@@ -16,6 +16,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 
 import java.util.Arrays;
 
@@ -87,7 +88,7 @@ public class ProviHealthConfigScreen {
             .setDefaultValue(0x00C100)
             .setSaveConsumer(newValue -> {
                 Options.hudStartColour = newValue;
-                Options.unpackedStartHud = Vec3d.unpackRgb(newValue).toVector3f();
+                Options.unpackedStartHud = new Vec3f(Vec3d.unpackRgb(newValue));
             })
             .build()
         );
@@ -96,7 +97,7 @@ public class ProviHealthConfigScreen {
             .setDefaultValue(0xFF0000)
             .setSaveConsumer(newValue -> {
                 Options.hudEndColour = newValue;
-                Options.unpackedEndHud = Vec3d.unpackRgb(newValue).toVector3f();
+                Options.unpackedEndHud = new Vec3f(Vec3d.unpackRgb(newValue));
             })
             .build()
         );
@@ -192,7 +193,7 @@ public class ProviHealthConfigScreen {
             .setDefaultValue(0x00C100)
             .setSaveConsumer(newValue -> {
                 Options.worldStartColour = newValue;
-                Options.unpackedStartWorld = Vec3d.unpackRgb(newValue).toVector3f();
+                Options.unpackedStartWorld = new Vec3f(Vec3d.unpackRgb(newValue));
             })
             .build()
         );
@@ -201,7 +202,7 @@ public class ProviHealthConfigScreen {
             .setDefaultValue(0xFF0000)
             .setSaveConsumer(newValue -> {
                 Options.worldEndColour = newValue;
-                Options.unpackedEndWorld = Vec3d.unpackRgb(newValue).toVector3f();
+                Options.unpackedEndWorld = new Vec3f(Vec3d.unpackRgb(newValue));
             })
             .build()
         );
@@ -290,7 +291,7 @@ public class ProviHealthConfigScreen {
             .setDefaultValue(0xFF0000)
             .setSaveConsumer(newValue -> {
                 Options.damageColour = newValue;
-                Options.unpackedDamage = Vec3d.unpackRgb(newValue).toVector3f();
+                Options.unpackedDamage = new Vec3f(Vec3d.unpackRgb(newValue));
             })
             .build()
         );
@@ -307,7 +308,7 @@ public class ProviHealthConfigScreen {
             .setDefaultValue(0x00FF00)
             .setSaveConsumer(newValue -> {
                 Options.healingColour = newValue;
-                Options.unpackedHealing = Vec3d.unpackRgb(newValue).toVector3f();
+                Options.unpackedHealing = new Vec3f(Vec3d.unpackRgb(newValue));
             })
             .build()
         );

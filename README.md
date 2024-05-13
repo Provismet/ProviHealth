@@ -35,7 +35,7 @@ public class SelfApiHook implements ProviHealthApi {
         this.registerPortrait(EntityGroup.ILLAGER, ProviHealthClient.identifier("textures/gui/healthbars/illager.png"));
         this.registerPortrait(EntityGroup.UNDEAD, ProviHealthClient.identifier("textures/gui/healthbars/undead.png"));
     }
-    
+
 }
 ```
 

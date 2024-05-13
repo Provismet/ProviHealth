@@ -27,9 +27,9 @@ public class TextParticle extends SpriteBillboardParticle {
     protected TextParticle (ClientWorld clientWorld, double x, double y, double z, TextParticleEffect particleEffect) {
         super(clientWorld, x, y, z);
 
-        this.red = particleEffect.getColour().x();
-        this.green = particleEffect.getColour().y();
-        this.blue = particleEffect.getColour().z();
+        this.red = particleEffect.getColour().getX();
+        this.green = particleEffect.getColour().getY();
+        this.blue = particleEffect.getColour().getZ();
         this.scale = 0f;
         this.prevScale = 0f;
         this.alpha = particleEffect.alpha;
@@ -49,7 +49,7 @@ public class TextParticle extends SpriteBillboardParticle {
                 this.velocityX = 0;
                 this.velocityY = 0.1;
                 this.velocityZ = 0;
-                this.velocityMultiplier = 0.85f;       
+                this.velocityMultiplier = 0.85f;
                 break;
 
             case GRAVITY:
@@ -66,7 +66,7 @@ public class TextParticle extends SpriteBillboardParticle {
                 this.velocityY = 0;
                 this.velocityZ = 0;
                 break;
-        
+
             default:
                 break;
         }
@@ -77,13 +77,13 @@ public class TextParticle extends SpriteBillboardParticle {
     }
 
     @Override
-	public void tick () {
+    public void tick () {
         super.tick();
         this.prevScale = this.scale;
 
         if (this.age > this.maxAge / 2) this.scale -= this.maxScale / (this.maxAge / 2f);
         else if (this.scale < this.maxScale) this.scale += this.maxScale / 5f;
-        
+
         this.prevAngle = this.angle;
         this.angle += this.rotationSpeed;
 
@@ -95,14 +95,14 @@ public class TextParticle extends SpriteBillboardParticle {
             }
             else this.velocityY -= 0.025;
         }
-	}
+    }
 
     @Override
     public ParticleTextureSheet getType () {
         return ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
     }
 
-   @Override
+    @Override
     public int getBrightness (float tint) {
         return LightmapTextureManager.pack(15, 15);
     }
@@ -141,6 +141,6 @@ public class TextParticle extends SpriteBillboardParticle {
             textParticle.setSprite(this.spriteProvider);
             return textParticle;
         }
-    
+
     }
 }

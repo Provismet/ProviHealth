@@ -1,9 +1,19 @@
 package com.provismet.provihealth.hud;
 
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.render.*;
+import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.crash.CrashException;
+import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.provismet.provihealth.ProviHealthClient;
@@ -16,8 +26,6 @@ import com.provismet.provihealth.world.EntityHealthBar;
 
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
@@ -27,7 +35,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
-public class TargetHealthBar implements HudRenderCallback {
+public class TargetHealthBar extends DrawableHelper implements HudRenderCallback {
     public static boolean disabledLabels = false;
 
     private static final Identifier BARS = ProviHealthClient.identifier("textures/gui/healthbars/bars.png");
@@ -62,11 +70,11 @@ public class TargetHealthBar implements HudRenderCallback {
 
     @SuppressWarnings("resource")
     @Override
-    public void onHudRender (DrawContext drawContext, float tickDelta) {
+    public void onHudRender (MatrixStack matrices, float tickDelta) {
         if (this.healthBarDuration > 0f) this.healthBarDuration -= tickDelta;
         else this.reset();
 
-        if (!MinecraftClient.isHudEnabled() || MinecraftClient.getInstance().getDebugHud().shouldShowDebugHud() || MinecraftClient.getInstance().player.isSpectator()) return;
+        if (!MinecraftClient.isHudEnabled() || MinecraftClient.getInstance().options.debugEnabled || MinecraftClient.getInstance().player.isSpectator()) return;
 
         boolean isNew = false;
 
@@ -112,34 +120,34 @@ public class TargetHealthBar implements HudRenderCallback {
             final int nameWidth = MinecraftClient.getInstance().textRenderer.getWidth(this.getName(this.target));
             if (hudType == HUDType.FULL) {
                 // Render bars
-                this.renderBar(drawContext, BAR_WIDTH, 1); // Empty space
-                this.renderBar(drawContext, glideHealth(healthWidth, tickDelta * Options.hudGlide), 0); // Health
+                this.renderBar(matrices, BAR_WIDTH, 1); // Empty space
+                this.renderBar(matrices, glideHealth(healthWidth, tickDelta * Options.hudGlide), 0); // Health
                 if (vehicleMaxHealthDeep > 0f) {
-                    this.renderMountBar(drawContext, MOUNT_BAR_WIDTH, 1); // Empty space
-                    this.renderMountBar(drawContext, glideVehicleHealth(vehicleHealthWidth, tickDelta * Options.hudGlide), 0); // Health
+                    this.renderMountBar(matrices, MOUNT_BAR_WIDTH, 1); // Empty space
+                    this.renderMountBar(matrices, glideVehicleHealth(vehicleHealthWidth, tickDelta * Options.hudGlide), 0); // Health
                 }
 
                 int infoLeftX = LEFT_TEXT_X;
                 if (Options.hudPosition == HUDPosition.LEFT) {
                     // Render entity group icon
                     int expectedNameX = LEFT_TEXT_X + nameWidth + 2; // Starting point + width + 2 pixels of free space.
-                    if (BorderRegistry.getItem(this.target) != null && Options.showHudIcon) drawContext.drawItem(BorderRegistry.getItem(this.target), Math.max(BAR_X + BAR_WIDTH - 16, expectedNameX), BAR_Y - 16);
+                    if (BorderRegistry.getItem(this.target) != null && Options.showHudIcon) drawItem(matrices, BorderRegistry.getItem(this.target), Math.max(BAR_X + BAR_WIDTH - 16, expectedNameX), BAR_Y - 16);
                 }
                 else {
                     int expectedNameX = OFFSET_X - 18 - nameWidth; // Leftmost pixel of name, then left by 2 pixels, then left by 16 to make space for the icon.
-                    if (BorderRegistry.getItem(this.target) != null && Options.showHudIcon) drawContext.drawItem(BorderRegistry.getItem(this.target), Math.min(BAR_X, expectedNameX), BAR_Y - 16);
+                    if (BorderRegistry.getItem(this.target) != null && Options.showHudIcon) drawItem(matrices, BorderRegistry.getItem(this.target), Math.min(BAR_X, expectedNameX), BAR_Y - 16);
                     infoLeftX = BAR_X + 3;
                 }
 
                 // Render health value and heart icons
-                int healthX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("%d/%d", Math.round(this.target.getHealth()), Math.round(this.target.getMaxHealth())), infoLeftX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true); // Health Value
-                drawContext.drawTexture(HEART, healthX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 1, 9, 9, 0f, 0f, 9, 9, 9, 9);
+                int healthX = drawText(matrices, String.format("%d/%d", Math.round(this.target.getHealth()), Math.round(this.target.getMaxHealth())), infoLeftX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true); // Health Value
+                drawTexture(matrices, HEART, healthX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 1, 9, 9, 0f, 0f, 9, 9, 9, 9);
 
                 // Render armour icon if necessary
                 int armourX = MinecraftClient.getInstance().textRenderer.getWidth(String.format("%d/%d", Math.round(this.target.getMaxHealth()), Math.round(this.target.getMaxHealth()))) + infoLeftX + 18;
                 if (this.target.getArmor() > 0) {
-                    armourX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("%d", this.target.getArmor()), armourX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true);
-                    drawContext.drawTexture(ARMOUR, armourX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 1, 9, 9, 0f, 0f, 9, 9, 9, 9);
+                    armourX = drawText(matrices, String.format("%d", this.target.getArmor()), armourX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true);
+                    drawTexture(matrices, ARMOUR, armourX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 1, 9, 9, 0f, 0f, 9, 9, 9, 9);
                 }
 
                 if (vehicleMaxHealthDeep > 0f) {
@@ -149,27 +157,27 @@ public class TargetHealthBar implements HudRenderCallback {
 
                     if (expectedLeftPixel < armourX) expectedLeftPixel = armourX + 10;
 
-                    int mountHealthX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, mountHealthString, expectedLeftPixel, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true);
-                    drawContext.drawTexture(MOUNT_HEART, mountHealthX, BAR_Y + BAR_HEIGHT + MOUNT_BAR_HEIGHT + 1, 9, 9, 0f, 0f, 9, 9, 9, 9);
+                    int mountHealthX = drawText(matrices, mountHealthString, expectedLeftPixel, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true);
+                    drawTexture(matrices, MOUNT_HEART, mountHealthX, BAR_Y + BAR_HEIGHT + MOUNT_BAR_HEIGHT + 1, 9, 9, 0f, 0f, 9, 9, 9, 9);
                 }
             }
-            
+
             if (hudType != HUDType.NONE) {
                 // Render Portrait
                 RenderSystem.enableBlend();
                 if (Options.hudPosition == HUDPosition.LEFT) {
-                    drawContext.drawTexture(BorderRegistry.getBorder(this.target), 0, OFFSET_Y, FRAME_LENGTH, FRAME_LENGTH, 48f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Background
-                    drawContext.drawTexture(BorderRegistry.getBorder(this.target), 0, OFFSET_Y, 300, 0f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Foreground
+                    this.drawTexture(matrices, BorderRegistry.getBorder(this.target), 0, OFFSET_Y, FRAME_LENGTH, FRAME_LENGTH, 48f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Background
+                    this.drawTexture(matrices, BorderRegistry.getBorder(this.target), 0, OFFSET_Y, 300, FRAME_LENGTH, FRAME_LENGTH, 0f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Foreground
                     RenderSystem.disableBlend();
 
-                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, this.getName(this.target), LEFT_TEXT_X, BAR_Y - BAR_HEIGHT, 0xFFFFFF, true); // Name
+                    drawText(matrices, this.getName(this.target), LEFT_TEXT_X, BAR_Y - BAR_HEIGHT, 0xFFFFFF, true); // Name
                 }
                 else {
-                    this.drawHorizontallyMirroredTexturedQuad(BorderRegistry.getBorder(this.target), drawContext, OFFSET_X, OFFSET_X + FRAME_LENGTH, OFFSET_Y, OFFSET_Y + FRAME_LENGTH, 0, 0.5f, 1f, 0f, 1f); // Background
-                    this.drawHorizontallyMirroredTexturedQuad(BorderRegistry.getBorder(this.target), drawContext, OFFSET_X, OFFSET_X + FRAME_LENGTH, OFFSET_Y, OFFSET_Y + FRAME_LENGTH, 300, 0f, 0.5f, 0f, 1f); // Foreground
+                    this.drawHorizontallyMirroredTexturedQuad(BorderRegistry.getBorder(this.target), matrices, OFFSET_X, OFFSET_X + FRAME_LENGTH, OFFSET_Y, OFFSET_Y + FRAME_LENGTH, 0, 0.5f, 1f, 0f, 1f); // Background
+                    this.drawHorizontallyMirroredTexturedQuad(BorderRegistry.getBorder(this.target), matrices, OFFSET_X, OFFSET_X + FRAME_LENGTH, OFFSET_Y, OFFSET_Y + FRAME_LENGTH, 300, 0f, 0.5f, 0f, 1f); // Foreground
                     RenderSystem.disableBlend();
 
-                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, this.getName(this.target), OFFSET_X - 1 - nameWidth, BAR_Y - BAR_HEIGHT, 0xFFFFFF, true); // Name
+                    drawText(matrices, this.getName(this.target), OFFSET_X - 1 - nameWidth, BAR_Y - BAR_HEIGHT, 0xFFFFFF, true); // Name
                 }
 
                 // Render Paper Doll
@@ -191,18 +199,19 @@ public class TargetHealthBar implements HudRenderCallback {
                     }
                     else renderHeight = this.target.getEyeHeight(this.target.getPose()) + 0.8f;
 
-                    drawContext.enableScissor(OFFSET_X, OFFSET_Y, OFFSET_X + FRAME_LENGTH, OFFSET_Y + FRAME_LENGTH);
+                    enableScissor(OFFSET_X, OFFSET_Y, OFFSET_X + FRAME_LENGTH, OFFSET_Y + FRAME_LENGTH);
                     EntityHealthBar.enabled = false;
                     disabledLabels = true;
-                    this.drawEntity(drawContext, 24 + OFFSET_X, OFFSET_Y, 30,
-                        new Vector3f(0f, renderHeight, 0f),
-                        (new Quaternionf()).rotateZ(3.1415927f),
+                    this.drawEntity(matrices, 24 + OFFSET_X, OFFSET_Y, 30,
+                        new Vec3f(0f, renderHeight, 0f),
+                        new Quaternion(new Vec3f(0,0,1), 3.1415927f, false),
                         null,
                         this.target
                     );
                     EntityHealthBar.enabled = true;
                     disabledLabels = false;
-                    drawContext.disableScissor();
+                    disableScissor();
+
 
                     this.target.headYaw = prevTargetHeadYaw;
                     this.target.prevHeadYaw = prevPrevTargetHeadYaw;
@@ -219,18 +228,18 @@ public class TargetHealthBar implements HudRenderCallback {
                     }
                     else renderHeight = this.target.getEyeHeight(this.target.getPose()) + 0.8f;
 
-                    drawContext.enableScissor(OFFSET_X, OFFSET_Y, OFFSET_X + FRAME_LENGTH, OFFSET_Y + FRAME_LENGTH);
+                    enableScissor(OFFSET_X, OFFSET_Y, OFFSET_X + FRAME_LENGTH, OFFSET_Y + FRAME_LENGTH);
                     EntityHealthBar.enabled = false;
                     disabledLabels = true;
-                    this.drawEntity(drawContext, 24 + OFFSET_X, OFFSET_Y, 30,
-                        new Vector3f(0f, renderHeight, 0f),
-                        (new Quaternionf()).rotateZ(3.1415927f).rotateY(yawOffset),
+                    this.drawEntity(matrices, 24 + OFFSET_X, OFFSET_Y, 30,
+                        new Vec3f(0f, renderHeight, 0f),
+                        new Quaternion(new Vec3f(0,0,1), 3.1415927f, false),
                         null,
                         this.target
                     );
                     EntityHealthBar.enabled = true;
                     disabledLabels = false;
-                    drawContext.disableScissor();
+                    disableScissor();
                 }
             }
         }
@@ -252,14 +261,14 @@ public class TargetHealthBar implements HudRenderCallback {
         return this.currentVehicleHealthWidth;
     }
 
-    private void renderBar (DrawContext drawContext, int width, int barIndex) {
-        if (Options.hudPosition == HUDPosition.LEFT) this.drawTexturedQuad(BARS, drawContext, BAR_X, BAR_X + width, BAR_Y, BAR_Y + BAR_HEIGHT, 0, 0f, (float)width / (float)BAR_WIDTH, barIndex / 2f, BAR_V2 + barIndex / 2f, Options.getBarColour((float)width / (float)BAR_WIDTH, barIndex == 1 ? Options.WHITE : Options.unpackedStartHud, Options.unpackedEndHud, barIndex == 0 && Options.hudGradient));
-        else this.drawHorizontallyMirroredTexturedQuad(BARS, drawContext, BAR_X + (BAR_WIDTH - width), BAR_X + BAR_WIDTH, BAR_Y, BAR_Y + BAR_HEIGHT, 0, 0f, (float)width / (float)BAR_WIDTH, barIndex / 2f, BAR_V2 + barIndex / 2f, Options.getBarColour((float)width / (float)BAR_WIDTH, barIndex == 1 ? Options.WHITE : Options.unpackedStartHud, Options.unpackedEndHud, barIndex == 0 && Options.hudGradient));
+    private void renderBar (MatrixStack matrices, int width, int barIndex) {
+        if (Options.hudPosition == HUDPosition.LEFT) this.drawTexturedQuad(BARS, matrices, BAR_X, BAR_X + width, BAR_Y, BAR_Y + BAR_HEIGHT, 0, 0f, (float)width / (float)BAR_WIDTH, barIndex / 2f, BAR_V2 + barIndex / 2f, Options.getBarColour((float)width / (float)BAR_WIDTH, barIndex == 1 ? Options.WHITE : Options.unpackedStartHud, Options.unpackedEndHud, barIndex == 0 && Options.hudGradient));
+        else this.drawHorizontallyMirroredTexturedQuad(BARS, matrices, BAR_X + (BAR_WIDTH - width), BAR_X + BAR_WIDTH, BAR_Y, BAR_Y + BAR_HEIGHT, 0, 0f, (float)width / (float)BAR_WIDTH, barIndex / 2f, BAR_V2 + barIndex / 2f, Options.getBarColour((float)width / (float)BAR_WIDTH, barIndex == 1 ? Options.WHITE : Options.unpackedStartHud, Options.unpackedEndHud, barIndex == 0 && Options.hudGradient));
     }
 
-    private void renderMountBar (DrawContext drawContext, int width, int barIndex) {
-        if (Options.hudPosition == HUDPosition.LEFT) this.drawTexturedQuad(BARS, drawContext, BAR_X, BAR_X + width, BAR_Y + BAR_HEIGHT, BAR_Y + BAR_HEIGHT + MOUNT_BAR_HEIGHT, 0, 0f, ((float)width / (float)MOUNT_BAR_WIDTH) * MOUNT_BAR_U2, MOUNT_BAR_V1 + barIndex / 2f, MOUNT_BAR_V2 + barIndex / 2f, Options.getBarColour((float)width / (float)MOUNT_BAR_WIDTH, barIndex == 1 ? Options.WHITE : Options.unpackedStartHud, Options.unpackedEndHud, barIndex == 0 && Options.hudGradient));
-        else this.drawHorizontallyMirroredTexturedQuad(BARS, drawContext, BAR_X + (MOUNT_BAR_WIDTH - width) + BAR_WIDTH_DIFF, BAR_X + BAR_WIDTH_DIFF + MOUNT_BAR_WIDTH, BAR_Y + BAR_HEIGHT, BAR_Y + BAR_HEIGHT + MOUNT_BAR_HEIGHT, 0, 0f, ((float)width / (float)MOUNT_BAR_WIDTH) * MOUNT_BAR_U2, MOUNT_BAR_V1 + barIndex / 2f, MOUNT_BAR_V2 + barIndex / 2f, Options.getBarColour((float)width / (float)MOUNT_BAR_WIDTH, barIndex == 1 ? Options.WHITE : Options.unpackedStartHud, Options.unpackedEndHud, barIndex == 0 && Options.hudGradient));
+    private void renderMountBar (MatrixStack matrices, int width, int barIndex) {
+        if (Options.hudPosition == HUDPosition.LEFT) this.drawTexturedQuad(BARS, matrices, BAR_X, BAR_X + width, BAR_Y + BAR_HEIGHT, BAR_Y + BAR_HEIGHT + MOUNT_BAR_HEIGHT, 0, 0f, ((float)width / (float)MOUNT_BAR_WIDTH) * MOUNT_BAR_U2, MOUNT_BAR_V1 + barIndex / 2f, MOUNT_BAR_V2 + barIndex / 2f, Options.getBarColour((float)width / (float)MOUNT_BAR_WIDTH, barIndex == 1 ? Options.WHITE : Options.unpackedStartHud, Options.unpackedEndHud, barIndex == 0 && Options.hudGradient));
+        else this.drawHorizontallyMirroredTexturedQuad(BARS, matrices, BAR_X + (MOUNT_BAR_WIDTH - width) + BAR_WIDTH_DIFF, BAR_X + BAR_WIDTH_DIFF + MOUNT_BAR_WIDTH, BAR_Y + BAR_HEIGHT, BAR_Y + BAR_HEIGHT + MOUNT_BAR_HEIGHT, 0, 0f, ((float)width / (float)MOUNT_BAR_WIDTH) * MOUNT_BAR_U2, MOUNT_BAR_V1 + barIndex / 2f, MOUNT_BAR_V2 + barIndex / 2f, Options.getBarColour((float)width / (float)MOUNT_BAR_WIDTH, barIndex == 1 ? Options.WHITE : Options.unpackedStartHud, Options.unpackedEndHud, barIndex == 0 && Options.hudGradient));
     }
 
     private void reset () {
@@ -286,12 +295,12 @@ public class TargetHealthBar implements HudRenderCallback {
 
     // Copied from InventoryScreen because this method does not exist in 1.20.1
     @SuppressWarnings("deprecation")
-    private void drawEntity (DrawContext context, float x, float y, int size, Vector3f vector3f, Quaternionf quaternionf, @Nullable Quaternionf quaternionf2, LivingEntity entity) {
-        context.getMatrices().push();
-        context.getMatrices().translate((double)x, (double)y, 50.0);
-        context.getMatrices().multiplyPositionMatrix((new Matrix4f()).scaling((float)size, (float)size, (float)(-size)));
-        context.getMatrices().translate(vector3f.x, vector3f.y, vector3f.z);
-        context.getMatrices().multiply(quaternionf);
+    private void drawEntity (MatrixStack matrices, float x, float y, int size, Vec3f vector3f, Quaternion quaternionf, @Nullable Quaternion quaternionf2, LivingEntity entity) {
+        matrices.push();
+        matrices.translate((double)x, (double)y, 50.0);
+        matrices.multiplyPositionMatrix(Matrix4f.scale((float)size, (float)size, (float)(-size)));
+        matrices.translate(vector3f.getX(), vector3f.getY(), vector3f.getZ());
+        matrices.multiply(quaternionf);
         DiffuseLighting.method_34742();
         EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
         if (quaternionf2 != null) {
@@ -301,23 +310,121 @@ public class TargetHealthBar implements HudRenderCallback {
 
         entityRenderDispatcher.setRenderShadows(false);
         RenderSystem.runAsFancy(() -> {
-            entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, 1.0F, context.getMatrices(), context.getVertexConsumers(), 15728880);
+            entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, 1.0F, matrices, MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers(), 15728880);
         });
-        context.draw();
+        VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+        immediate.draw();
         entityRenderDispatcher.setRenderShadows(true);
-        context.getMatrices().pop();
+        matrices.pop();
         DiffuseLighting.enableGuiDepthLighting();
     }
 
-    private void drawHorizontallyMirroredTexturedQuad (Identifier texture, DrawContext context, int x1, int x2, int y1, int y2, int z, float u1, float u2, float v1, float v2) {
-        context.drawTexturedQuad(texture, x1, x2, y1, y2, z, u2, u1, v1, v2);
+    public void drawTexturedQuad(Identifier texture, MatrixStack matrices, int x1, int x2, int y1, int y2, int z, float u1, float u2, float v1, float v2, float red, float green, float blue, float alpha) {
+        RenderSystem.setShaderTexture(0, texture);
+        RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
+        RenderSystem.enableBlend();
+        Matrix4f matrix4f = matrices.peek().getPositionMatrix();
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
+        bufferBuilder.vertex(matrix4f, (float)x1, (float)y1, (float)z).color(red, green, blue, alpha).texture(u1, v1).next();
+        bufferBuilder.vertex(matrix4f, (float)x1, (float)y2, (float)z).color(red, green, blue, alpha).texture(u1, v2).next();
+        bufferBuilder.vertex(matrix4f, (float)x2, (float)y2, (float)z).color(red, green, blue, alpha).texture(u2, v2).next();
+        bufferBuilder.vertex(matrix4f, (float)x2, (float)y1, (float)z).color(red, green, blue, alpha).texture(u2, v1).next();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
+        RenderSystem.disableBlend();
+    }
+    private static void drawTexturedQuad(Identifier texture, MatrixStack matrices, int x0, int x1, int y0, int y1, int z, float u0, float u1, float v0, float v1) {
+        RenderSystem.setShaderTexture(0, texture);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        Matrix4f matrix = matrices.peek().getPositionMatrix();
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        bufferBuilder.vertex(matrix, (float)x0, (float)y1, (float)z).texture(u0, v1).next();
+        bufferBuilder.vertex(matrix, (float)x1, (float)y1, (float)z).texture(u1, v1).next();
+        bufferBuilder.vertex(matrix, (float)x1, (float)y0, (float)z).texture(u1, v0).next();
+        bufferBuilder.vertex(matrix, (float)x0, (float)y0, (float)z).texture(u0, v0).next();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
     }
 
-    private void drawTexturedQuad (Identifier texture, DrawContext context, int x1, int x2, int y1, int y2, int z, float u1, float u2, float v1, float v2, Vector3f colour) {
-        context.drawTexturedQuad(texture, x1, x2, y1, y2, z, u1, u2, v1, v2, colour.x, colour.y, colour.z, 1f);
+    private void drawHorizontallyMirroredTexturedQuad(Identifier texture, MatrixStack matrices, int x1, int x2, int y1, int y2, int z, float u1, float u2, float v1, float v2) {
+        drawTexturedQuad(texture, matrices, x1, x2, y1, y2, z, u2, u1, v1, v2);
     }
 
-    private void drawHorizontallyMirroredTexturedQuad (Identifier texture, DrawContext context, int x1, int x2, int y1, int y2, int z, float u1, float u2, float v1, float v2, Vector3f colour) {
-        context.drawTexturedQuad(texture, x1, x2, y1, y2, z, u2, u1, v1, v2, colour.x, colour.y, colour.z, 1f);
+    private void drawTexturedQuad (Identifier texture, MatrixStack matrices, int x1, int x2, int y1, int y2, int z, float u1, float u2, float v1, float v2, Vec3f colour) {
+        drawTexturedQuad(texture, matrices, x1, x2, y1, y2, z, u1, u2, v1, v2, colour.getX(), colour.getY(), colour.getZ(), 1f);
+    }
+
+    private void drawHorizontallyMirroredTexturedQuad (Identifier texture, MatrixStack matrices, int x1, int x2, int y1, int y2, int z, float u1, float u2, float v1, float v2, Vec3f colour) {
+        drawTexturedQuad(texture, matrices, x1, x2, y1, y2, z, u2, u1, v1, v2, colour.getX(), colour.getY(), colour.getZ(), 1f);
+    }
+
+    private void drawTexture(MatrixStack matrices, Identifier texture, int x, int y, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight) {
+        RenderSystem.setShaderTexture(0, texture);
+        drawTexture(matrices, x, y, width, height, u, v, regionWidth, regionHeight, textureWidth, textureHeight);
+    }
+
+    private void drawTexture(MatrixStack matrices, Identifier texture, int x, int y, int z, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight) {
+        drawTexturedQuad(texture, matrices, x, x + width, y, y + height, z, u, u + (float)regionWidth / (float)textureWidth, v, v + (float)regionHeight / (float)textureHeight);
+    }
+
+    public int drawText(MatrixStack matrices, @Nullable String text, int x, int y, int color, boolean shadow) {
+        if (text == null) {
+            return 0;
+        } else {
+            return drawText(matrices, Text.of(text), x, y, color, shadow);
+        }
+    }
+
+    public int drawText(MatrixStack matrices, @Nullable Text text, int x, int y, int color, boolean shadow) {
+        if (text == null) {
+            return 0;
+        } else {
+            VertexConsumerProvider.Immediate vertexConsumer = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+            TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+            int i = textRenderer.draw(
+                    text, (float)x, (float)y, color, shadow,
+                    matrices.peek().getPositionMatrix(),
+                    vertexConsumer,
+                    false, 0, 15728880
+            );
+            vertexConsumer.draw();
+            return i;
+        }
+    }
+
+    private void drawItem(MatrixStack matrices, ItemStack stack, int x, int y) {
+        if (stack.isEmpty()) return;
+
+        MinecraftClient client = MinecraftClient.getInstance();
+        BakedModel bakedModel = client.getItemRenderer().getModel(stack, client.world, client.player, 0);
+        matrices.push();
+        matrices.translate((float) (x + 8), (float) (y + 8), 150F);
+
+        try {
+            matrices.multiplyPositionMatrix(Matrix4f.scale(1.0F, -1.0F, 1.0F));
+            matrices.scale(16.0F, 16.0F, 16.0F);
+            boolean bl = !bakedModel.isSideLit();
+            if (bl) {
+                DiffuseLighting.disableGuiDepthLighting();
+            }
+
+            VertexConsumerProvider.Immediate vertexConsumers = client.getBufferBuilders().getEntityVertexConsumers();
+            client.getItemRenderer().renderItem(stack, ModelTransformation.Mode.GUI, false, matrices, vertexConsumers, 15728880, OverlayTexture.DEFAULT_UV, bakedModel);
+            vertexConsumers.draw();
+
+            if (bl) {
+                DiffuseLighting.enableGuiDepthLighting();
+            }
+        } catch (Throwable var12) {
+            CrashReport crashReport = CrashReport.create(var12, "Rendering item");
+            CrashReportSection crashReportSection = crashReport.addElement("Item being rendered");
+            crashReportSection.add("Item Type", () -> String.valueOf(stack.getItem()));
+            crashReportSection.add("Item Damage", () -> String.valueOf(stack.getDamage()));
+            crashReportSection.add("Item NBT", () -> String.valueOf(stack.getNbt()));
+            crashReportSection.add("Item Foil", () -> String.valueOf(stack.hasGlint()));
+            throw new CrashException(crashReport);
+        }
+
+        matrices.pop();
     }
 }

@@ -18,13 +18,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.joml.Vector3f;
+import net.minecraft.util.math.Vec3f;
 
 import com.google.gson.stream.JsonReader;
 import com.provismet.provihealth.ProviHealthClient;
 
 public class Options {
-    public static final Vector3f WHITE = Vec3d.unpackRgb(0xFFFFFF).toVector3f();
+    public static final Vec3f WHITE = new Vec3f(Vec3d.unpackRgb(0xFFFFFF));
 
     public static int maxHealthBarTicks = 40;
 
@@ -55,8 +55,8 @@ public class Options {
     public static HUDPosition hudPosition = HUDPosition.LEFT;
     public static int hudStartColour = 0x00C100;
     public static int hudEndColour = 0xFF0000;
-    public static Vector3f unpackedStartHud = Vec3d.unpackRgb(hudStartColour).toVector3f();
-    public static Vector3f unpackedEndHud = Vec3d.unpackRgb(hudEndColour).toVector3f();
+    public static Vec3f unpackedStartHud = new Vec3f(Vec3d.unpackRgb(hudStartColour));
+    public static Vec3f unpackedEndHud = new Vec3f(Vec3d.unpackRgb(hudEndColour));
     public static boolean hudGradient = false;
 
     public static boolean showTextInWorld = true;
@@ -64,8 +64,8 @@ public class Options {
     public static float worldHealthBarScale = 1.5f;
     public static int worldStartColour = 0x00C100;
     public static int worldEndColour = 0xFF0000;
-    public static Vector3f unpackedStartWorld = Vec3d.unpackRgb(worldStartColour).toVector3f();
-    public static Vector3f unpackedEndWorld = Vec3d.unpackRgb(worldEndColour).toVector3f();
+    public static Vec3f unpackedStartWorld = new Vec3f(Vec3d.unpackRgb(worldStartColour));
+    public static Vec3f unpackedEndWorld = new Vec3f(Vec3d.unpackRgb(worldEndColour));
     public static boolean worldGradient = false;
     public static boolean overrideLabels = false;
     public static boolean worldShadows = true;
@@ -75,8 +75,8 @@ public class Options {
     public static boolean spawnHealingParticles = false;
     public static int damageColour = 0xFF0000;
     public static int healingColour = 0x00FF00;
-    public static Vector3f unpackedDamage = Vec3d.unpackRgb(damageColour).toVector3f();
-    public static Vector3f unpackedHealing = Vec3d.unpackRgb(healingColour).toVector3f();
+    public static Vec3f unpackedDamage = new Vec3f(Vec3d.unpackRgb(damageColour));
+    public static Vec3f unpackedHealing = new Vec3f(Vec3d.unpackRgb(healingColour));
     public static float particleScale = 0.25f;
     public static boolean particleTextShadow = true;
     public static int damageParticleTextColour = 0xFFFFFF;
@@ -91,7 +91,6 @@ public class Options {
     public static boolean compatInHUD = false;
     public static HUDPortraitCompatMode HUDCompat = HUDPortraitCompatMode.STANDARD;
 
-    @SuppressWarnings("resource")
     public static boolean shouldRenderHealthFor (LivingEntity livingEntity) {
         if (blacklist.contains(EntityType.getId(livingEntity.getType()).toString())) return false;
         if (livingEntity.distanceTo(MinecraftClient.getInstance().player) > Options.maxRenderDistance) return false;
@@ -123,13 +122,13 @@ public class Options {
         else return otherHUD;
     }
 
-    public static Vector3f getBarColour (float percentage, Vector3f start, Vector3f end, boolean shouldGradient) {
+    public static Vec3f getBarColour (float percentage, Vec3f start, Vec3f end, boolean shouldGradient) {
         if (shouldGradient) {
-            Vector3f colour = new Vector3f();
-            colour.x = MathHelper.lerp(percentage, end.x, start.x);
-            colour.y = MathHelper.lerp(percentage, end.y, start.y);
-            colour.z = MathHelper.lerp(percentage, end.z, start.z);
-            return colour;
+            return new Vec3f(
+                    MathHelper.lerp(percentage, end.getX(), start.getX()),
+                    MathHelper.lerp(percentage, end.getY(), start.getY()),
+                    MathHelper.lerp(percentage, end.getZ(), start.getZ())
+            );
         }
         else return start;
     }
@@ -238,12 +237,12 @@ public class Options {
                     
                     case "hudStartColour":
                         hudStartColour = parser.nextInt();
-                        unpackedStartHud = Vec3d.unpackRgb(hudStartColour).toVector3f();
+                        unpackedStartHud = new Vec3f(Vec3d.unpackRgb(hudStartColour));
                         break;
 
                     case "hudEndColour":
                         hudEndColour = parser.nextInt();
-                        unpackedEndHud = Vec3d.unpackRgb(hudEndColour).toVector3f();
+                        unpackedEndHud = new Vec3f(Vec3d.unpackRgb(hudEndColour));
                         break;
 
                     case "replaceLabels":
@@ -280,12 +279,12 @@ public class Options {
 
                     case "worldStartColour":
                         worldStartColour = parser.nextInt();
-                        unpackedStartWorld = Vec3d.unpackRgb(worldStartColour).toVector3f();
+                        unpackedStartWorld = new Vec3f(Vec3d.unpackRgb(worldStartColour));
                         break;
 
                     case "worldEndColour":
                         worldEndColour = parser.nextInt();
-                        unpackedEndWorld = Vec3d.unpackRgb(worldEndColour).toVector3f();
+                        unpackedEndWorld = new Vec3f(Vec3d.unpackRgb(worldEndColour));
                         break;
 
                     case "bossHealth":
@@ -346,7 +345,7 @@ public class Options {
 
                     case "damageColour":
                         damageColour = parser.nextInt();
-                        unpackedDamage = Vec3d.unpackRgb(damageColour).toVector3f();
+                        unpackedDamage = new Vec3f(Vec3d.unpackRgb(damageColour));
                         break;
 
                     case "damageAlpha":
@@ -355,7 +354,7 @@ public class Options {
 
                     case "healingColour":
                         healingColour = parser.nextInt();
-                        unpackedHealing = Vec3d.unpackRgb(healingColour).toVector3f();
+                        unpackedHealing = new Vec3f(Vec3d.unpackRgb(healingColour));
                         break;
 
                     case "healingAlpha":
@@ -454,8 +453,6 @@ public class Options {
                 return false;
             
             case ALWAYS_SHOW:
-                return true;
-            
             default:
                 return true;
         }

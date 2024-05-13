@@ -1,14 +1,8 @@
 package com.provismet.provihealth.mixin;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import com.llamalad7.mixinextras.sugar.Local;
 import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.particle.TextParticle;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.particle.Particle;
@@ -19,6 +13,10 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ParticleManager.class)
 public abstract class ParticleManagerMixin {
@@ -40,7 +38,7 @@ public abstract class ParticleManagerMixin {
             float scaleSize = textParticle.getSize(tickDelta) / 6f;
             matrices.scale(-scaleSize, -scaleSize, -scaleSize);
 
-            MinecraftClient.getInstance().textRenderer.draw(textParticle.getText(), 0f, 0f, textParticle.getColour(), Options.particleTextShadow, matrices.peek().getPositionMatrix(), vertexConsumers, TextLayerType.POLYGON_OFFSET, 0, textParticle.getBrightness(tickDelta));
+            MinecraftClient.getInstance().textRenderer.draw(textParticle.getText(), 0f, 0f, textParticle.getColour(), Options.particleTextShadow, matrices.peek().getPositionMatrix(), vertexConsumers, false, 0, textParticle.getBrightness(tickDelta));
             matrices.pop();
         }
     }
