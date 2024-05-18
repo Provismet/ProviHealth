@@ -1,6 +1,7 @@
 package com.provismet.provihealth.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.particle.TextParticle;
 import net.minecraft.client.MinecraftClient;
@@ -37,6 +38,7 @@ public abstract class ParticleManagerMixin {
             float scaleSize = textParticle.getSize(tickDelta) / 6f;
             matrices.scale(-scaleSize, -scaleSize, -scaleSize);
 
+            RenderSystem.enableDepthTest();
             MinecraftClient.getInstance().textRenderer.draw(textParticle.getText(), 0f, 0f, textParticle.getColour(), Options.particleTextShadow, matrices.peek().getPositionMatrix(), vertexConsumers, false, 0, textParticle.getBrightness(tickDelta));
             matrices.pop();
         }

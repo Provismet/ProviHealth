@@ -31,7 +31,9 @@
 		"minecraft": "~1.19.2",
 		"java": ">=17",
 		"fabric-api": "*",
-		"lilylib": "*"
+		"lilylib": "*",
+		"sodium": "*",
+		"iris": "*"
 	},
 	"recommends": {
 		"modmenu": "*",
