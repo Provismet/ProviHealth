@@ -29,6 +29,9 @@ public abstract class EntityRenderStateMixin implements IMixinEntityRenderState 
     @Unique
     private boolean shouldRenderLabel;
 
+    @Unique
+    private Text healthBarLabel;
+
     @Override
     public void provi_Health$setShouldRenderHealth (boolean value) {
         this.shouldRenderHealth = value;
@@ -60,6 +63,11 @@ public abstract class EntityRenderStateMixin implements IMixinEntityRenderState 
     }
 
     @Override
+    public void provi_Health$setLabel (Text label) {
+        this.healthBarLabel = label.copy();
+    }
+
+    @Override
     public boolean provi_Health$shouldRenderHealth () {
         return this.shouldRenderHealth;
     }
@@ -87,5 +95,10 @@ public abstract class EntityRenderStateMixin implements IMixinEntityRenderState 
     @Override
     public boolean provi_Health$shouldRenderLabel () {
         return this.shouldRenderLabel;
+    }
+
+    @Override
+    public Text provi_Health$getLabel () {
+        return this.healthBarLabel;
     }
 }

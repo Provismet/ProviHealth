@@ -70,6 +70,9 @@ public abstract class EntityRendererMixin {
             mixinState.provi_Health$setIsLiving(true);
             mixinState.provi_Health$setShouldRenderLabel(this.hasLabel(entity, state.squaredDistanceToCamera));
 
+            if (entity.getDisplayName() != null) mixinState.provi_Health$setLabel(entity.getDisplayName());
+            else mixinState.provi_Health$setLabel(entity.getName());
+
             mixinState.provi_Health$setTitles(BorderRegistry.getTitle(living, true, false));
 
             // If another valid entity is riding this one, don't render a healthbar.
@@ -83,16 +86,6 @@ public abstract class EntityRendererMixin {
             }
 
             mixinState.provi_Health$setMountHealth(((IMixinLivingEntity)living).provi_Health$getMountHealthContainer());
-        }
-    }
-
-    // For some reason the display name is cleared from the state if the label isn't rendering. Put it back.
-    @Inject(method="updateRenderState", at=@At("TAIL"))
-    private void postModifyRenderState (Entity entity, EntityRenderState state, float tickDelta, CallbackInfo info) {
-        if (state.displayName == null) {
-            Text name = this.getDisplayName(entity);
-            if (name != null) state.displayName = name.copy();
-            else state.displayName = entity.getName().copy();
         }
     }
 }

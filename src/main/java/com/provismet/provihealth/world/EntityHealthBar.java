@@ -164,7 +164,7 @@ public class EntityHealthBar {
 
     private static Text getName (EntityRenderState state) {
         if (state instanceof PlayerEntityRenderState playerState && playerState.invisibleToPlayer) return Text.translatable("entity.provihealth.unknownPlayer");
-        return state.displayName;
+        return ((IMixinEntityRenderState)state).provi_Health$getLabel();
     }
 
     private static void renderBar (Matrix4f model, VertexConsumer vertexConsumer, int index, float percentage, boolean isMount) {
