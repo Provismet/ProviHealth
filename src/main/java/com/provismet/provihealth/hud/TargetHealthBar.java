@@ -1,7 +1,15 @@
 package com.provismet.provihealth.hud;
 
+import com.provismet.provihealth.interfaces.IMixinLivingEntity;
+import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
 import org.jetbrains.annotations.Nullable;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.StatusEffectSpriteManager;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.registry.entry.RegistryEntry;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -49,6 +57,12 @@ public class TargetHealthBar implements HudRenderCallback {
     private static final int LEFT_TEXT_X = FRAME_LENGTH + 2;
     private static int BAR_X = FRAME_LENGTH - 5;
     private static int BAR_Y = OFFSET_Y + FRAME_LENGTH / 2 - (BAR_HEIGHT + MOUNT_BAR_HEIGHT) / 2;
+
+    private static int TEXT_BASE_Y = BAR_Y + BAR_HEIGHT + 1;
+
+    private static int EFFECT_X = FRAME_LENGTH + 2;
+    private static int EFFECT_BASE_Y = TEXT_BASE_Y + 11;
+    private static int EFFECT_X_OFFSET = 17;
 
     private static final float BAR_V2 = ((float)BAR_HEIGHT / (float)(BAR_HEIGHT + MOUNT_BAR_HEIGHT)) / 2f; // Accounting for index.
     private static final float MOUNT_BAR_U2 = (float)MOUNT_BAR_WIDTH / (float)BAR_WIDTH;
@@ -136,14 +150,15 @@ public class TargetHealthBar implements HudRenderCallback {
                 }
 
                 // Render health value and heart icons
+                int offsetFromMountBar = (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0);
                 int healthX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("%d/%d", Math.round(this.target.getHealth()), Math.round(this.target.getMaxHealth())), infoLeftX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true); // Health Value
-                drawContext.drawTexture(HEART, healthX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 1, 9, 9, 0f, 0f, 9, 9, 9, 9);
+                drawContext.drawTexture(HEART, healthX, TEXT_BASE_Y + offsetFromMountBar, 9, 9, 0f, 0f, 9, 9, 9, 9);
 
                 // Render armour icon if necessary
                 int armourX = MinecraftClient.getInstance().textRenderer.getWidth(String.format("%d/%d", Math.round(this.target.getMaxHealth()), Math.round(this.target.getMaxHealth()))) + infoLeftX + 18;
                 if (this.target.getArmor() > 0) {
-                    armourX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("%d", this.target.getArmor()), armourX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 2, 0xFFFFFF, true);
-                    drawContext.drawTexture(ARMOUR, armourX, BAR_Y + BAR_HEIGHT + (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0) + 1, 9, 9, 0f, 0f, 9, 9, 9, 9);
+                    armourX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("%d", this.target.getArmor()), armourX, TEXT_BASE_Y + 1 + offsetFromMountBar, 0xFFFFFF, true);
+                    drawContext.drawTexture(ARMOUR, armourX, TEXT_BASE_Y + offsetFromMountBar, 9, 9, 0f, 0f, 9, 9, 9, 9);
                 }
 
                 if (vehicleMaxHealthDeep > 0f) {
@@ -153,8 +168,22 @@ public class TargetHealthBar implements HudRenderCallback {
 
                     if (expectedLeftPixel < armourX) expectedLeftPixel = armourX + 10;
 
-                    int mountHealthX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, mountHealthString, expectedLeftPixel, BAR_Y + BAR_HEIGHT + MOUNT_BAR_HEIGHT + 2, 0xFFFFFF, true);
-                    drawContext.drawTexture(MOUNT_HEART, mountHealthX, BAR_Y + BAR_HEIGHT + MOUNT_BAR_HEIGHT + 1, 9, 9, 0f, 0f, 9, 9, 9, 9);
+                    int mountHealthX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, mountHealthString, expectedLeftPixel, TEXT_BASE_Y + 1 + MOUNT_BAR_HEIGHT, 0xFFFFFF, true);
+                    drawContext.drawTexture(MOUNT_HEART, mountHealthX, TEXT_BASE_Y + MOUNT_BAR_HEIGHT, 9, 9, 0f, 0f, 9, 9, 9, 9);
+                }
+
+                if (Options.hudStatuses) {
+                    List<RegistryEntry<StatusEffect>> effects = ((IMixinLivingEntity)this.target).provi_Health$getClientSideStatusEffects();
+
+                    if (!effects.isEmpty()) {
+                        StatusEffectSpriteManager statusEffectSpriteManager = MinecraftClient.getInstance().getStatusEffectSpriteManager();
+                        int effectXOffset = 0;
+                        for (RegistryEntry<StatusEffect> effect : effects) {
+                            Sprite effectSprite = statusEffectSpriteManager.getSprite(effect);
+                            drawContext.drawSprite(EFFECT_X + effectXOffset, EFFECT_BASE_Y + offsetFromMountBar, 0, 16, 16, effectSprite);
+                            effectXOffset += EFFECT_X_OFFSET;
+                        }
+                    }
                 }
 
                 // Render titles on HUD
@@ -298,15 +327,21 @@ public class TargetHealthBar implements HudRenderCallback {
     private void adjustForScreenSize () {
         OFFSET_Y = Math.min((int)(MinecraftClient.getInstance().getWindow().getScaledHeight() * (Options.hudOffsetPercent / 100f)), MinecraftClient.getInstance().getWindow().getScaledHeight() - FRAME_LENGTH);
         BAR_Y = OFFSET_Y + FRAME_LENGTH / 2 - (BAR_HEIGHT + MOUNT_BAR_HEIGHT) / 2;
+        TEXT_BASE_Y = BAR_Y + BAR_HEIGHT + 1;
+        EFFECT_BASE_Y = TEXT_BASE_Y + 11;
 
         if (Options.hudPosition == HUDPosition.LEFT) {
             OFFSET_X = 0;
             BAR_X = FRAME_LENGTH - 5;
+            EFFECT_X = FRAME_LENGTH + 2;
+            EFFECT_X_OFFSET = 17;
         }
         else {
             int width = MinecraftClient.getInstance().getWindow().getScaledWidth();
             OFFSET_X = width - FRAME_LENGTH;
             BAR_X = OFFSET_X + 5 - BAR_WIDTH;
+            EFFECT_X = OFFSET_X - 18;
+            EFFECT_X_OFFSET = -17;
         }
     }
 

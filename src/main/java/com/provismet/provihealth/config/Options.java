@@ -60,6 +60,7 @@ public class Options {
     public static Vector3f unpackedEndHud = Vec3d.unpackRgb(hudEndColour).toVector3f();
     public static boolean hudGradient = false;
     public static boolean hudTitles = true;
+    public static boolean hudStatuses = true;
 
     public static boolean showTextInWorld = true;
     public static float maxRenderDistance = 24f;
@@ -176,6 +177,7 @@ public class Options {
             .append("playerHUD", playerHUD.name()).newLine()
             .append("otherHUD", otherHUD.name()).newLine()
             .append("hudTitles", hudTitles).newLine()
+            .append("hudStatusEffects", hudStatuses).newLine()
             .append("damageParticles", spawnDamageParticles).newLine()
             .append("healingParticles", spawnHealingParticles).newLine()
             .append("damageColour", damageColour).newLine()
@@ -360,6 +362,10 @@ public class Options {
                         hudTitles = parser.nextBoolean();
                         break;
 
+                    case "hudStatusEffects":
+                        hudStatuses = parser.nextBoolean();
+                        break;
+
                     case "damageParticles":
                         spawnDamageParticles = parser.nextBoolean();
                         break;
@@ -443,7 +449,7 @@ public class Options {
                         break;
                 
                     default:
-                        ProviHealthClient.LOGGER.warn("Unknown label \"" + label + "\" found in config.");
+                        ProviHealthClient.LOGGER.warn("Unknown label \"{}\" found in config.", label);
                         parser.skipValue();
                         break;
                 }
