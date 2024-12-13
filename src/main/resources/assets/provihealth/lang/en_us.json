@@ -51,6 +51,7 @@
     "entry.provihealth.damageAlpha": "Damage Particle Alpha",
     "entry.provihealth.healingAlpha": "Healing Particle Alpha",
     "entry.provihealth.compatHud": "HUD Paperdoll Render Mode",
+    "entry.provihealth.hudStatuses": "Show Status Effects",
 
     "enum.provihealth.full": "Full",
     "enum.provihealth.portrait_only": "Portrait Only",

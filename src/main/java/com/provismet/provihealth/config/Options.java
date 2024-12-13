@@ -16,7 +16,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.joml.Vector3f;
@@ -29,8 +28,8 @@ public class Options {
 
     public static int maxHealthBarTicks = 40;
 
-    public static List<String> blacklist = Arrays.asList("minecraft:armor_stand");
-    public static List<String> blacklistHUD = Arrays.asList("minecraft:armor_stand");
+    public static List<String> blacklist = List.of("minecraft:armor_stand");
+    public static List<String> blacklistHUD = List.of("minecraft:armor_stand");
 
     public static VisibilityType bosses = VisibilityType.ALWAYS_HIDE;
     public static VisibilityType hostile = VisibilityType.ALWAYS_SHOW;
@@ -59,6 +58,7 @@ public class Options {
     public static Vector3f unpackedEndHud = Vec3d.unpackRgb(hudEndColour).toVector3f();
     public static boolean hudGradient = false;
     public static boolean hudTitles = true;
+    public static boolean hudStatuses = true;
 
     public static boolean showTextInWorld = true;
     public static float maxRenderDistance = 24f;
@@ -170,6 +170,7 @@ public class Options {
             .append("playerHUD", playerHUD.name()).newLine()
             .append("otherHUD", otherHUD.name()).newLine()
             .append("hudTitles", hudTitles).newLine()
+            .append("hudStatusEffects", hudStatuses).newLine()
             .append("damageParticles", spawnDamageParticles).newLine()
             .append("healingParticles", spawnHealingParticles).newLine()
             .append("damageColour", damageColour).newLine()
@@ -340,6 +341,10 @@ public class Options {
                         hudTitles = parser.nextBoolean();
                         break;
 
+                    case "hudStatusEffects":
+                        hudStatuses = parser.nextBoolean();
+                        break;
+
                     case "damageParticles":
                         spawnDamageParticles = parser.nextBoolean();
                         break;
@@ -423,7 +428,7 @@ public class Options {
                         break;
                 
                     default:
-                        ProviHealthClient.LOGGER.warn("Unknown label \"" + label + "\" found in config.");
+                        ProviHealthClient.LOGGER.warn("Unknown label \"{}\" found in config.", label);
                         parser.skipValue();
                         break;
                 }

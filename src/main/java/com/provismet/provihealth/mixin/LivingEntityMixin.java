@@ -1,6 +1,13 @@
 package com.provismet.provihealth.mixin;
 
 import com.provismet.provihealth.util.HealthContainer;
+import com.provismet.provihealth.util.StatusEffectIdentifier;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.particle.EntityEffectParticleEffect;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.registry.entry.RegistryEntry;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -17,6 +24,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.world.World;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity implements IMixinLivingEntity {
@@ -36,6 +47,8 @@ public abstract class LivingEntityMixin extends Entity implements IMixinLivingEn
     @Shadow
     public abstract float getMaxHealth();
 
+    @Shadow @Final private static TrackedData<List<ParticleEffect>> POTION_SWIRLS;
+
     @Override
     public HealthContainer provi_Health$getHealthContainer () {
         return this.container;
@@ -44,6 +57,21 @@ public abstract class LivingEntityMixin extends Entity implements IMixinLivingEn
     @Override
     public HealthContainer provi_Health$getMountHealthContainer () {
         return this.mountContainer;
+    }
+
+    @Override
+    public List<RegistryEntry<StatusEffect>> provi_Health$getClientSideStatusEffects () {
+        List<ParticleEffect> particles = this.dataTracker.get(POTION_SWIRLS);
+        if (particles.isEmpty()) return List.of();
+
+        return particles.stream()
+            .filter(particle -> particle instanceof EntityEffectParticleEffect)
+            .map(particle -> StatusEffectIdentifier.fromParticleEffect((EntityEffectParticleEffect)particle))
+            .distinct()
+            .filter(Objects::nonNull)
+            .sorted(Comparator.comparing(effect -> effect.value().getName().getString()))
+            .sorted(Comparator.comparingInt(effect -> effect.value().getCategory().ordinal()))
+            .toList();
     }
 
     @Inject(method="tick", at=@At("TAIL"))

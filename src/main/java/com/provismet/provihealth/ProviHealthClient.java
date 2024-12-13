@@ -1,5 +1,6 @@
 package com.provismet.provihealth;
 
+import com.provismet.provihealth.util.StatusEffectIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +42,7 @@ public class ProviHealthClient implements ClientModInitializer {
 
         Options.load();
         Particles.register();
+        StatusEffectIdentifier.setup();
     }
     
 }

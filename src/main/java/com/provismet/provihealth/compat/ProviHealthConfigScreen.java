@@ -84,6 +84,12 @@ public class ProviHealthConfigScreen {
             .build()
         );
 
+        hud.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.hudStatuses"), Options.hudStatuses)
+            .setDefaultValue(true)
+            .setSaveConsumer(newValue -> Options.hudStatuses = newValue)
+            .build()
+        );
+
         hud.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.gradient"), Options.hudGradient)
             .setDefaultValue(false)
             .setTooltip(Text.translatable("tooltip.provihealth.gradient"))

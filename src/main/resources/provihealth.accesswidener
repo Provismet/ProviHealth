@@ -2,3 +2,4 @@ accessWidener v2 named
 
 accessible method net/minecraft/client/gui/DrawContext drawTexturedQuad (Ljava/util/function/Function;Lnet/minecraft/util/Identifier;IIIIFFFFI)V
 accessible field net/minecraft/client/gui/DrawContext vertexConsumers Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;
+accessible field net/minecraft/particle/EntityEffectParticleEffect color I
