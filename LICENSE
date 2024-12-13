@@ -1,6 +1,6 @@
-Lily License
+Lily License v1.1
 
-Copyright (c) 2023 Provismet
+Copyright (c) 2023-2024 Provismet
 
 0. Definitions
    - Software
@@ -44,10 +44,16 @@ Copyright (c) 2023 Provismet
       e) In the interest of preventing theft, fraud, or otherwise malicious activity, the copyright holder
          retains the right to revoke this permission from individuals or entities at any time.
 
-The above permissions and exemptions do not apply to files prominently noted as being exempt from these permissions
-or are held under a different license.
-Prominent notices for this purpose include comments at the head of a source file, or a list of exempt file names
-located in a NOTICE or README.
+      f) The original source form of the Modified-Software must be freely accessible on a public platform.
+            i) Access to the source form of the Modified-Software must be present on webpages distributing the
+               Modified-Software. This may be in the form of instructions on how to access the source form, or a
+               hyperlink to a public webpage that hosts the source form.
+
+The above permissions and exemptions apply to ALL files in the Software. The copyright holder may exempt individual
+files from these permissions, exemptions, or this license. Any such file must be prominently noted as such for this
+to apply.
+Prominent notices for this purpose include comments at the head of a source file, or a list of exempt file names or
+relative file paths located in a NOTICE or README.
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of
 the Software.
