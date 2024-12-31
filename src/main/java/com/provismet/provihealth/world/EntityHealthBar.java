@@ -6,6 +6,7 @@ import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
+import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -67,15 +68,15 @@ public class EntityHealthBar {
         RenderSystem.enableBlend();
 
         Matrix4f model = matrices.peek().getPositionMatrix();
-        renderBar(model, vertexConsumer, 1, 1f, false); // Empty
-        renderBar(model, vertexConsumer, 0, mixinState.provi_Health$getHealth().getLerped() / mixinState.provi_Health$getHealth().getMax(), false); // Health
+        renderBar(mixinState, model, vertexConsumer, 1, 1f, false); // Empty
+        renderBar(mixinState, model, vertexConsumer, 0, mixinState.provi_Health$getHealth().getLerped() / mixinState.provi_Health$getHealth().getMax(), false); // Health
 
         if (mixinState.provi_Health$getMountHealth() != null && mixinState.provi_Health$getMountHealth().getMax() > 0) {
             matrices.push();
             matrices.translate(0f, -1f * (7f / TEXTURE_SIZE), 0f);
             Matrix4f mountModel = matrices.peek().getPositionMatrix();
-            renderBar(mountModel, vertexConsumer, 1, 1f, true); // Empty
-            renderBar(mountModel, vertexConsumer, 0, mixinState.provi_Health$getMountHealth().getLerped() / mixinState.provi_Health$getMountHealth().getMax(), true); // Health
+            renderBar(mixinState, mountModel, vertexConsumer, 1, 1f, true); // Empty
+            renderBar(mixinState, mountModel, vertexConsumer, 0, mixinState.provi_Health$getMountHealth().getLerped() / mixinState.provi_Health$getMountHealth().getMax(), true); // Health
             matrices.pop();
         }
 
@@ -167,7 +168,7 @@ public class EntityHealthBar {
         return ((IMixinEntityRenderState)state).provi_Health$getLabel();
     }
 
-    private static void renderBar (Matrix4f model, VertexConsumer vertexConsumer, int index, float percentage, boolean isMount) {
+    private static void renderBar (IMixinEntityRenderState state, Matrix4f model, VertexConsumer vertexConsumer, int index, float percentage, boolean isMount) {
         percentage = MathHelper.clamp(percentage, 0f, 1f);
         if (isMount) percentage = MathHelper.lerp(percentage, 3f / TEXTURE_SIZE, 61f / TEXTURE_SIZE);
 
@@ -195,8 +196,16 @@ public class EntityHealthBar {
             vertexConsumer.vertex(model, MAX_X, MIN_Y, Z).texture(MAX_U, MIN_V); // Top-Right
         }
         else {
-            Vector3f colour = Options.WHITE;
-            if (index == 0) colour = Options.getBarColour(percentage, Options.unpackedStartWorld, Options.unpackedEndWorld, Options.worldGradient);
+            Vector3f colour;
+            var tintBackground = true; // TODO: ADD A CONFIG FOR THIS CONDITION
+            var useTeamColor = true;  // TODO: ADD A CONFIG FOR THIS CONDITION
+            if (!tintBackground && index == 0) {
+                colour = Options.WHITE;
+            } else if (useTeamColor && state.getScoreboardTeam() != null) {
+                colour = Vec3d.unpackRgb(state.getTeamColorValue()).toVector3f();
+            } else {
+                colour = Options.getBarColour(percentage, Options.unpackedStartWorld, Options.unpackedEndWorld, Options.worldGradient);
+            }
 
             vertexConsumer.vertex(model, MIN_X, MIN_Y, Z).texture(MIN_U, MIN_V).color(colour.x, colour.y, colour.z, 1f); // Top-Left
             vertexConsumer.vertex(model, MAX_X, MIN_Y, Z).texture(MAX_U, MIN_V).color(colour.x, colour.y, colour.z, 1f); // Top-Right
