@@ -86,6 +86,9 @@ public abstract class EntityRendererMixin {
             }
 
             mixinState.provi_Health$setMountHealth(((IMixinLivingEntity)living).provi_Health$getMountHealthContainer());
+
+            if (living.getScoreboardTeam() != null) mixinState.provi_Health$setTeamColour(living.getScoreboardTeam().getColor().getColorValue());
+            else mixinState.provi_Health$setTeamColour(null);
         }
     }
 }

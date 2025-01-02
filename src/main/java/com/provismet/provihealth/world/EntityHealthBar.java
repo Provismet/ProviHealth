@@ -202,8 +202,8 @@ public class EntityHealthBar {
             if (!Options.tintBackground && index == 1) {
                 colour = Options.WHITE;
             }
-            else if (Options.useTeamColours && state.getScoreboardTeam() != null && state.getScoreboardTeam().getColor().getColorValue() != null) {
-                colour = Vec3d.unpackRgb(state.getTeamColorValue()).toVector3f();
+            else if (Options.useTeamColours && state.provi_Health$getTeamColour() instanceof Integer teamColour) {
+                colour = Vec3d.unpackRgb(teamColour).toVector3f();
             }
             else {
                 colour = Options.getBarColour(healthPercentage, Options.unpackedStartWorld, Options.unpackedEndWorld, Options.worldGradient);
