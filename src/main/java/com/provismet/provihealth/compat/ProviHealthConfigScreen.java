@@ -193,6 +193,20 @@ public class ProviHealthConfigScreen {
             .build()
         );
 
+        health.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.tintBackground"), Options.tintBackground)
+            .setDefaultValue(false)
+            .setTooltip(Text.translatable("tooltip.provihealth.tintBackground"))
+            .setSaveConsumer(newValue -> Options.tintBackground = newValue)
+            .build()
+        );
+
+        health.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.teamColours"), Options.useTeamColours)
+            .setDefaultValue(false)
+            .setTooltip(Text.translatable("tooltip.provihealth.teamColours"))
+            .setSaveConsumer(newValue -> Options.useTeamColours = newValue)
+            .build()
+        );
+
         health.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.gradient"), Options.worldGradient)
             .setDefaultValue(false)
             .setTooltip(Text.translatable("tooltip.provihealth.gradient"))

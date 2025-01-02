@@ -170,6 +170,8 @@ public class EntityHealthBar {
 
     private static void renderBar (IMixinEntityRenderState state, Matrix4f model, VertexConsumer vertexConsumer, int index, float percentage, boolean isMount) {
         percentage = MathHelper.clamp(percentage, 0f, 1f);
+        float healthPercentage = percentage; // Just to decouple the colouring from the background image.
+        if (index == 1) percentage = 1f;
         if (isMount) percentage = MathHelper.lerp(percentage, 3f / TEXTURE_SIZE, 61f / TEXTURE_SIZE);
 
         // As of 1.21, the rendering was changed for whatever reason and the bars were facing in the wrong direction (which makes them invisible).
@@ -197,14 +199,14 @@ public class EntityHealthBar {
         }
         else {
             Vector3f colour;
-            var tintBackground = true; // TODO: ADD A CONFIG FOR THIS CONDITION
-            var useTeamColor = true;  // TODO: ADD A CONFIG FOR THIS CONDITION
-            if (!tintBackground && index == 0) {
+            if (!Options.tintBackground && index == 1) {
                 colour = Options.WHITE;
-            } else if (useTeamColor && state.getScoreboardTeam() != null) {
+            }
+            else if (Options.useTeamColours && state.getScoreboardTeam() != null && state.getScoreboardTeam().getColor().getColorValue() != null) {
                 colour = Vec3d.unpackRgb(state.getTeamColorValue()).toVector3f();
-            } else {
-                colour = Options.getBarColour(percentage, Options.unpackedStartWorld, Options.unpackedEndWorld, Options.worldGradient);
+            }
+            else {
+                colour = Options.getBarColour(healthPercentage, Options.unpackedStartWorld, Options.unpackedEndWorld, Options.worldGradient);
             }
 
             vertexConsumer.vertex(model, MIN_X, MIN_Y, Z).texture(MIN_U, MIN_V).color(colour.x, colour.y, colour.z, 1f); // Top-Left

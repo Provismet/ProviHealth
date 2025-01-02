@@ -52,6 +52,8 @@
     "entry.provihealth.healingAlpha": "Healing Particle Alpha",
     "entry.provihealth.compatHud": "HUD Paperdoll Render Mode",
     "entry.provihealth.hudStatuses": "Show Status Effects",
+    "entry.provihealth.tintBackground": "Tint Background",
+    "entry.provihealth.teamColours": "Use Team Colors",
 
     "enum.provihealth.full": "Full",
     "enum.provihealth.portrait_only": "Portrait Only",
@@ -88,6 +90,8 @@
     "tooltip.provihealth.compatWorld": "Uses a different rendering program for in-world health bars. Only turn this on if shaders are preventing the bars from rendering.\nWarning: This option disables any color-related settings for in-world health bars.",
     "tooltip.provihealth.hudTitles": "Allows other mods to show text under the HUD portrait.",
     "tooltip.provihealth.worldTitles": "Allows other mods to show text above the in-world health bars.",
+    "tooltip.provihealth.tintBackground": "Applies the bar color to the background as well.",
+    "tooltip.provihealth.teamColours": "Matches health bar color to the entity's team if applicable.\nTeam colors will override colors from other settings.",
 
     "entity.provihealth.unknownPlayer": "[Invisible Player]"
 }
