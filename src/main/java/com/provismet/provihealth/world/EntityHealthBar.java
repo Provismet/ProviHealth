@@ -1,6 +1,7 @@
 package com.provismet.provihealth.world;
 
 import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -75,8 +76,8 @@ public class EntityHealthBar {
         RenderSystem.enableBlend();
 
         Matrix4f model = matrices.peek().getPositionMatrix();
-        renderBar(model, vertexConsumer, 1, 1f, false); // Empty
-        renderBar(model, vertexConsumer, 0, ((IMixinLivingEntity)target).provihealth_glideHealth(tickDelta * Options.worldGlide), false); // Health
+        renderBar(target, model, vertexConsumer, 1, ((IMixinLivingEntity)target).provihealth_glideHealth(tickDelta * Options.worldGlide), false); // Empty
+        renderBar(target, model, vertexConsumer, 0, ((IMixinLivingEntity)target).provihealth_glideHealth(tickDelta * Options.worldGlide), false); // Health
 
         if (target.hasVehicle()) {
             float vehicleHealthDeep = 0f;
@@ -96,8 +97,8 @@ public class EntityHealthBar {
                 matrices.push();
                 matrices.translate(0f, -1f * (7f / TEXTURE_SIZE), 0f);
                 Matrix4f mountModel = matrices.peek().getPositionMatrix();
-                renderBar(mountModel, vertexConsumer, 1, 1f, true);
-                renderBar(mountModel, vertexConsumer, 0, ((IMixinLivingEntity)target).provihealth_glideVehicle(vehicleHealthPercent, tickDelta * Options.worldGlide), true);
+                renderBar(target, mountModel, vertexConsumer, 1, ((IMixinLivingEntity)target).provihealth_glideVehicle(vehicleHealthPercent, tickDelta * Options.worldGlide), true);
+                renderBar(target, mountModel, vertexConsumer, 0, ((IMixinLivingEntity)target).provihealth_glideVehicle(vehicleHealthPercent, tickDelta * Options.worldGlide), true);
                 matrices.pop();
             }
         }
@@ -190,7 +191,9 @@ public class EntityHealthBar {
         else return entity.getDisplayName();
     }
 
-    private static void renderBar (Matrix4f model, VertexConsumer vertexConsumer, int index, float percentage, boolean isMount) {
+    private static void renderBar (Entity entity, Matrix4f model, VertexConsumer vertexConsumer, int index, float percentage, boolean isMount) {
+        float healthPercentage = percentage; // Just to decouple the colouring from the background image.
+        if (index == 1) percentage = 1f;
         if (isMount) percentage = MathHelper.lerp(percentage, 3f / TEXTURE_SIZE, 61f / TEXTURE_SIZE);
 
         // As of 1.21, the rendering was changed for whatever reason and the bars were facing in the wrong direction (which makes them invisible).
@@ -217,8 +220,16 @@ public class EntityHealthBar {
             vertexConsumer.vertex(model, MAX_X, MIN_Y, Z).texture(MAX_U, MIN_V); // Top-Right
         }
         else {
-            Vector3f colour = Options.WHITE;
-            if (index == 0) colour = Options.getBarColour(percentage, Options.unpackedStartWorld, Options.unpackedEndWorld, Options.worldGradient);
+            Vector3f colour;
+            if (!Options.tintBackground && index == 1) {
+                colour = Options.WHITE;
+            }
+            else if (Options.useTeamColours && entity.getScoreboardTeam() != null && entity.getScoreboardTeam().getColor().getColorValue() != null) {
+                colour = Vec3d.unpackRgb(entity.getTeamColorValue()).toVector3f();
+            }
+            else {
+                colour = Options.getBarColour(healthPercentage, Options.unpackedStartWorld, Options.unpackedEndWorld, Options.worldGradient);
+            }
 
             vertexConsumer.vertex(model, MIN_X, MIN_Y, Z).texture(MIN_U, MIN_V).color(colour.x, colour.y, colour.z, 1f); // Top-Left
             vertexConsumer.vertex(model, MAX_X, MIN_Y, Z).texture(MAX_U, MIN_V).color(colour.x, colour.y, colour.z, 1f); // Top-Right

@@ -73,6 +73,8 @@ public class Options {
     public static boolean worldShadows = true;
     public static float worldOffsetY = 0f;
     public static boolean worldTitles = true;
+    public static boolean tintBackground = false;
+    public static boolean useTeamColours = false;
 
     public static boolean spawnDamageParticles = true;
     public static boolean spawnHealingParticles = false;
@@ -167,6 +169,8 @@ public class Options {
             .append("otherHealth", others.name()).newLine()
             .append("otherTarget", othersVisibilityOverride).newLine()
             .append("worldTitles", worldTitles).newLine()
+            .append("tintBackground", tintBackground).newLine()
+            .append("useTeamColours", useTeamColours).newLine()
             .append("bossHUD", bossHUD.name()).newLine()
             .append("hostileHUD", hostileHUD.name()).newLine()
             .append("playerHUD", playerHUD.name()).newLine()
@@ -326,6 +330,14 @@ public class Options {
 
                     case "worldTitles":
                         worldTitles = parser.nextBoolean();
+                        break;
+
+                    case "tintBackground":
+                        tintBackground = parser.nextBoolean();
+                        break;
+
+                    case "useTeamColours":
+                        useTeamColours = parser.nextBoolean();
                         break;
 
                     case "playerHUD":
