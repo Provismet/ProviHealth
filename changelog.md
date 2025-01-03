@@ -1,7 +1,5 @@
-## Additions
-- Health bars on the HUD now display the status effects of the target.
-  - Only status effects with visible particles are shown. Status effects with particles disabled are not displayed. 
-- Added a config option to toggle status effects on the health bar HUD.
+Minor patch that adds more versatility to in-world health bars.
 
-## Bugfixes
-- Fixed an issue that caused all nameplates to be permanently visible.
+## Additions
+- Added ability for health bar to match team colour. (ZsoltMolnarrr/Provismet)
+- Added ability for the background of a health bar to match the foreground colour. (ZsoltMolnarrr)
