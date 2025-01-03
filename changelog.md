@@ -1,6 +1,5 @@
-Patch update to address some visual inconsistencies.
+Minor patch that adds more versatility to in-world health bars.
 
-## Changes
-- In-World health bars no longer show when GUI is hidden (F1 mode).
-- In-World health bars no longer render past the fog border.
-  - The effects of blindness and darkness are considered fog. 
+## Additions
+- Added ability for health bar to match team colour. (ZsoltMolnarrr/Provismet)
+- Added ability for the background of a health bar to match the foreground colour. (ZsoltMolnarrr)
