@@ -1,0 +1,9 @@
+{
+  "pack": {
+    "pack_format": 34,
+    "supported_formats": [34, 999],
+    "description": {
+      "translate": "resource.provihealth.square_bars.description"
+    }
+  }
+}

@@ -1,6 +1,9 @@
 package com.provismet.provihealth;
 
 import com.provismet.provihealth.util.StatusEffectIdentifier;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
+import net.minecraft.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +28,11 @@ public class ProviHealthClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient () {
+        FabricLoader.getInstance().getModContainer(MODID).ifPresent(container -> {
+            ResourceManagerHelper.registerBuiltinResourcePack(identifier("rounded_bars"), container, Text.translatable("resource.provihealth.rounded_bars"), ResourcePackActivationType.NORMAL);
+            ResourceManagerHelper.registerBuiltinResourcePack(identifier("square_bars"), container, Text.translatable("resource.provihealth.square_bars"), ResourcePackActivationType.NORMAL);
+        });
+
         HudRenderCallback.EVENT.register(new TargetHealthBar());
 
         FabricLoader.getInstance().getEntrypointContainers(MODID, ProviHealthApi.class).forEach(
