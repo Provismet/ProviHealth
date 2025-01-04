@@ -93,5 +93,10 @@
     "tooltip.provihealth.tintBackground": "Applies the bar color to the background as well.",
     "tooltip.provihealth.teamColours": "Matches health bar color to the entity's team if applicable.\nTeam colors will override colors from other settings.",
 
-    "entity.provihealth.unknownPlayer": "[Invisible Player]"
+    "entity.provihealth.unknownPlayer": "[Invisible Player]",
+
+    "resource.provihealth.rounded_bars": "Rounded Bars",
+    "resource.provihealth.rounded_bars.description": "Round-styled healthbars.",
+    "resource.provihealth.square_bars": "Square Bars",
+    "resource.provihealth.square_bars.description": "Square-styled healthbars."
 }
