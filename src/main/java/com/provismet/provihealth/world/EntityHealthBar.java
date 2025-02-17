@@ -40,6 +40,8 @@ public class EntityHealthBar {
     private static final Identifier COMPAT_BARS = ProviHealthClient.identifier("textures/gui/healthbars/in_world_coloured.png");
     private static final float TEXTURE_SIZE = 64;
     private static final int LIGHT = LightmapTextureManager.pack(15, 15);
+    private static final int BACKGROUND_BAR_INDEX = 1;
+    private static final int FOREGROUND_BAR_INDEX = 0;
 
     public static void render (EntityRenderState state, MatrixStack matrices, VertexConsumerProvider vertexConsumers, Quaternionf rotation, TextRenderer textRenderer) {
         IMixinEntityRenderState mixinState = (IMixinEntityRenderState)state;
@@ -68,15 +70,15 @@ public class EntityHealthBar {
         RenderSystem.enableBlend();
 
         Matrix4f model = matrices.peek().getPositionMatrix();
-        renderBar(mixinState, model, vertexConsumer, 1, 1f, false); // Empty
-        renderBar(mixinState, model, vertexConsumer, 0, mixinState.provi_Health$getHealth().getLerped() / mixinState.provi_Health$getHealth().getMax(), false); // Health
+        renderBar(mixinState, model, vertexConsumer, BACKGROUND_BAR_INDEX, 1f, false); // Empty
+        renderBar(mixinState, model, vertexConsumer, FOREGROUND_BAR_INDEX, mixinState.provi_Health$getHealth().getLerped() / mixinState.provi_Health$getHealth().getMax(), false); // Health
 
         if (mixinState.provi_Health$getMountHealth() != null && mixinState.provi_Health$getMountHealth().getMax() > 0) {
             matrices.push();
             matrices.translate(0f, -1f * (7f / TEXTURE_SIZE), 0f);
             Matrix4f mountModel = matrices.peek().getPositionMatrix();
-            renderBar(mixinState, mountModel, vertexConsumer, 1, 1f, true); // Empty
-            renderBar(mixinState, mountModel, vertexConsumer, 0, mixinState.provi_Health$getMountHealth().getLerped() / mixinState.provi_Health$getMountHealth().getMax(), true); // Health
+            renderBar(mixinState, mountModel, vertexConsumer, BACKGROUND_BAR_INDEX, 1f, true); // Empty
+            renderBar(mixinState, mountModel, vertexConsumer, FOREGROUND_BAR_INDEX, mixinState.provi_Health$getMountHealth().getLerped() / mixinState.provi_Health$getMountHealth().getMax(), true); // Health
             matrices.pop();
         }
 
