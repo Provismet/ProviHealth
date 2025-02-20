@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import com.google.gson.stream.JsonReader;
@@ -119,7 +120,7 @@ public class Options {
     }
 
     public static HUDType getHUDFor (LivingEntity livingEntity) {
-        if (blacklistHUD.contains(EntityType.getId(livingEntity.getType()).toString())) return HUDType.NONE;
+        if (Options.isBlacklisted(livingEntity, BarType.HUD)) return HUDType.NONE;
         else if (livingEntity.getType().isIn(ConventionalEntityTypeTags.BOSSES)) return bossHUD;
         else if (livingEntity instanceof HostileEntity) return hostileHUD;
         else if (livingEntity instanceof PlayerEntity) return playerHUD;
@@ -135,6 +136,14 @@ public class Options {
             return colour;
         }
         else return start;
+    }
+
+    public static boolean isBlacklisted (Entity entity, @Nullable BarType barType) {
+        return switch (barType) {
+            case null -> false;
+            case WORLD -> Options.blacklist.contains(EntityType.getId(entity.getType()).toString());
+            case HUD -> Options.blacklistHUD.contains(EntityType.getId(entity.getType()).toString());
+        };
     }
 
     public static void save () {
@@ -478,6 +487,11 @@ public class Options {
             default:
                 return true;
         }
+    }
+
+    public enum BarType {
+        WORLD,
+        HUD;
     }
 
     public static enum VisibilityType {

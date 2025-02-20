@@ -1,6 +1,8 @@
 package com.provismet.provihealth.hud;
 
 import com.provismet.provihealth.interfaces.IMixinLivingEntity;
+import com.provismet.provihealth.util.HealthCalculator;
+import com.provismet.provihealth.util.HealthContainer;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
@@ -105,18 +107,8 @@ public class TargetHealthBar implements HudRenderCallback {
 
             float healthPercent = MathHelper.clamp(this.target.getHealth() / this.target.getMaxHealth(), 0f, 1f);
 
-            float vehicleHealthDeep = 0f;
-            float vehicleMaxHealthDeep = 0f;
-
-            Entity currentEntity = this.target.getVehicle();
-            while (currentEntity != null) {
-                if (currentEntity instanceof LivingEntity currentLiving) {
-                    vehicleHealthDeep += currentLiving.getHealth();
-                    vehicleMaxHealthDeep += currentLiving.getMaxHealth();
-                }
-                currentEntity = currentEntity.getVehicle();
-            }
-            float vehicleHealthPercent = vehicleMaxHealthDeep > 0f ? MathHelper.clamp(vehicleHealthDeep / vehicleMaxHealthDeep, 0f, 1f) : 0f;
+            HealthContainer mountHealth = HealthCalculator.getRecursiveMountHealth(target, Options.BarType.HUD);
+            float vehicleHealthPercent = mountHealth != null ? mountHealth.getPercentage() : 0f;
 
             int healthWidth = Math.round(BAR_WIDTH * healthPercent);
             int vehicleHealthWidth = Math.round(MOUNT_BAR_WIDTH * vehicleHealthPercent);
@@ -131,7 +123,7 @@ public class TargetHealthBar implements HudRenderCallback {
                 // Render bars
                 this.renderBar(drawContext, BAR_WIDTH, 1); // Empty space
                 this.renderBar(drawContext, glideHealth(healthWidth, tickDelta * Options.hudGlide), 0); // Health
-                if (vehicleMaxHealthDeep > 0f) {
+                if (mountHealth != null) {
                     this.renderMountBar(drawContext, MOUNT_BAR_WIDTH, 1); // Empty space
                     this.renderMountBar(drawContext, glideVehicleHealth(vehicleHealthWidth, tickDelta * Options.hudGlide), 0); // Health
                 }
@@ -149,7 +141,7 @@ public class TargetHealthBar implements HudRenderCallback {
                 }
 
                 // Render health value and heart icons
-                int offsetFromMountBar = (vehicleMaxHealthDeep > 0f ? MOUNT_BAR_HEIGHT : 0);
+                int offsetFromMountBar = (mountHealth != null ? MOUNT_BAR_HEIGHT : 0);
                 int healthX = drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("%d/%d", Math.round(this.target.getHealth()), Math.round(this.target.getMaxHealth())), infoLeftX, TEXT_BASE_Y + 1 + offsetFromMountBar, 0xFFFFFF, true); // Health Value
                 drawContext.drawTexture(RenderLayer::getGuiTextured, HEART, healthX, TEXT_BASE_Y + offsetFromMountBar, 0f, 0f, 9, 9, 9, 9, 9, 9);
 
@@ -160,8 +152,8 @@ public class TargetHealthBar implements HudRenderCallback {
                     drawContext.drawTexture(RenderLayer::getGuiTextured, ARMOUR, armourX, TEXT_BASE_Y + offsetFromMountBar, 0f, 0f, 9, 9, 9, 9, 9, 9);
                 }
 
-                if (vehicleMaxHealthDeep > 0f) {
-                    String mountHealthString = String.format("%d/%d", Math.round(vehicleHealthDeep), Math.round(vehicleMaxHealthDeep));
+                if (mountHealth != null) {
+                    String mountHealthString = String.format("%d/%d", Math.round(mountHealth.getCurrent()), Math.round(mountHealth.getMax()));
                     int mountHealthWidth = MinecraftClient.getInstance().textRenderer.getWidth(mountHealthString) + 9;
                     int expectedLeftPixel = BAR_X + BAR_WIDTH - mountHealthWidth - 3;
 

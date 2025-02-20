@@ -13,6 +13,11 @@ public final class HealthContainer {
         this.previousHealth = health;
     }
 
+    public HealthContainer (float health, float maxHealth) {
+        this(health);
+        this.maxHealth = maxHealth;
+    }
+
     public void setMaxHealth (float health) {
         this.maxHealth = health;
     }
@@ -20,6 +25,11 @@ public final class HealthContainer {
     public void set (float health) {
         this.previousHealth = this.currentHealth;
         this.currentHealth = health;
+    }
+
+    public void setFrom (HealthContainer other) {
+        this.set(other.currentHealth);
+        this.maxHealth = other.maxHealth;
     }
 
     public void lerp (float progress) {
@@ -40,5 +50,9 @@ public final class HealthContainer {
 
     public float getLerped () {
         return this.lerpedHealth;
+    }
+
+    public float getPercentage () {
+        return Math.clamp(this.currentHealth / this.maxHealth, 0f, 1f);
     }
 }

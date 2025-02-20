@@ -78,7 +78,7 @@ public abstract class EntityRendererMixin {
             // If another valid entity is riding this one, don't render a healthbar.
             if ((living.hasPassengers() &&
                 living.getFirstPassenger() instanceof LivingEntity livingRider &&
-                !Options.blacklist.contains(EntityType.getId(livingRider.getType()).toString())) ||
+                !Options.isBlacklisted(livingRider, Options.BarType.WORLD)) ||
                 living == MinecraftClient.getInstance().player ||
                 !Visibility.isVisible(living)
             ) {
