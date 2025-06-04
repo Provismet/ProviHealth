@@ -99,7 +99,10 @@ public class Options {
 
     public static boolean shouldRenderHealthFor (LivingEntity livingEntity) {
         if (blacklist.contains(EntityType.getId(livingEntity.getType()).toString())) return false;
-        if (livingEntity.distanceTo(MinecraftClient.getInstance().player) > Math.min(Options.maxRenderDistance, Math.max(RenderSystem.getShaderFog().end(), Options.maxRenderDistance))) return false;
+        var maxDistance = RenderSystem.getShaderFog().end();
+        if (maxDistance < 1)
+            maxDistance = Options.maxRenderDistance;
+        if (livingEntity.distanceTo(MinecraftClient.getInstance().player) > Math.min(Options.maxRenderDistance, maxDistance)) return false;
 
         Entity target = MinecraftClient.getInstance().targetedEntity;
         if (livingEntity.getType().isIn(ConventionalEntityTypeTags.BOSSES)) {
