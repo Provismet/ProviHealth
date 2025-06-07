@@ -2,6 +2,7 @@ package com.provismet.provihealth.hud;
 
 import com.provismet.provihealth.config.resources.EntityOptions;
 import com.provismet.provihealth.interfaces.IMixinLivingEntity;
+import com.provismet.provihealth.util.FunctionalUtilities;
 import com.provismet.provihealth.util.HealthCalculator;
 import com.provismet.provihealth.util.HealthContainer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
@@ -309,17 +310,33 @@ public class TargetHealthBar implements HudLayerRegistrationCallback, LayeredDra
         this.currentVehicleHealthWidth += (int)((float)(trueValue - this.currentVehicleHealthWidth) * MathHelper.clamp(glideFactor, 0.001f, 1f));
         return this.currentVehicleHealthWidth;
     }
-
+    
     private void renderBar (DrawContext drawContext, Identifier texture, int width, int barIndex) {
-        Vector3f barColour = Options.lerpBarColour((float)width / (float)BAR_WIDTH, barIndex == 1 ? Options.WHITE : Options.unpackedStartHud, Options.unpackedEndHud, barIndex == 0 && Options.hudGradient);
+        
+        Vector3f startColour;
+        LivingEntity entity = this.target;
+
+        // System.out.println(((IMixinLivingEntity)this.target).provi_Health$getAnger());
+
+        // CommandManager commandManager = Objects.requireNonNull(player.getServer()).getCommandManager();
+        //     ServerCommandSource commandSource = player.getServer().getCommandSource();
+        //     commandManager.executeWithPrefix(commandSource, command);
+
+
+        if (barIndex == 1) startColour = Options.WHITE;
+
+        else startColour = FunctionalUtilities.deduceColour(entity, true);
+
+        Vector3f barColour = Options.lerpBarColour((float)width / (float)BAR_WIDTH, startColour, Options.unpackedEndHud, barIndex == 0 && Options.hudGradient);
         if (Options.hudPosition == HUDPosition.LEFT) this.drawTexturedQuad(texture, drawContext, BAR_X, BAR_X + width, BAR_Y, BAR_Y + BAR_HEIGHT, 0, 0f, (float)width / (float)BAR_WIDTH, barIndex / 2f, BAR_V2 + barIndex / 2f, barColour);
         else this.drawHorizontallyMirroredTexturedQuad(texture, drawContext, BAR_X + (BAR_WIDTH - width), BAR_X + BAR_WIDTH, BAR_Y, BAR_Y + BAR_HEIGHT, 0, 0f, (float)width / (float)BAR_WIDTH, barIndex / 2f, BAR_V2 + barIndex / 2f, barColour);
     }
 
     private void renderMountBar (DrawContext drawContext, Identifier texture, int width, int barIndex) {
-        Vector3f barColour = Options.lerpBarColour((float)width / (float)MOUNT_BAR_WIDTH, barIndex == 1 ? Options.WHITE : Options.unpackedStartHud, Options.unpackedEndHud, barIndex == 0 && Options.hudGradient);
+        Vector3f barColour = Options.lerpBarColour((float)width / (float)MOUNT_BAR_WIDTH, barIndex == 1 ? Options.WHITE : Options.unpackedDefaultStartHud, Options.unpackedEndHud, barIndex == 0 && Options.hudGradient);
         if (Options.hudPosition == HUDPosition.LEFT) this.drawTexturedQuad(texture, drawContext, BAR_X, BAR_X + width, BAR_Y + BAR_HEIGHT, BAR_Y + BAR_HEIGHT + MOUNT_BAR_HEIGHT, 0, 0f, ((float)width / (float)MOUNT_BAR_WIDTH) * MOUNT_BAR_U2, MOUNT_BAR_V1 + barIndex / 2f, MOUNT_BAR_V2 + barIndex / 2f, barColour);
         else this.drawHorizontallyMirroredTexturedQuad(texture, drawContext, BAR_X + (MOUNT_BAR_WIDTH - width) + BAR_WIDTH_DIFF, BAR_X + BAR_WIDTH_DIFF + MOUNT_BAR_WIDTH, BAR_Y + BAR_HEIGHT, BAR_Y + BAR_HEIGHT + MOUNT_BAR_HEIGHT, 0, 0f, ((float)width / (float)MOUNT_BAR_WIDTH) * MOUNT_BAR_U2, MOUNT_BAR_V1 + barIndex / 2f, MOUNT_BAR_V2 + barIndex / 2f, barColour);
+
     }
 
     private void reset () {

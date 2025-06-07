@@ -1,27 +1,35 @@
 package com.provismet.provihealth.world;
 
-import com.provismet.provihealth.ProviHealthClient;
-import com.provismet.provihealth.config.Options;
-import com.provismet.provihealth.config.Options.SeeThroughText;
+import com.mojang.blaze3d.opengl.GlStateManager;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import com.provismet.provihealth.interfaces.IMixinEntityRenderState;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.font.TextRenderer.TextLayerType;
-import net.minecraft.client.render.LightmapTextureManager;
+import com.provismet.provihealth.interfaces.IMixinLivingEntity;
+import com.provismet.provihealth.util.FunctionalUtilities;
+
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import com.provismet.provihealth.ProviHealthClient;
+import com.provismet.provihealth.config.Options;
+import com.provismet.provihealth.config.Options.SeeThroughText;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.font.TextRenderer.TextLayerType;
+import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.List;
 
@@ -167,6 +175,10 @@ public class EntityHealthBar {
 
         final float Z = (float)index * -0.0001f;
 
+
+        Entity entity = state.provi_Health$getEntityType(); // Store to avoid constant calls in checks
+
+        
         Vector3f colour;
         if (!Options.tintBackground && index == 1) {
             colour = Options.WHITE;
@@ -174,9 +186,8 @@ public class EntityHealthBar {
         else if (Options.useTeamColours && state.provi_Health$getTeamColour() instanceof Integer teamColour) {
             colour = Vec3d.unpackRgb(teamColour).toVector3f();
         }
-        else {
-            colour = Options.lerpBarColour(healthPercentage, Options.unpackedStartWorld, Options.unpackedEndWorld, Options.worldGradient);
-        }
+
+        else colour = Options.lerpBarColour(healthPercentage, FunctionalUtilities.deduceColour((LivingEntity)entity, false), Options.unpackedEndWorld, isMount);
 
         int maxLight = 0xF000F0;
         vertexConsumer.vertex(model, MIN_X, MIN_Y, Z).texture(MIN_U, MIN_V).light(maxLight).color(colour.x, colour.y, colour.z, 1f); // Top-Left

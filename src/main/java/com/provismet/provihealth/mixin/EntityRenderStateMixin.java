@@ -3,6 +3,7 @@ package com.provismet.provihealth.mixin;
 import com.provismet.provihealth.interfaces.IMixinEntityRenderState;
 import com.provismet.provihealth.util.HealthContainer;
 import net.minecraft.client.render.entity.state.EntityRenderState;
+import net.minecraft.entity.Entity;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -35,6 +36,9 @@ public abstract class EntityRenderStateMixin implements IMixinEntityRenderState 
 
     @Unique
     private Integer teamColour = null;
+
+    @Unique
+    private Entity entityType;
 
     @Override
     public void provi_Health$setShouldRenderHealth (boolean value) {
@@ -77,6 +81,11 @@ public abstract class EntityRenderStateMixin implements IMixinEntityRenderState 
     }
 
     @Override
+    public void provi_Health$setEntityType (Entity entity) {
+        this.entityType = entity;
+    }
+
+    @Override
     public boolean provi_Health$shouldRenderHealth () {
         return this.shouldRenderHealth;
     }
@@ -109,6 +118,11 @@ public abstract class EntityRenderStateMixin implements IMixinEntityRenderState 
     @Override
     public Text provi_Health$getLabel () {
         return this.healthBarLabel;
+    }
+
+    @Override
+    public Entity provi_Health$getEntityType () {
+        return this.entityType;
     }
 
     @Override

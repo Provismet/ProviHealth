@@ -10,4 +10,5 @@ public interface IMixinLivingEntity {
     HealthContainer provi_Health$getHealthContainer ();
     HealthContainer provi_Health$getMountHealthContainer ();
     List<RegistryEntry<StatusEffect>> provi_Health$getClientSideStatusEffects ();
+    int provi_Health$getAnger ();
 }

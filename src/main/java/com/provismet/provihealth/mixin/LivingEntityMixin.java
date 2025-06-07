@@ -28,6 +28,7 @@ import net.minecraft.world.World;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity implements IMixinLivingEntity {
@@ -41,6 +42,12 @@ public abstract class LivingEntityMixin extends Entity implements IMixinLivingEn
     @Unique
     private HealthContainer mountContainer;
 
+    @Unique
+    private String[] instantKillMessages = {"INSTA-KILL!", "INSTANT KILL!", "DECIMATED!", "VAPORISED!", "ONE-HIT KILL!", "FATALITY!"};
+    
+    @Unique
+    private String[] deathMessages = {"Killed", "Boom", "Dead", "Eliminated", "Removed from Equation", "Finished"};
+
     @Shadow
     public abstract float getHealth();
 
@@ -48,6 +55,7 @@ public abstract class LivingEntityMixin extends Entity implements IMixinLivingEn
     public abstract float getMaxHealth();
 
     @Shadow @Final private static TrackedData<List<ParticleEffect>> POTION_SWIRLS;
+    // @Shadow protected int lastAttackTimer;
 
     @Override
     public HealthContainer provi_Health$getHealthContainer () {
@@ -74,6 +82,16 @@ public abstract class LivingEntityMixin extends Entity implements IMixinLivingEn
             .toList();
     }
 
+    // @Override
+    // public boolean provi_Health$isAngryAtPlayer () {
+    //     return this.lastAttackTimer > 0;
+    // }
+
+    // @Override
+    // public int provi_Health$getAnger () {
+    //     return this.lastAttackTimer;
+    // }
+
     @Inject(method="tick", at=@At("TAIL"))
     private void spawnParticles (CallbackInfo info) {
         if (this.container == null) this.container = new HealthContainer(this.getHealth());
@@ -86,7 +104,13 @@ public abstract class LivingEntityMixin extends Entity implements IMixinLivingEn
 
         final Entity cameraEntity = MinecraftClient.getInstance().getCameraEntity();
         if (cameraEntity != null && this != cameraEntity && this.distanceTo(MinecraftClient.getInstance().getCameraEntity()) <= Options.maxParticleDistance) {
-            if (this.container.getCurrent() < this.container.getPrevious() && Options.spawnDamageParticles) {
+            if (this.container.getCurrent() <= 0 && this.container.getPrevious() == this.container.getMax() && Options.spawnDamageParticles && Options.spawnKillText) {
+                this.getWorld().addParticleClient(new HealthParticleEffect(Options.unpackedDamage, Options.damageAlpha, Options.particleScale, Options.damageParticleTextColour, instantKillMessages[new Random().nextInt(instantKillMessages.length)]), this.getX(), this.getEyeY(), this.getZ(), 0f, 0f, 0f);
+            }
+            else if (this.container.getCurrent() <= 0 && this.container.getCurrent() < this.container.getPrevious() && Options.spawnDamageParticles && Options.spawnKillText) {
+                this.getWorld().addParticleClient(new HealthParticleEffect(Options.unpackedDamage, Options.damageAlpha, Options.particleScale * 1.5f, Options.damageParticleTextColour, deathMessages[new Random().nextInt(deathMessages.length)]), this.getX(), this.getEyeY(), this.getZ(), 0f, 0f, 0f);
+            }
+            else if (this.container.getCurrent() < this.container.getPrevious() && Options.spawnDamageParticles) {
                 this.getWorld().addParticleClient(new HealthParticleEffect(Options.unpackedDamage, Options.damageAlpha, Options.particleScale, Options.damageParticleTextColour, String.format("%d", (int)this.container.getPrevious() - (int)this.container.getCurrent())), this.getX(), this.getEyeY(), this.getZ(), 0f, 0f, 0f);
             }
             else if (this.container.getCurrent() > this.container.getPrevious() && Options.spawnHealingParticles) {

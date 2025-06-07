@@ -2,6 +2,8 @@ package com.provismet.provihealth.interfaces;
 
 import com.provismet.provihealth.util.HealthContainer;
 import net.minecraft.text.Text;
+import net.minecraft.entity.Entity;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -15,6 +17,7 @@ public interface IMixinEntityRenderState {
     void provi_Health$setShouldRenderLabel (boolean value);
     void provi_Health$setLabel (Text label);
     void provi_Health$setTeamColour (Integer colour);
+    void provi_Health$setEntityType (Entity entity);
 
     boolean provi_Health$shouldRenderHealth ();
     HealthContainer provi_Health$getHealth ();
@@ -23,5 +26,6 @@ public interface IMixinEntityRenderState {
     List<Text> provi_Health$getTitles ();
     boolean provi_Health$shouldRenderLabel ();
     Text provi_Health$getLabel ();
+    Entity provi_Health$getEntityType ();
     @Nullable Integer provi_Health$getTeamColour ();
 }

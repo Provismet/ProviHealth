@@ -68,6 +68,7 @@ public abstract class EntityRendererMixin {
             mixinState.provi_Health$setShouldRenderHealth(Options.shouldRenderHealthFor(living));
             mixinState.provi_Health$setIsLiving(true);
             mixinState.provi_Health$setShouldRenderLabel(this.hasLabel(entity, state.squaredDistanceToCamera));
+            mixinState.provi_Health$setEntityType(entity);
 
             if (entity.getDisplayName() != null) mixinState.provi_Health$setLabel(entity.getDisplayName());
             else mixinState.provi_Health$setLabel(entity.getName());

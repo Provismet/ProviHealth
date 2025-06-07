@@ -97,17 +97,42 @@ public class ProviHealthConfigScreen {
             .build()
         );
 
-        hud.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barStartColour"), Options.hudStartColour)
+        hud.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.aggressionColours"), Options.useHudAggressionColours)
+        .setDefaultValue(true)
+        .setTooltip(Text.translatable("tooltip.provihealth.aggressionColours"))
+        .setSaveConsumer(newValue -> Options.useHudAggressionColours = newValue)
+        .build()
+        );
+
+        hud.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barDefaultStartColour"), Options.hudDefaultStartColour)
             .setDefaultValue(0x00C100)
             .setSaveConsumer(newValue -> {
-                Options.hudStartColour = newValue;
-                Options.unpackedStartHud = Vec3d.unpackRgb(newValue).toVector3f();
+                Options.hudDefaultStartColour = newValue;
+                Options.unpackedDefaultStartHud = Vec3d.unpackRgb(newValue).toVector3f();
+            })
+            .build()
+        );
+
+        hud.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barNeutralStartColour"), Options.hudNeutralStartColour)
+            .setDefaultValue(0xF2D00C)
+            .setSaveConsumer(newValue -> {
+                Options.hudNeutralStartColour = newValue;
+                Options.unpackedNeutralStartHud = Vec3d.unpackRgb(newValue).toVector3f();
+            })
+            .build()
+        );
+
+        hud.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barHostileStartColour"), Options.hudHostileStartColour)
+            .setDefaultValue(0xFF0000)
+            .setSaveConsumer(newValue -> {
+                Options.hudHostileStartColour = newValue;
+                Options.unpackedHostileStartHud = Vec3d.unpackRgb(newValue).toVector3f();
             })
             .build()
         );
 
         hud.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barEndColour"), Options.hudEndColour)
-            .setDefaultValue(0xFF0000)
+            .setDefaultValue(0xBB0000)
             .setSaveConsumer(newValue -> {
                 Options.hudEndColour = newValue;
                 Options.unpackedEndHud = Vec3d.unpackRgb(newValue).toVector3f();
@@ -214,17 +239,42 @@ public class ProviHealthConfigScreen {
             .build()
         );
 
-        health.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barStartColour"), Options.worldStartColour)
+        health.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.aggressionColours"), Options.useWorldAggressionColours)
+        .setDefaultValue(true)
+        .setTooltip(Text.translatable("tooltip.provihealth.aggressionColours"))
+        .setSaveConsumer(newValue -> Options.useWorldAggressionColours = newValue)
+        .build()
+        );
+
+        health.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barDefaultStartColour"), Options.worldDefaultStartColour)
             .setDefaultValue(0x00C100)
             .setSaveConsumer(newValue -> {
-                Options.worldStartColour = newValue;
-                Options.unpackedStartWorld = Vec3d.unpackRgb(newValue).toVector3f();
+                Options.worldDefaultStartColour = newValue;
+                Options.unpackedDefaultStartWorld = Vec3d.unpackRgb(newValue).toVector3f();
+            })
+            .build()
+        );
+
+        health.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barNeutralStartColour"), Options.worldNeutralStartColour)
+            .setDefaultValue(0xF2D00C)
+            .setSaveConsumer(newValue -> {
+                Options.worldNeutralStartColour = newValue;
+                Options.unpackedNeutralStartWorld = Vec3d.unpackRgb(newValue).toVector3f();
+            })
+            .build()
+        );
+
+        health.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barHostileStartColour"), Options.worldHostileStartColour)
+            .setDefaultValue(0xFF0000)
+            .setSaveConsumer(newValue -> {
+                Options.worldHostileStartColour = newValue;
+                Options.unpackedHostileStartWorld = Vec3d.unpackRgb(newValue).toVector3f();
             })
             .build()
         );
 
         health.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barEndColour"), Options.worldEndColour)
-            .setDefaultValue(0xFF0000)
+            .setDefaultValue(0xBB0000)
             .setSaveConsumer(newValue -> {
                 Options.worldEndColour = newValue;
                 Options.unpackedEndWorld = Vec3d.unpackRgb(newValue).toVector3f();
@@ -303,6 +353,12 @@ public class ProviHealthConfigScreen {
         particles.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.healingParticles"), Options.spawnHealingParticles)
             .setDefaultValue(false)
             .setSaveConsumer(newValue -> Options.spawnHealingParticles = newValue)
+            .build()
+        );
+
+        particles.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.killText"), Options.spawnKillText)
+            .setDefaultValue(true)
+            .setSaveConsumer(newValue -> Options.spawnKillText = newValue)
             .build()
         );
 

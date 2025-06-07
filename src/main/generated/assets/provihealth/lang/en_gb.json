@@ -1,13 +1,18 @@
 {
-  "entry.provihealth.barEndColour": "Low Health Colour",
-  "entry.provihealth.barStartColour": "Full Health Colour",
   "entry.provihealth.damageColour": "Damage Particle Colour",
-  "entry.provihealth.damageParticleTextColour": "Damage Text Colour",
   "entry.provihealth.healingColour": "Healing Particle Colour",
+  "entry.provihealth.damageParticleTextColour": "Damage Text Colour",
   "entry.provihealth.healingParticleTextColour": "Healing Text Colour",
+  "entry.provihealth.barDefaultStartColour": "Full Default/Passive Mob Health Colour",
+  "entry.provihealth.barNeutralStartColour": "Full Neutral Mob Health Colour",
+  "entry.provihealth.barHostileStartColour": "Full Hostile Mob Health Colour",
+  "entry.provihealth.barEndColour": "Low Health Colour",
   "entry.provihealth.teamColours": "Use Team Colours",
-  "tooltip.provihealth.compatWorld": "Uses a different rendering program for in-world health bars. Only turn this on if shaders are preventing the bars from rendering.\nWarning: This option disables any colour-related settings for in-world health bars.",
+  "entry.provihealth.aggressionColours": "Use Entity Aggression Colours",
+
   "tooltip.provihealth.gradient": "Whether or not the health bar will change colour as it gets lower.\nTurning this off sets the bar colour to the starting value.",
+  "tooltip.provihealth.compatWorld": "Uses a different rendering program for in-world health bars. Only turn this on if shaders are preventing the bars from rendering.\nWarning: This option disables any colour-related settings for in-world health bars.",
+  "tooltip.provihealth.tintBackground": "Applies the bar colour to the background as well.",
   "tooltip.provihealth.teamColours": "Matches health bar colour to the entity's team if applicable.\nTeam colours will override colours from other settings.",
-  "tooltip.provihealth.tintBackground": "Applies the bar colour to the background as well."
+  "tooltip.provihealth.aggressionColours": "Matches health bar colour to the entity aggression type/level.\nAngered and Hostile mobs will use the Hostile aggression colours.\nNon-angered and Untamed Neutral/Angerable mobs will use the Neutral aggression colours\nPassive mobs will use the default colour.\nIf turned off, all mobs use the default colour."
 }

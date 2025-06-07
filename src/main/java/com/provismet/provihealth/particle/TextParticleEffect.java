@@ -15,7 +15,8 @@ import net.minecraft.particle.ParticleType;
 public record TextParticleEffect (float scale, int textColour, String text) implements ParticleEffect {
     private final static Codec<String> TEXT_CODEC = Codec.string(1, 8).validate(text -> {
         try {
-            Integer.valueOf(text);
+            // Integer.valueOf(text);
+            // String.valueOf(text);
             return DataResult.success(text);
         } catch (Exception e) {
             return DataResult.error(() -> "Text must be an integer: " + text);
