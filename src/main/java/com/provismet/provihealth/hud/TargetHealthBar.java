@@ -363,7 +363,7 @@ public class TargetHealthBar implements HudElement {
         this.drawEntity(
             context,
             OFFSET_X,
-            OFFSET_Y - 24,
+            OFFSET_Y - 50,
             OFFSET_X + FRAME_LENGTH,
             OFFSET_Y + FRAME_LENGTH,
             30,
