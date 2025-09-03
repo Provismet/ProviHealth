@@ -44,8 +44,6 @@ import java.util.List;
 public class TargetHealthBar implements HudElement {
     public static final Identifier HEALTHBAR_LAYER = ProviHealthClient.identifier("healthbar_layer");
 
-    public static boolean disabledLabels = false;
-
     private static final Identifier COMPAT_BARS = ProviHealthClient.identifier("textures/gui/healthbars/bars_coloured.png");
     private static final Identifier HEART = ProviHealthClient.identifier("textures/gui/healthbars/icons/heart.png");
     private static final Identifier MOUNT_HEART = ProviHealthClient.identifier("textures/gui/healthbars/icons/mount_heart.png");
@@ -359,7 +357,6 @@ public class TargetHealthBar implements HudElement {
         else renderHeight = this.target.getEyeHeight(this.target.getPose()) + 0.8f;
 
         context.enableScissor(OFFSET_X, OFFSET_Y, OFFSET_X + FRAME_LENGTH, OFFSET_Y + FRAME_LENGTH);
-        disabledLabels = true;
         this.drawEntity(
             context,
             OFFSET_X,
@@ -371,7 +368,6 @@ public class TargetHealthBar implements HudElement {
             rotation,
             this.target
         );
-        disabledLabels = false;
         context.disableScissor();
     }
 

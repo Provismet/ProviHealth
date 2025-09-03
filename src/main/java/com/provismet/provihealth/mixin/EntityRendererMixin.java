@@ -43,7 +43,7 @@ public abstract class EntityRendererMixin {
 
     @Inject(method="renderLabelIfPresent", at=@At("HEAD"), cancellable=true)
     private void cancelLabel (EntityRenderState state, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo info) {
-        if (TargetHealthBar.disabledLabels || (Options.overrideLabels &&  ((IMixinEntityRenderState)state).provi_Health$shouldRenderHealth())) info.cancel();
+        if (Options.overrideLabels &&  ((IMixinEntityRenderState)state).provi_Health$shouldRenderHealth()) info.cancel();
     }
 
     @Inject(method="render", at=@At("HEAD"))
