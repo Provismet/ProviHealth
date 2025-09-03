@@ -4,6 +4,7 @@ import com.provismet.provihealth.ProviHealthClient;
 import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.config.Options.SeeThroughText;
 import com.provismet.provihealth.interfaces.IMixinEntityRenderState;
+import com.provismet.provihealth.util.ColourHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
@@ -175,7 +176,7 @@ public class EntityHealthBar {
             colour = Vec3d.unpackRgb(teamColour).toVector3f();
         }
         else {
-            colour = Options.lerpBarColour(healthPercentage, Options.unpackedStartWorld, Options.unpackedEndWorld, Options.worldGradient);
+            colour = ColourHelper.lerpBarColour(healthPercentage, Options.unpackedStartWorld, Options.unpackedEndWorld, Options.worldGradient);
         }
 
         int maxLight = 0xF000F0;

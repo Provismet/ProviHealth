@@ -73,6 +73,7 @@ public class TextParticle extends SpriteBillboardParticle {
 
     @Override
     public void renderCustom (MatrixStack matrices, VertexConsumerProvider vertexConsumers, Camera camera, float tickDelta) {
+        // TODO: Nothing renders right now
         super.renderCustom(matrices, vertexConsumers, camera, tickDelta);
 
         matrices.push();

@@ -87,8 +87,8 @@ public class Options {
     public static Vector3f unpackedHealing = Vec3d.unpackRgb(healingColour).toVector3f();
     public static float particleScale = 0.25f;
     public static boolean particleTextShadow = true;
-    public static int damageParticleTextColour = 0xFFFFFF;
-    public static int healingParticleTextColour = 0xFFFFFF;
+    public static int damageParticleTextColour = 0xFFFFFFFF;
+    public static int healingParticleTextColour = 0xFFFFFFFF;
     public static DamageParticleType particleType = DamageParticleType.RISING;
     public static float maxParticleDistance = 16f;
     public static float damageAlpha = 1f;
@@ -99,10 +99,9 @@ public class Options {
 
     public static boolean shouldRenderHealthFor (LivingEntity livingEntity) {
         if (blacklist.contains(EntityType.getId(livingEntity.getType()).toString())) return false;
-        var maxDistance = RenderSystem.getShaderFog().end();
-        if (maxDistance < 1)
-            maxDistance = Options.maxRenderDistance;
-        if (livingEntity.distanceTo(MinecraftClient.getInstance().player) > Math.min(Options.maxRenderDistance, maxDistance)) return false;
+//        float maxDistance = RenderSystem.getShaderFog().length();
+//        if (maxDistance < 1) maxDistance = Options.maxRenderDistance;
+//        if (livingEntity.distanceTo(MinecraftClient.getInstance().player) > Math.min(Options.maxRenderDistance, maxDistance)) return false;
 
         Entity target = MinecraftClient.getInstance().targetedEntity;
         if (livingEntity.getType().isIn(ConventionalEntityTypeTags.BOSSES)) {
@@ -121,17 +120,6 @@ public class Options {
             if (othersVisibilityOverride && livingEntity == target) return true;
             return shouldRenderHealthFor(others, livingEntity);
         }
-    }
-
-    public static Vector3f lerpBarColour (float percentage, Vector3f start, Vector3f end, boolean shouldGradient) {
-        if (shouldGradient) {
-            Vector3f colour = new Vector3f();
-            colour.x = MathHelper.lerp(percentage, end.x, start.x);
-            colour.y = MathHelper.lerp(percentage, end.y, start.y);
-            colour.z = MathHelper.lerp(percentage, end.z, start.z);
-            return colour;
-        }
-        else return start;
     }
 
     public static boolean isBlacklisted (Entity entity, @Nullable BarType barType) {
