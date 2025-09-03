@@ -29,7 +29,6 @@ import com.provismet.provihealth.config.Options.HUDPortraitCompatMode;
 import com.provismet.provihealth.config.Options.HUDPosition;
 import com.provismet.provihealth.config.Options.HUDType;
 import com.provismet.provihealth.util.Visibility;
-import com.provismet.provihealth.world.EntityHealthBar;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -127,7 +126,7 @@ public class TargetHealthBar implements HudElement {
         }
 
         final int nameWidth = MinecraftClient.getInstance().textRenderer.getWidth(this.getName(this.target));
-        if (hudType == HUDType.FULL) {
+        if (hudType.showBars) {
             // Render bars
             Identifier healthbarTexture = entityOptions.getHealthBar(this.target);
             this.renderBar(drawContext, healthbarTexture, BAR_WIDTH, 1); // Empty space
@@ -137,10 +136,10 @@ public class TargetHealthBar implements HudElement {
                 this.renderMountBar(drawContext, healthbarTexture, glideVehicleHealth(vehicleHealthWidth, tickDelta * Options.hudGlide), 0); // Health
             }
 
+            // Render entity group icon
             int infoLeftX = LEFT_TEXT_X;
             ItemStack icon = entityOptions.getIcon(this.target);
             if (Options.hudPosition == HUDPosition.LEFT) {
-                // Render entity group icon
                 int expectedNameX = LEFT_TEXT_X + nameWidth + 2; // Starting point + width + 2 pixels of free space.
                 if (icon != null && Options.showHudIcon) drawContext.drawItem(icon, Math.max(BAR_X + BAR_WIDTH - 16, expectedNameX), BAR_Y - 16);
             }
@@ -162,6 +161,7 @@ public class TargetHealthBar implements HudElement {
                 drawContext.drawTexture(RenderPipelines.GUI_TEXTURED, ARMOUR, armourX, TEXT_BASE_Y + offsetFromMountBar, 0f, 0f, 9, 9, 9, 9, 9, 9);
             }
 
+            // Render mount health icon/text if necessary
             if (mountHealth != null) {
                 String mountHealthString = String.format("%d/%d", Math.round(mountHealth.getCurrent()), Math.round(mountHealth.getMax()));
                 int mountHealthWidth = MinecraftClient.getInstance().textRenderer.getWidth(mountHealthString) + 9;
@@ -185,31 +185,30 @@ public class TargetHealthBar implements HudElement {
                     }
                 }
             }
+        }
 
-            // Render titles on HUD
-            if (Options.hudTitles) {
-                List<Text> titles = ElementRegistry.getTitle(this.target, false, true).reversed();
+        if (Options.hudTitles && hudType.showTitles) {
+            List<Text> titles = ElementRegistry.getTitle(this.target, false, true).reversed();
 
-                int titleX = 5;
-                int titleY = OFFSET_Y + FRAME_LENGTH + 5;
+            int titleX = 5;
+            int titleY = OFFSET_Y + FRAME_LENGTH + 5;
 
-                if (Options.hudPosition == HUDPosition.LEFT) {
-                    for (Text title : titles) {
-                        drawContext.drawText(MinecraftClient.getInstance().textRenderer, title, titleX, titleY, Colors.WHITE, true);
-                        titleY += 10;
-                    }
+            if (Options.hudPosition == HUDPosition.LEFT) {
+                for (Text title : titles) {
+                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, title, titleX, titleY, Colors.WHITE, true);
+                    titleY += 10;
                 }
-                else {
-                    for (Text title : titles) {
-                        titleX = MinecraftClient.getInstance().getWindow().getScaledWidth() - 10 - MinecraftClient.getInstance().textRenderer.getWidth(title);
-                        drawContext.drawText(MinecraftClient.getInstance().textRenderer, title, titleX, titleY, Colors.WHITE, true);
-                        titleY += 10;
-                    }
+            }
+            else {
+                for (Text title : titles) {
+                    titleX = MinecraftClient.getInstance().getWindow().getScaledWidth() - 10 - MinecraftClient.getInstance().textRenderer.getWidth(title);
+                    drawContext.drawText(MinecraftClient.getInstance().textRenderer, title, titleX, titleY, Colors.WHITE, true);
+                    titleY += 10;
                 }
             }
         }
 
-        if (hudType != HUDType.NONE) {
+        if (hudType.showPortrait) {
             // Render Portrait
             if (Options.hudPosition == HUDPosition.LEFT) {
                 this.drawTexturedQuad(entityOptions.getBorder(this.target), drawContext, 0, OFFSET_Y, BACKGROUND_Z, 48f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Background
@@ -236,30 +235,7 @@ public class TargetHealthBar implements HudElement {
                 this.target.headYaw = Options.hudPosition.portraitYAW;
                 this.target.lastHeadYaw = Options.hudPosition.portraitYAW;
 
-                float renderHeight;
-                if (this.target.getEyeHeight(EntityPose.STANDING) >= this.target.getHeight() * 0.6) {
-                    renderHeight = this.target.getEyeHeight(this.target.getPose()) + 0.5f;
-                    if (renderHeight < 1f) renderHeight = 1f;
-                }
-                else renderHeight = this.target.getEyeHeight(this.target.getPose()) + 0.8f;
-
-                drawContext.enableScissor(OFFSET_X, OFFSET_Y, OFFSET_X + FRAME_LENGTH, OFFSET_Y + FRAME_LENGTH);
-                EntityHealthBar.enabled = false;
-                disabledLabels = true;
-                this.drawEntity(
-                    drawContext,
-                    OFFSET_X,
-                    OFFSET_Y - 20,
-                    OFFSET_X + FRAME_LENGTH,
-                    OFFSET_Y + FRAME_LENGTH,
-                    25f,
-                    new Vector3f(0f, renderHeight, 0f),
-                    (new Quaternionf()).rotateZ(3.1415927f),
-                    this.target
-                );
-                EntityHealthBar.enabled = true;
-                disabledLabels = false;
-                drawContext.disableScissor();
+                this.drawEntity(drawContext, (new Quaternionf()).rotateZ(3.1415927f));
 
                 this.target.headYaw = prevTargetHeadYaw;
                 this.target.lastHeadYaw = prevPrevTargetHeadYaw;
@@ -268,31 +244,7 @@ public class TargetHealthBar implements HudElement {
             }
             else if (Options.HUDCompat == HUDPortraitCompatMode.COMPAT) {
                 float yawOffset = -(Options.hudPosition.portraitYAW - this.target.getBodyYaw()) / MathHelper.DEGREES_PER_RADIAN;
-
-                float renderHeight;
-                if (this.target.getEyeHeight(EntityPose.STANDING) >= this.target.getHeight() * 0.6) {
-                    renderHeight = this.target.getEyeHeight(this.target.getPose()) + 0.5f;
-                    if (renderHeight < 1f) renderHeight = 1f;
-                }
-                else renderHeight = this.target.getEyeHeight(this.target.getPose()) + 0.8f;
-
-                drawContext.enableScissor(OFFSET_X, OFFSET_Y, OFFSET_X + FRAME_LENGTH, OFFSET_Y + FRAME_LENGTH);
-                EntityHealthBar.enabled = false;
-                disabledLabels = true;
-                this.drawEntity(
-                    drawContext,
-                    24 + OFFSET_X,
-                    OFFSET_Y,
-                    OFFSET_X + 74,
-                    OFFSET_Y + 78,
-                    20f,
-                    new Vector3f(0f, renderHeight, 0f),
-                    (new Quaternionf()).rotateZ(3.1415927f).rotateY(yawOffset),
-                    this.target
-                );
-                EntityHealthBar.enabled = true;
-                disabledLabels = false;
-                drawContext.disableScissor();
+                this.drawEntity(drawContext, (new Quaternionf()).rotateZ(3.1415927f).rotateY(yawOffset));
             }
         }
     }
@@ -363,7 +315,7 @@ public class TargetHealthBar implements HudElement {
     /**
      * Recreation of DrawContext#drawTexturedQuad that allows for changing the layering order (z-axis).
      *
-     * @param texture
+     * @param texture The location of the texture to draw.
      * @param context The DrawContext to get rendering data from.
      * @param x1 The screen-coordinate of the leftmost pixel.
      * @param x2 The screen-coordinate of the rightmost pixel.
@@ -396,6 +348,31 @@ public class TargetHealthBar implements HudElement {
     private int drawTextAndGetWidth (DrawContext context, String text, int x, int y, int colour, boolean shadow) {
         context.drawText(MinecraftClient.getInstance().textRenderer, text, x, y, ColorHelper.fullAlpha(colour), shadow);
         return x + MinecraftClient.getInstance().textRenderer.getWidth(text);
+    }
+
+    private void drawEntity (DrawContext context, Quaternionf rotation) {
+        float renderHeight;
+        if (this.target.getEyeHeight(EntityPose.STANDING) >= this.target.getHeight() * 0.6) {
+            renderHeight = this.target.getEyeHeight(this.target.getPose()) + 0.5f;
+            if (renderHeight < 1f) renderHeight = 1f;
+        }
+        else renderHeight = this.target.getEyeHeight(this.target.getPose()) + 0.8f;
+
+        context.enableScissor(OFFSET_X, OFFSET_Y, OFFSET_X + FRAME_LENGTH, OFFSET_Y + FRAME_LENGTH);
+        disabledLabels = true;
+        this.drawEntity(
+            context,
+            OFFSET_X,
+            OFFSET_Y - 24,
+            OFFSET_X + FRAME_LENGTH,
+            OFFSET_Y + FRAME_LENGTH,
+            30,
+            new Vector3f(0f, renderHeight, 0f),
+            rotation,
+            this.target
+        );
+        disabledLabels = false;
+        context.disableScissor();
     }
 
     private void drawEntity (

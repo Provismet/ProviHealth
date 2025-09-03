@@ -27,8 +27,6 @@ import org.joml.Vector3f;
 import java.util.List;
 
 public class EntityHealthBar {
-    public static boolean enabled = true;
-
     private static final Identifier BARS = ProviHealthClient.identifier("textures/gui/healthbars/in_world.png");
     private static final float TEXTURE_SIZE = 64;
     private static final int LIGHT = LightmapTextureManager.pack(15, 15);
@@ -37,7 +35,7 @@ public class EntityHealthBar {
 
     public static void render (EntityRenderState state, MatrixStack matrices, VertexConsumerProvider vertexConsumers, Quaternionf rotation, TextRenderer textRenderer) {
         IMixinEntityRenderState mixinState = (IMixinEntityRenderState)state;
-        if (!enabled || !mixinState.provi_Health$isLiving() || !mixinState.provi_Health$shouldRenderHealth() || !MinecraftClient.isHudEnabled()) return;
+        if (!mixinState.provi_Health$isLiving() || !mixinState.provi_Health$shouldRenderHealth() || !MinecraftClient.isHudEnabled()) return;
 
         matrices.push();
         matrices.translate(0f, state.height + 0.45f - (0.003f / Options.worldHealthBarScale) + Options.worldOffsetY, 0f);

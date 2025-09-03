@@ -330,9 +330,19 @@ public class Options {
     }
 
     public static enum HUDType {
-        NONE,
-        PORTRAIT_ONLY,
-        FULL;
+        NONE(false, false, false),
+        PORTRAIT_ONLY(true, false, false),
+        FULL(true, true, true);
+
+        public final boolean showPortrait;
+        public final boolean showBars;
+        public final boolean showTitles;
+
+        HUDType (boolean showPortrait, boolean showBars, boolean showTitles) {
+            this.showPortrait = showPortrait;
+            this.showBars = showBars;
+            this.showTitles = showTitles;
+        }
 
         @Override
         public String toString () {
