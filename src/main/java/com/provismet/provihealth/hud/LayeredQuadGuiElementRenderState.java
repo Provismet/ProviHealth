@@ -46,13 +46,12 @@ public record LayeredQuadGuiElementRenderState (
     }
 
     @Override
-    public void setupVertices (VertexConsumer vertices, float depth) {
-        float combinedZ = this.z + depth;
-
-        vertices.vertex(matrices, (float)x1, (float)y1, combinedZ).texture(u1, v1).color(colour.x, colour.y, colour.z, 1f);
-        vertices.vertex(matrices, (float)x1, (float)y2, combinedZ).texture(u1, v2).color(colour.x, colour.y, colour.z, 1f);
-        vertices.vertex(matrices, (float)x2, (float)y2, combinedZ).texture(u2, v2).color(colour.x, colour.y, colour.z, 1f);
-        vertices.vertex(matrices, (float)x2, (float)y1, combinedZ).texture(u2, v1).color(colour.x, colour.y, colour.z, 1f);
+    public void setupVertices (VertexConsumer vertices) {
+        // TODO: How to control layering?
+        vertices.vertex(matrices, (float)x1, (float)y1).texture(u1, v1).color(colour.x, colour.y, colour.z, 1f);
+        vertices.vertex(matrices, (float)x1, (float)y2).texture(u1, v2).color(colour.x, colour.y, colour.z, 1f);
+        vertices.vertex(matrices, (float)x2, (float)y2).texture(u2, v2).color(colour.x, colour.y, colour.z, 1f);
+        vertices.vertex(matrices, (float)x2, (float)y1).texture(u2, v1).color(colour.x, colour.y, colour.z, 1f);
     }
 
     @Nullable

@@ -1,43 +1,41 @@
 package com.provismet.provihealth.hud;
 
+import com.provismet.provihealth.ProviHealthClient;
+import com.provismet.provihealth.config.Options;
+import com.provismet.provihealth.config.Options.HUDPortraitCompatMode;
+import com.provismet.provihealth.config.Options.HUDPosition;
+import com.provismet.provihealth.config.Options.HUDType;
 import com.provismet.provihealth.config.resources.EntityOptions;
 import com.provismet.provihealth.interfaces.IMixinEntityRenderState;
 import com.provismet.provihealth.interfaces.IMixinLivingEntity;
 import com.provismet.provihealth.util.ColourHelper;
 import com.provismet.provihealth.util.HealthCalculator;
 import com.provismet.provihealth.util.HealthContainer;
+import com.provismet.provihealth.util.Visibility;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.entity.EntityRenderManager;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.texture.TextureSetup;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-
-import com.provismet.provihealth.ProviHealthClient;
-import com.provismet.provihealth.config.Options;
-import com.provismet.provihealth.config.Options.HUDPortraitCompatMode;
-import com.provismet.provihealth.config.Options.HUDPosition;
-import com.provismet.provihealth.config.Options.HUDType;
-import com.provismet.provihealth.util.Visibility;
-
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 
 import java.util.List;
 
@@ -382,7 +380,7 @@ public class TargetHealthBar implements HudElement {
         Quaternionf rotation,
         LivingEntity entity
     ) {
-        EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
+        EntityRenderManager entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
         EntityRenderer<? super LivingEntity, ?> entityRenderer = entityRenderDispatcher.getRenderer(entity);
         EntityRenderState state = entityRenderer.getAndUpdateRenderState(entity, 1.0F);
         state.hitbox = null;

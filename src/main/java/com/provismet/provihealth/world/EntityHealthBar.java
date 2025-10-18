@@ -4,36 +4,33 @@ import com.provismet.provihealth.ProviHealthClient;
 import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.config.Options.SeeThroughText;
 import com.provismet.provihealth.interfaces.IMixinEntityRenderState;
-import com.provismet.provihealth.util.ColourHelper;
+import com.provismet.provihealth.util.HealthContainer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import org.joml.Matrix4f;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 import java.util.List;
+import java.util.Optional;
 
 public class EntityHealthBar {
+    public static final float TEXTURE_SIZE = 64;
     private static final Identifier BARS = ProviHealthClient.identifier("textures/gui/healthbars/in_world.png");
-    private static final float TEXTURE_SIZE = 64;
     private static final int LIGHT = LightmapTextureManager.pack(15, 15);
     private static final int BACKGROUND_BAR_INDEX = 1;
     private static final int FOREGROUND_BAR_INDEX = 0;
 
-    public static void render (EntityRenderState state, MatrixStack matrices, VertexConsumerProvider vertexConsumers, Quaternionf rotation, TextRenderer textRenderer) {
+    public static void render (EntityRenderState state, MatrixStack matrices, OrderedRenderCommandQueue queue, Quaternionf rotation, TextRenderer textRenderer) {
         IMixinEntityRenderState mixinState = (IMixinEntityRenderState)state;
         if (!mixinState.provi_Health$isLiving() || !mixinState.provi_Health$shouldRenderHealth() || !MinecraftClient.isHudEnabled()) return;
 
@@ -43,19 +40,11 @@ public class EntityHealthBar {
         matrices.translate(0f, (mixinState.provi_Health$shouldRenderLabel() && !Options.overrideLabels && !(state.invisible || (state instanceof LivingEntityRenderState livingState && livingState.invisibleToPlayer)) ? 0.02f + 0.3f / Options.worldHealthBarScale : 0f), 0f);
         matrices.multiply(rotation); // This is the problem.
 
-        RenderLayer layer = RenderLayer.getText(BARS); // WHY DOES THIS FIX THE IRIS ISSUE?!
-        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(layer);
-
-        Matrix4f model = matrices.peek().getPositionMatrix();
-        renderBar(mixinState, model, vertexConsumer, BACKGROUND_BAR_INDEX, 1f, false); // Empty
-        renderBar(mixinState, model, vertexConsumer, FOREGROUND_BAR_INDEX, mixinState.provi_Health$getHealth().getLerped() / mixinState.provi_Health$getHealth().getMax(), false); // Health
-
+        renderBars(mixinState, matrices, queue, false);
         if (mixinState.provi_Health$getMountHealth() != null && mixinState.provi_Health$getMountHealth().getMax() > 0) {
             matrices.push();
             matrices.translate(0f, -1f * (7f / TEXTURE_SIZE), 0f);
-            Matrix4f mountModel = matrices.peek().getPositionMatrix();
-            renderBar(mixinState, mountModel, vertexConsumer, BACKGROUND_BAR_INDEX, 1f, true); // Empty
-            renderBar(mixinState, mountModel, vertexConsumer, FOREGROUND_BAR_INDEX, mixinState.provi_Health$getMountHealth().getLerped() / mixinState.provi_Health$getMountHealth().getMax(), true); // Health
+            renderBars(mixinState, matrices, queue, true);
             matrices.pop();
         }
 
@@ -63,7 +52,6 @@ public class EntityHealthBar {
         if (Options.showTextInWorld) {
             matrices.push();
             matrices.scale(0.01f, -0.01f, 0.01f);
-            Matrix4f textModel = matrices.peek().getPositionMatrix();
             final String healthString = String.format("%d/%d", Math.round(mixinState.provi_Health$getHealth().getCurrent()), Math.round(mixinState.provi_Health$getHealth().getMax()));
             final float lineHeight = 9;
 
@@ -93,30 +81,29 @@ public class EntityHealthBar {
                 if (mixinState.provi_Health$shouldRenderLabel() && !state.sneaking && Options.seeThroughTextType != SeeThroughText.NONE) {
                     if (Options.seeThroughTextType == SeeThroughText.STANDARD) {
                         if (Options.worldShadows) {
-                            EntityHealthBar.renderFullText(textRenderer, targetName, healthString, titles, nameX + 1, nameY + 1, healthX + 1, healthY + 1, lineHeight, 1, 0xFF404040, false, textModel, vertexConsumers, TextLayerType.NORMAL, LIGHT);
+                            EntityHealthBar.renderFullText(textRenderer, targetName, healthString, titles, nameX + 1, nameY + 1, healthX + 1, healthY + 1, lineHeight, 1, 0xFF404040, false, matrices, queue, TextLayerType.NORMAL, LIGHT);
                         }
 
                         matrices.translate(0, 0, 0.03f);
-                        textModel = matrices.peek().getPositionMatrix();
-                        EntityHealthBar.renderFullText(textRenderer, targetName, healthString, titles, nameX, nameY, healthX, healthY, lineHeight, 0, 0xFFFFFFFF, false, textModel, vertexConsumers, TextLayerType.SEE_THROUGH, LIGHT);
+                        EntityHealthBar.renderFullText(textRenderer, targetName, healthString, titles, nameX, nameY, healthX, healthY, lineHeight, 0, Colors.WHITE, false, matrices, queue, TextLayerType.SEE_THROUGH, LIGHT);
                     }
                     else { // SeeThroughText.FULL
-                        EntityHealthBar.renderFullText(textRenderer, targetName, healthString, titles, nameX, nameY, healthX, healthY, lineHeight, 0, 0xFFFFFFFF, Options.worldShadows, textModel, vertexConsumers, TextLayerType.SEE_THROUGH, LIGHT);
+                        EntityHealthBar.renderFullText(textRenderer, targetName, healthString, titles, nameX, nameY, healthX, healthY, lineHeight, 0, Colors.WHITE, Options.worldShadows, matrices, queue, TextLayerType.SEE_THROUGH, LIGHT);
                     }
                 }
                 else {
-                    EntityHealthBar.renderFullText(textRenderer, targetName, healthString, titles, nameX, nameY, healthX, healthY, lineHeight, 0, 0xFFFFFFFF, Options.worldShadows, textModel, vertexConsumers, TextLayerType.NORMAL, LIGHT);
+                    EntityHealthBar.renderFullText(textRenderer, targetName, healthString, titles, nameX, nameY, healthX, healthY, lineHeight, 0, Colors.WHITE, Options.worldShadows, matrices, queue, TextLayerType.NORMAL, LIGHT);
                 }
             }
             else {
-                textRenderer.draw(healthString, -(textRenderer.getWidth(healthString)) / 2f, -lineHeight, 0xFFFFFFFF, Options.worldShadows, textModel, vertexConsumers, TextLayerType.NORMAL, 0, LIGHT);
+                queue.submitText(matrices, -(textRenderer.getWidth(healthString)) / 2f, -lineHeight, Text.literal(healthString).asOrderedText(), Options.worldShadows, TextLayerType.NORMAL, LIGHT, Colors.WHITE, 0, 0);
 
                 float titleX;
                 float titleY = -lineHeight;
                 for (Text title : titles) {
                     titleX = -textRenderer.getWidth(title) / 2f;
                     titleY -= lineHeight;
-                    textRenderer.draw(title, titleX, titleY, 0xFFFFFFFF, Options.worldShadows, textModel, vertexConsumers, TextLayerType.NORMAL, 0, LIGHT);
+                    queue.submitText(matrices, titleX, titleY, title.asOrderedText(), Options.worldShadows, TextLayerType.NORMAL, LIGHT, 0xFFFFFFFF, 0, 0);
                 }
             }
             matrices.pop();
@@ -125,16 +112,16 @@ public class EntityHealthBar {
         matrices.pop();
     }
 
-    private static void renderFullText (TextRenderer textRenderer, Text name, String health, List<Text> titles, float nameX, float nameY, float healthX, float healthY, float titleLineHeight, float titleLineOffset, int colour, boolean shadow, Matrix4f model, VertexConsumerProvider vertexes, TextLayerType layerType, int light) {
-        textRenderer.draw(name, nameX, nameY, colour, shadow, model, vertexes, layerType, 0, light);
-        textRenderer.draw(health, healthX, healthY, colour, shadow, model, vertexes, layerType, 0, light);
+    private static void renderFullText (TextRenderer textRenderer, Text name, String health, List<Text> titles, float nameX, float nameY, float healthX, float healthY, float titleLineHeight, float titleLineOffset, int colour, boolean shadow, MatrixStack matrices, OrderedRenderCommandQueue queue, TextLayerType layerType, int light) {
+        queue.submitText(matrices, nameX, nameY, name.asOrderedText(), shadow, layerType, light, colour, 0, 0);
+        queue.submitText(matrices, healthX, healthY, Text.literal(health).asOrderedText(), shadow, layerType, light, colour, 0, 0);
 
         float titleX;
         float titleY = nameY;
         for (Text title : titles) {
             titleX = titleLineOffset - (textRenderer.getWidth(title) / 2f);
             titleY -= titleLineHeight;
-            textRenderer.draw(title, titleX, titleY, colour, shadow, model, vertexes, layerType, 0, light);
+            queue.submitText(matrices, titleX, titleY, title.asOrderedText(), shadow, layerType, light, colour, 0, 0);
         }
     }
 
@@ -143,44 +130,29 @@ public class EntityHealthBar {
         return ((IMixinEntityRenderState)state).provi_Health$getLabel();
     }
 
-    private static void renderBar (IMixinEntityRenderState state, Matrix4f model, VertexConsumer vertexConsumer, int index, float percentage, boolean isMount) {
-        percentage = MathHelper.clamp(percentage, 0f, 1f);
-        float healthPercentage = percentage; // Just to decouple the colouring from the background image.
-        if (index == 1) percentage = 1f;
-        if (isMount) percentage = MathHelper.lerp(percentage, 3f / TEXTURE_SIZE, 61f / TEXTURE_SIZE);
+    private static void renderBars (IMixinEntityRenderState state, MatrixStack matrices, OrderedRenderCommandQueue queue, boolean isMount) {
+        Optional<Integer> teamColour = Optional.ofNullable(state.provi_Health$getTeamColour());
+        HealthContainer container = isMount ? state.provi_Health$getMountHealth() : state.provi_Health$getHealth();
 
-        // As of 1.21, the rendering was changed for whatever reason and the bars were facing in the wrong direction (which makes them invisible).
-        // This method now renders them backwards because simply rotating them was causing even more issues.
-
-        // All U and V values are a percentage.
-        final float MIN_U = 1f - percentage; // Leftmost pixel
-        final float MIN_V = ((index * 12f) / TEXTURE_SIZE) + (isMount ? 7f / TEXTURE_SIZE : 0f); // Topmost pixel
-        final float MAX_U = 1f; // Rightmost pixel
-        final float MAX_V = MIN_V + (isMount ? 5f : 7f) / TEXTURE_SIZE; // Bottommost pixel
-
-        // X and Y are block coordinates relative to the matrix shenanigans.
-        final float MAX_X = -0.5f; // Pushes the bar half a block to the left, centering it.
-        final float MIN_X = MAX_X + percentage;
-        final float MIN_Y = 0f;
-        final float MAX_Y = -1f * ((isMount ? 5f : 7f) / TEXTURE_SIZE); // Mount bar is 5 pixels tall, Health bar is 7 pixels tall.
-
-        final float Z = (float)index * -0.0001f;
-
-        Vector3f colour;
-        if (!Options.tintBackground && index == 1) {
-            colour = Options.WHITE;
-        }
-        else if (Options.useTeamColours && state.provi_Health$getTeamColour() instanceof Integer teamColour) {
-            colour = Vec3d.unpackRgb(teamColour).toVector3f();
-        }
-        else {
-            colour = ColourHelper.lerpBarColour(healthPercentage, Options.unpackedStartWorld, Options.unpackedEndWorld, Options.worldGradient);
-        }
-
-        int maxLight = 0xF000F0;
-        vertexConsumer.vertex(model, MIN_X, MIN_Y, Z).texture(MIN_U, MIN_V).light(maxLight).color(colour.x, colour.y, colour.z, 1f); // Top-Left
-        vertexConsumer.vertex(model, MAX_X, MIN_Y, Z).texture(MAX_U, MIN_V).light(maxLight).color(colour.x, colour.y, colour.z, 1f); // Top-Right
-        vertexConsumer.vertex(model, MAX_X, MAX_Y, Z).texture(MAX_U, MAX_V).light(maxLight).color(colour.x, colour.y, colour.z, 1f); // Bottom-Right
-        vertexConsumer.vertex(model, MIN_X, MAX_Y, Z).texture(MIN_U, MAX_V).light(maxLight).color(colour.x, colour.y, colour.z, 1f); // Bottom-Left
+        queue.submitCustom(
+            matrices,
+            RenderLayer.getText(BARS),
+            new RenderableHealthBar(
+                teamColour,
+                BACKGROUND_BAR_INDEX,
+                1f,
+                isMount
+            )
+        );
+        queue.submitCustom(
+            matrices,
+            RenderLayer.getText(BARS),
+            new RenderableHealthBar(
+                teamColour,
+                FOREGROUND_BAR_INDEX,
+                container.getLerped() / container.getMax(),
+                isMount
+            )
+        );
     }
 }

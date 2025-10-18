@@ -1,7 +1,7 @@
 package com.provismet.provihealth.util;
 
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.particle.EntityEffectParticleEffect;
+import net.minecraft.particle.EffectParticleEffect;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.ColorHelper;
@@ -12,7 +12,7 @@ import java.util.Map;
 public abstract class StatusEffectIdentifier {
     private static final Map<Integer, RegistryEntry<StatusEffect>> colourToEffect = new HashMap<>();
 
-    public static RegistryEntry<StatusEffect> fromParticleEffect (EntityEffectParticleEffect particleEffect) {
+    public static RegistryEntry<StatusEffect> fromParticleEffect (EffectParticleEffect particleEffect) {
         return colourToEffect.getOrDefault(particleEffect.color, null);
     }
 

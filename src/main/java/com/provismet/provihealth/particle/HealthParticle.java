@@ -1,25 +1,19 @@
 package com.provismet.provihealth.particle;
 
 import com.provismet.lilylib.util.MoreMath;
-import com.provismet.provihealth.ProviHealthClient;
 import com.provismet.provihealth.config.Options;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.particle.BillboardParticle;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
-import net.minecraft.client.particle.ParticleTextureSheet;
-import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
-import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 
-public class HealthParticle extends SpriteBillboardParticle {
+public class HealthParticle extends BillboardParticle {
     private final String text;
     private final float rotationSpeed;
     private final float maxScale;
@@ -27,8 +21,8 @@ public class HealthParticle extends SpriteBillboardParticle {
 
     private float prevScale;
 
-    protected HealthParticle (ClientWorld clientWorld, double x, double y, double z, HealthParticleEffect particleEffect) {
-        super(clientWorld, x, y, z);
+    protected HealthParticle (ClientWorld clientWorld, double x, double y, double z, HealthParticleEffect particleEffect, SpriteProvider provider) {
+        super(clientWorld, x, y, z, provider.getFirst());
 
         this.red = particleEffect.colour().x();
         this.green = particleEffect.colour().y();
@@ -95,8 +89,8 @@ public class HealthParticle extends SpriteBillboardParticle {
         if (this.age > this.maxAge / 2) this.scale -= this.maxScale / (this.maxAge / 2f);
         else if (this.scale < this.maxScale) this.scale += this.maxScale / 5f;
 
-        this.lastAngle = this.angle;
-        this.angle += this.rotationSpeed;
+        this.lastZRotation = this.zRotation;
+        this.zRotation += this.rotationSpeed;
 
         if (Options.particleType == Options.DamageParticleType.GRAVITY) {
             if (this.onGround) {
@@ -109,8 +103,8 @@ public class HealthParticle extends SpriteBillboardParticle {
     }
 
     @Override
-    public ParticleTextureSheet getType () {
-        return ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
+    protected RenderType getRenderType () {
+        return RenderType.PARTICLE_ATLAS_TRANSLUCENT;
     }
 
     @Override
@@ -147,9 +141,9 @@ public class HealthParticle extends SpriteBillboardParticle {
         }
 
         @Override
-        public Particle createParticle (HealthParticleEffect particleEffect, ClientWorld clientWorld, double x, double y, double z, double velX, double velY, double velZ) {
-            HealthParticle textParticle = new HealthParticle(clientWorld, x, y, z, particleEffect);
-            textParticle.setSprite(this.spriteProvider);
+        public Particle createParticle (HealthParticleEffect particleEffect, ClientWorld clientWorld, double x, double y, double z, double velX, double velY, double velZ, Random random) {
+            HealthParticle textParticle = new HealthParticle(clientWorld, x, y, z, particleEffect, this.spriteProvider);
+            textParticle.updateSprite(this.spriteProvider);
             return textParticle;
         }
 

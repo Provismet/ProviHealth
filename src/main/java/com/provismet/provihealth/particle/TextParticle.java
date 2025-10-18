@@ -2,29 +2,22 @@ package com.provismet.provihealth.particle;
 
 import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.config.Options.DamageParticleType;
-
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.ParticleTextureSheet;
-import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
-import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 
-public class TextParticle extends SpriteBillboardParticle {
+public class TextParticle extends Particle {
     private final String text;
     private final float maxScale;
     private final int textColour;
-    private final TextRenderer textRenderer;
 
+    private float scale;
     private float prevScale;
 
     protected TextParticle (ClientWorld clientWorld, double x, double y, double z, double velocityX, double velocityY, double velocityZ, TextParticleEffect particleEffect) {
@@ -35,7 +28,6 @@ public class TextParticle extends SpriteBillboardParticle {
         this.textColour = particleEffect.textColour();
         this.text = particleEffect.text();
         this.maxAge = 40;
-        this.textRenderer = MinecraftClient.getInstance().textRenderer;
         this.maxScale = particleEffect.scale();
 
         this.lastX = this.x;
@@ -67,45 +59,40 @@ public class TextParticle extends SpriteBillboardParticle {
         }
 	}
 
+//    @Override
+//    public void renderCustom (MatrixStack matrices, VertexConsumerProvider vertexConsumers, Camera camera, float tickDelta) {
+//        super.renderCustom(matrices, vertexConsumers, camera, tickDelta);
+//
+//        matrices.push();
+//        float dX = (float)(MathHelper.lerp(tickDelta, this.lastX, this.x) - camera.getPos().getX());
+//        float dY = (float)(MathHelper.lerp(tickDelta, this.lastY, this.y) - camera.getPos().getY());
+//        float dZ = (float)(MathHelper.lerp(tickDelta, this.lastZ, this.z) - camera.getPos().getZ());
+//
+//        matrices.translate(dX, dY, dZ);
+//        matrices.multiply(camera.getRotation());
+//        float scaleSize = this.getSize(tickDelta) / 6f;
+//        matrices.scale(scaleSize, -scaleSize, scaleSize);
+//
+//        this.textRenderer.draw(
+//            this.text,
+//            0f, 0f,
+//            this.textColour,
+//            Options.particleTextShadow,
+//            matrices.peek().getPositionMatrix(),
+//            vertexConsumers,
+//            TextRenderer.TextLayerType.POLYGON_OFFSET,
+//            0,
+//            this.getBrightness(tickDelta)
+//        );
+//        matrices.pop();
+//    }
+
     @Override
-    public void render (VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
+    public ParticleTextureSheet textureSheet () {
+        return TextParticleRenderer.PARTICLE_TEXTURE_SHEET;
     }
 
     @Override
-    public void renderCustom (MatrixStack matrices, VertexConsumerProvider vertexConsumers, Camera camera, float tickDelta) {
-        // TODO: Nothing renders right now
-        super.renderCustom(matrices, vertexConsumers, camera, tickDelta);
-
-        matrices.push();
-        float dX = (float)(MathHelper.lerp(tickDelta, this.lastX, this.x) - camera.getPos().getX());
-        float dY = (float)(MathHelper.lerp(tickDelta, this.lastY, this.y) - camera.getPos().getY());
-        float dZ = (float)(MathHelper.lerp(tickDelta, this.lastZ, this.z) - camera.getPos().getZ());
-
-        matrices.translate(dX, dY, dZ);
-        matrices.multiply(camera.getRotation());
-        float scaleSize = this.getSize(tickDelta) / 6f;
-        matrices.scale(scaleSize, -scaleSize, scaleSize);
-
-        this.textRenderer.draw(
-            this.text,
-            0f, 0f,
-            this.textColour,
-            Options.particleTextShadow,
-            matrices.peek().getPositionMatrix(),
-            vertexConsumers,
-            TextRenderer.TextLayerType.POLYGON_OFFSET,
-            0,
-            this.getBrightness(tickDelta)
-        );
-        matrices.pop();
-    }
-
-    @Override
-    public ParticleTextureSheet getType () {
-        return ParticleTextureSheet.CUSTOM;
-    }
-
-   @Override
     public int getBrightness (float tint) {
         return LightmapTextureManager.pack(15, 15);
     }
@@ -118,7 +105,6 @@ public class TextParticle extends SpriteBillboardParticle {
         return this.textColour;
     }
 
-    @Override
     public float getSize (float tickDelta) {
         return MathHelper.lerp(tickDelta, this.prevScale, this.scale);
     }
@@ -132,18 +118,12 @@ public class TextParticle extends SpriteBillboardParticle {
     }
 
     public static class Factory implements ParticleFactory<TextParticleEffect> {
-        private final SpriteProvider spriteProvider;
-
-        public Factory (SpriteProvider spriteProvider) {
-            this.spriteProvider = spriteProvider;
-        }
+        public Factory (SpriteProvider spriteProvider) {}
 
         @Override
-        public Particle createParticle (TextParticleEffect particleEffect, ClientWorld clientWorld, double x, double y, double z, double velX, double velY, double velZ) {
-            TextParticle textParticle = new TextParticle(clientWorld, x, y, z, velX, velY, velZ, particleEffect);
-            textParticle.setSprite(this.spriteProvider);
-            return textParticle;
+        public Particle createParticle (TextParticleEffect particleEffect, ClientWorld clientWorld, double x, double y, double z, double velX, double velY, double velZ, Random random) {
+            return new TextParticle(clientWorld, x, y, z, velX, velY, velZ, particleEffect);
         }
-    
+
     }
 }
