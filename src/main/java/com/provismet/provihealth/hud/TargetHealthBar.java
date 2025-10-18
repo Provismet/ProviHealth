@@ -17,6 +17,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.gui.render.state.TexturedQuadGuiElementRenderState;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.entity.EntityRenderManager;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -57,8 +59,6 @@ public class TargetHealthBar implements HudElement {
     private static final int LEFT_TEXT_X = FRAME_LENGTH + 2;
     private static int BAR_X = FRAME_LENGTH - 5;
     private static int BAR_Y = OFFSET_Y + FRAME_LENGTH / 2 - (BAR_HEIGHT + MOUNT_BAR_HEIGHT) / 2;
-    private static final int FOREGROUND_Z = 300;
-    private static final int BACKGROUND_Z = 0;
 
     private static int TEXT_BASE_Y = BAR_Y + BAR_HEIGHT + 1;
 
@@ -205,17 +205,13 @@ public class TargetHealthBar implements HudElement {
         }
 
         if (hudType.showPortrait) {
-            // Render Portrait
+            // Render Portrait Background and Text (foreground comes later)
             if (Options.hudPosition == HUDPosition.LEFT) {
-                this.drawTexturedQuad(entityOptions.getBorder(this.target), drawContext, 0, OFFSET_Y, BACKGROUND_Z, 48f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Background
-                this.drawTexturedQuad(entityOptions.getBorder(this.target), drawContext, 0, OFFSET_Y, FOREGROUND_Z, 0f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Foreground
-
+                this.drawTexturedWhiteQuad(entityOptions.getBorder(this.target), drawContext, 0, OFFSET_Y, 48f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Background
                 drawContext.drawText(MinecraftClient.getInstance().textRenderer, this.getName(this.target), LEFT_TEXT_X, BAR_Y - BAR_HEIGHT, Colors.WHITE, true); // Name
             }
             else {
-                this.drawHorizontallyMirroredTexturedQuad(entityOptions.getBorder(this.target), drawContext, OFFSET_X, OFFSET_X + FRAME_LENGTH, OFFSET_Y, OFFSET_Y + FRAME_LENGTH, BACKGROUND_Z, 0.5f, 1f, 0f, 1f, Colors.WHITE); // Background
-                this.drawHorizontallyMirroredTexturedQuad(entityOptions.getBorder(this.target), drawContext, OFFSET_X, OFFSET_X + FRAME_LENGTH, OFFSET_Y, OFFSET_Y + FRAME_LENGTH, FOREGROUND_Z, 0f, 0.5f, 0f, 1f, Colors.WHITE); // Foreground
-
+                this.drawHorizontallyMirroredTexturedQuad(entityOptions.getBorder(this.target), drawContext, OFFSET_X, OFFSET_X + FRAME_LENGTH, OFFSET_Y, OFFSET_Y + FRAME_LENGTH, 0.5f, 1f, 0f, 1f, Colors.WHITE); // Background
                 drawContext.drawText(MinecraftClient.getInstance().textRenderer, this.getName(this.target), OFFSET_X - 1 - nameWidth, BAR_Y - BAR_HEIGHT, Colors.WHITE, true); // Name
             }
 
@@ -242,6 +238,14 @@ public class TargetHealthBar implements HudElement {
                 float yawOffset = -(Options.hudPosition.portraitYAW - this.target.getBodyYaw()) / MathHelper.DEGREES_PER_RADIAN;
                 this.drawEntity(drawContext, (new Quaternionf()).rotateZ(3.1415927f).rotateY(yawOffset));
             }
+
+            // Draw portrait background.
+            if (Options.hudPosition == HUDPosition.LEFT) {
+                this.drawTexturedWhiteQuad(entityOptions.getBorder(this.target), drawContext, 0, OFFSET_Y, 0f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH);
+            }
+            else {
+                this.drawHorizontallyMirroredTexturedQuad(entityOptions.getBorder(this.target), drawContext, OFFSET_X, OFFSET_X + FRAME_LENGTH, OFFSET_Y, OFFSET_Y + FRAME_LENGTH, 0f, 0.5f, 0f, 1f, Colors.WHITE); // Foreground
+            }
         }
     }
 
@@ -263,13 +267,13 @@ public class TargetHealthBar implements HudElement {
     private void renderBar (DrawContext drawContext, Identifier texture, int width, int barIndex) {
         int barColour = ColourHelper.lerpBarColour((float)width / (float)BAR_WIDTH, barIndex == 1 ? Colors.WHITE : Options.hudStartColour, Options.hudEndColour, barIndex == 0 && Options.hudGradient);
         if (Options.hudPosition == HUDPosition.LEFT) drawContext.drawTexturedQuad(RenderPipelines.GUI_TEXTURED, texture, BAR_X, BAR_X + width, BAR_Y, BAR_Y + BAR_HEIGHT, 0f, (float)width / (float)BAR_WIDTH, barIndex / 2f, BAR_V2 + barIndex / 2f, barColour);
-        else this.drawHorizontallyMirroredTexturedQuad(texture, drawContext, BAR_X + (BAR_WIDTH - width), BAR_X + BAR_WIDTH, BAR_Y, BAR_Y + BAR_HEIGHT, 0, 0f, (float)width / (float)BAR_WIDTH, barIndex / 2f, BAR_V2 + barIndex / 2f, barColour);
+        else this.drawHorizontallyMirroredTexturedQuad(texture, drawContext, BAR_X + (BAR_WIDTH - width), BAR_X + BAR_WIDTH, BAR_Y, BAR_Y + BAR_HEIGHT, 0f, (float)width / (float)BAR_WIDTH, barIndex / 2f, BAR_V2 + barIndex / 2f, barColour);
     }
 
     private void renderMountBar (DrawContext drawContext, Identifier texture, int width, int barIndex) {
         int barColour = ColourHelper.lerpBarColour((float)width / (float)MOUNT_BAR_WIDTH, barIndex == 1 ? Colors.WHITE : Options.hudStartColour, Options.hudEndColour, barIndex == 0 && Options.hudGradient);
         if (Options.hudPosition == HUDPosition.LEFT) drawContext.drawTexturedQuad(RenderPipelines.GUI_TEXTURED, texture, BAR_X, BAR_X + width, BAR_Y + BAR_HEIGHT, BAR_Y + BAR_HEIGHT + MOUNT_BAR_HEIGHT, 0f, ((float)width / (float)MOUNT_BAR_WIDTH) * MOUNT_BAR_U2, MOUNT_BAR_V1 + barIndex / 2f, MOUNT_BAR_V2 + barIndex / 2f, barColour);
-        else this.drawHorizontallyMirroredTexturedQuad(texture, drawContext, BAR_X + (MOUNT_BAR_WIDTH - width) + BAR_WIDTH_DIFF, BAR_X + BAR_WIDTH_DIFF + MOUNT_BAR_WIDTH, BAR_Y + BAR_HEIGHT, BAR_Y + BAR_HEIGHT + MOUNT_BAR_HEIGHT, 0, 0f, ((float)width / (float)MOUNT_BAR_WIDTH) * MOUNT_BAR_U2, MOUNT_BAR_V1 + barIndex / 2f, MOUNT_BAR_V2 + barIndex / 2f, barColour);
+        else this.drawHorizontallyMirroredTexturedQuad(texture, drawContext, BAR_X + (MOUNT_BAR_WIDTH - width) + BAR_WIDTH_DIFF, BAR_X + BAR_WIDTH_DIFF + MOUNT_BAR_WIDTH, BAR_Y + BAR_HEIGHT, BAR_Y + BAR_HEIGHT + MOUNT_BAR_HEIGHT, 0f, ((float)width / (float)MOUNT_BAR_WIDTH) * MOUNT_BAR_U2, MOUNT_BAR_V1 + barIndex / 2f, MOUNT_BAR_V2 + barIndex / 2f, barColour);
     }
 
     private void reset () {
@@ -300,12 +304,12 @@ public class TargetHealthBar implements HudElement {
         }
     }
 
-    private void drawHorizontallyMirroredTexturedQuad (Identifier texture, DrawContext context, int x1, int x2, int y1, int y2, int z, float u1, float u2, float v1, float v2, int colour) {
-        this.drawTexturedZQuad(texture, context, x1, x2, y1, y2, z, u2, u1, v1, v2, ColorHelper.toVector(colour));
+    private void drawHorizontallyMirroredTexturedQuad (Identifier texture, DrawContext context, int x1, int x2, int y1, int y2, float u1, float u2, float v1, float v2, int colour) {
+        this.drawTexturedQuad(texture, context, x1, x2, y1, y2, u2, u1, v1, v2, colour);
     }
 
-    private void drawTexturedQuad (Identifier texture, DrawContext context, int x, int y, int z, float u, float v, int width, int height, int textureWidth, int textureHeight) {
-        this.drawTexturedZQuad(texture, context, x, x + width, y, y + height, z, u / (float)textureWidth, (u + (float)width) / (float)textureWidth, v / (float)textureHeight, (v + (float)height) / (float)textureHeight, Options.WHITE);
+    private void drawTexturedWhiteQuad (Identifier texture, DrawContext context, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight) {
+        this.drawTexturedQuad(texture, context, x, x + width, y, y + height, u / (float)textureWidth, (u + (float)width) / (float)textureWidth, v / (float)textureHeight, (v + (float)height) / (float)textureHeight, Colors.WHITE);
     }
 
     /**
@@ -317,22 +321,20 @@ public class TargetHealthBar implements HudElement {
      * @param x2 The screen-coordinate of the rightmost pixel.
      * @param y1 The screen-coordinate of the topmost pixel.
      * @param y2 The screen-coordinate of the bottommost pixel.
-     * @param z The z-axis, higher values will be over lower values.
      * @param u1 As a percentage of the texture-width, the leftmost pixel to read and render.
      * @param u2 As a percentage of the texture-width, the rightmost pixel to read and render.
      * @param v1 As a percentage of the texture-height, the topmost pixel to read and render.
      * @param v2 As a percentage of the texture-height, the bottommost pixel to read and render.
      * @param colour Colour expressed as a vector. See {@link Vec3d#unpackRgb(int)}
      */
-    private void drawTexturedZQuad (Identifier texture, DrawContext context, int x1, int x2, int y1, int y2, int z, float u1, float u2, float v1, float v2, Vector3f colour) {
+    private void drawTexturedQuad (Identifier texture, DrawContext context, int x1, int x2, int y1, int y2, float u1, float u2, float v1, float v2, int colour) {
         context.state.addSimpleElement(
-            new LayeredQuadGuiElementRenderState(
+            new TexturedQuadGuiElementRenderState(
                 RenderPipelines.GUI_TEXTURED,
                 TextureSetup.withoutGlTexture(MinecraftClient.getInstance().getTextureManager().getTexture(texture).getGlTextureView()),
                 context.getMatrices(),
                 x1, y1,
                 x2, y2,
-                z,
                 u1, u2,
                 v1, v2,
                 colour,
@@ -386,6 +388,8 @@ public class TargetHealthBar implements HudElement {
         state.hitbox = null;
         state.onFire = false;
         state.nameLabelPos = null;
+        state.outlineColor = 0;
+        state.light = LightmapTextureManager.MAX_LIGHT_COORDINATE;
         ((IMixinEntityRenderState)state).provi_Health$setShouldRenderHealth(false);
         drawer.addEntity(state, scale, translation, rotation, null, x1, y1, x2, y2);
     }
