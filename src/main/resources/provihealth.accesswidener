@@ -1,4 +1,4 @@
 accessWidener v2 named
 
 accessible method net/minecraft/client/gui/DrawContext drawTexturedQuad (Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/util/Identifier;IIIIFFFFI)V
-accessible field net/minecraft/particle/EffectParticleEffect color I
+accessible field net/minecraft/particle/TintedParticleEffect color I

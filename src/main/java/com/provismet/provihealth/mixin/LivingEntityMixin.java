@@ -6,11 +6,16 @@ import com.provismet.provihealth.particle.HealthParticleEffect;
 import com.provismet.provihealth.util.HealthCalculator;
 import com.provismet.provihealth.util.HealthContainer;
 import com.provismet.provihealth.util.StatusEffectIdentifier;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.particle.EffectParticleEffect;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.TintedParticleEffect;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,15 +24,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.world.World;
-
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity implements IMixinLivingEntity {
@@ -65,10 +63,9 @@ public abstract class LivingEntityMixin extends Entity implements IMixinLivingEn
         if (particles.isEmpty()) return List.of();
 
         return particles.stream()
-            .filter(particle -> particle instanceof EffectParticleEffect)
-            .map(particle -> StatusEffectIdentifier.fromParticleEffect((EffectParticleEffect)particle))
+            .filter(particle -> particle instanceof TintedParticleEffect)
+            .map(particle -> StatusEffectIdentifier.fromParticleEffect((TintedParticleEffect)particle))
             .distinct()
-            .filter(Objects::nonNull)
             .sorted(Comparator.comparing(effect -> effect.value().getName().getString()))
             .sorted(Comparator.comparingInt(effect -> effect.value().getCategory().ordinal()))
             .toList();
