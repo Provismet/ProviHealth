@@ -94,7 +94,7 @@ public class TextParticle extends Particle {
 
     @Override
     public int getBrightness (float tint) {
-        return LightmapTextureManager.pack(15, 15);
+        return LightmapTextureManager.MAX_LIGHT_COORDINATE;
     }
 
     public String getText () {
