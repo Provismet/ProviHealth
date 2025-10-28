@@ -16,7 +16,6 @@ import net.minecraft.util.math.MathHelper;
 
 import java.util.List;
 
-// TODO: Add this class to the particle manager via mixin.
 public class TextParticleRenderer extends ParticleRenderer<TextParticle> {
     public static final ParticleTextureSheet PARTICLE_TEXTURE_SHEET = new ParticleTextureSheet("PROVIHEALTH_TEXT");
 
@@ -52,8 +51,6 @@ public class TextParticleRenderer extends ParticleRenderer<TextParticle> {
 
     record State (MatrixStack matrices, String text, int colour, int light) {
         public static TextParticleRenderer.State create (TextParticle particle, Camera camera, float tickDelta) {
-            // TODO: Figure out matrices for this. Does it need them?
-
             MatrixStack matrices = new MatrixStack();
             matrices.push();
             float dX = (float)(MathHelper.lerp(tickDelta, particle.getPrevPos().x, particle.getPos().x) - camera.getPos().getX());
