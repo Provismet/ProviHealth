@@ -26,6 +26,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity implements IMixinLivingEntity {
@@ -65,6 +66,7 @@ public abstract class LivingEntityMixin extends Entity implements IMixinLivingEn
         return particles.stream()
             .filter(particle -> particle instanceof TintedParticleEffect)
             .map(particle -> StatusEffectIdentifier.fromParticleEffect((TintedParticleEffect)particle))
+            .filter(Objects::nonNull)
             .distinct()
             .sorted(Comparator.comparing(effect -> effect.value().getName().getString()))
             .sorted(Comparator.comparingInt(effect -> effect.value().getCategory().ordinal()))

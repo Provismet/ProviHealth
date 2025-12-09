@@ -5,6 +5,7 @@ import net.minecraft.particle.TintedParticleEffect;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.ColorHelper;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.Map;
 public abstract class StatusEffectIdentifier {
     private static final Map<Integer, RegistryEntry<StatusEffect>> colourToEffect = new HashMap<>();
 
+    @Nullable
     public static RegistryEntry<StatusEffect> fromParticleEffect (TintedParticleEffect particleEffect) {
         return colourToEffect.getOrDefault(particleEffect.color, null);
     }
