@@ -8,9 +8,8 @@ import com.provismet.provihealth.particle.Particles;
 import com.provismet.provihealth.util.StatusEffectIdentifier;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
+import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
+import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.text.Text;
@@ -29,12 +28,12 @@ public class ProviHealthClient implements ClientModInitializer {
     @Override
     public void onInitializeClient () {
         FabricLoader.getInstance().getModContainer(MODID).ifPresent(container -> {
-            ResourceManagerHelper.registerBuiltinResourcePack(identifier("rounded_bars"), container, Text.translatable("resource.provihealth.rounded_bars"), ResourcePackActivationType.NORMAL);
-            ResourceManagerHelper.registerBuiltinResourcePack(identifier("square_bars"), container, Text.translatable("resource.provihealth.square_bars"), ResourcePackActivationType.NORMAL);
+            ResourceLoader.registerBuiltinPack(identifier("rounded_bars"), container, Text.translatable("resource.provihealth.rounded_bars"), PackActivationType.NORMAL);
+            ResourceLoader.registerBuiltinPack(identifier("square_bars"), container, Text.translatable("resource.provihealth.square_bars"), PackActivationType.NORMAL);
         });
 
         HudElementRegistry.addLast(TargetHealthBar.HEALTHBAR_LAYER, new TargetHealthBar());
-        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new ElementRegistry());
+        ResourceLoader.get(ResourceType.CLIENT_RESOURCES).registerReloader(identifier("asset_listener"), new ElementRegistry());
 
         FabricLoader.getInstance().getEntrypointContainers(MODID, ProviHealthApi.class).forEach(
             entrypoint -> {

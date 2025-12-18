@@ -9,7 +9,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.render.entity.state.LivingEntityRenderState;
@@ -136,7 +136,7 @@ public class EntityHealthBar {
 
         queue.submitCustom(
             matrices,
-            RenderLayer.getText(BARS),
+            RenderLayers.text(BARS),
             new RenderableHealthBar(
                 teamColour,
                 BACKGROUND_BAR_INDEX,
@@ -146,7 +146,7 @@ public class EntityHealthBar {
         );
         queue.submitCustom(
             matrices,
-            RenderLayer.getText(BARS),
+            RenderLayers.text(BARS),
             new RenderableHealthBar(
                 teamColour,
                 FOREGROUND_BAR_INDEX,

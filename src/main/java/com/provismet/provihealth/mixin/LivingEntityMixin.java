@@ -15,6 +15,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.TintedParticleEffect;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -86,10 +87,10 @@ public abstract class LivingEntityMixin extends Entity implements IMixinLivingEn
         final Entity cameraEntity = MinecraftClient.getInstance().getCameraEntity();
         if (cameraEntity != null && this != cameraEntity && this.distanceTo(MinecraftClient.getInstance().getCameraEntity()) <= Options.maxParticleDistance) {
             if (this.container.getCurrent() < this.container.getPrevious() && Options.spawnDamageParticles) {
-                this.getEntityWorld().addParticleClient(new HealthParticleEffect(Options.unpackedDamage, Options.damageAlpha, Options.particleScale, Options.damageParticleTextColour, String.format("%d", (int)this.container.getPrevious() - (int)this.container.getCurrent())), this.getX(), this.getEyeY(), this.getZ(), 0f, 0f, 0f);
+                this.getEntityWorld().addParticleClient(new HealthParticleEffect(ColorHelper.withAlpha(Options.damageAlpha, Options.damageColour), Options.particleScale, Options.damageParticleTextColour, String.format("%d", (int)this.container.getPrevious() - (int)this.container.getCurrent())), this.getX(), this.getEyeY(), this.getZ(), 0f, 0f, 0f);
             }
             else if (this.container.getCurrent() > this.container.getPrevious() && Options.spawnHealingParticles) {
-                this.getEntityWorld().addParticleClient(new HealthParticleEffect(Options.unpackedHealing, Options.healingAlpha, Options.particleScale, Options.healingParticleTextColour, String.format("%d", (int)this.container.getCurrent() - (int)this.container.getPrevious())), this.getX(), this.getEyeY(), this.getZ(), 0f, 0f, 0f);
+                this.getEntityWorld().addParticleClient(new HealthParticleEffect(ColorHelper.withAlpha(Options.healingAlpha, Options.healingColour), Options.particleScale, Options.healingParticleTextColour, String.format("%d", (int)this.container.getCurrent() - (int)this.container.getPrevious())), this.getX(), this.getEyeY(), this.getZ(), 0f, 0f, 0f);
             }
         }
     }

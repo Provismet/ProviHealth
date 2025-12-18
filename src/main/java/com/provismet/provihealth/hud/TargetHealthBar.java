@@ -23,6 +23,7 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.entity.EntityRenderManager;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.state.EntityRenderState;
+import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.TextureSetup;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
@@ -265,13 +266,13 @@ public class TargetHealthBar implements HudElement {
     }
 
     private void renderBar (DrawContext drawContext, Identifier texture, int width, int barIndex) {
-        int barColour = ColourHelper.lerpBarColour((float)width / (float)BAR_WIDTH, barIndex == 1 ? Colors.WHITE : Options.hudStartColour, Options.hudEndColour, barIndex == 0 && Options.hudGradient);
+        int barColour = ColorHelper.fullAlpha(ColourHelper.lerpBarColour((float)width / (float)BAR_WIDTH, barIndex == 1 ? Colors.WHITE : Options.hudStartColour, Options.hudEndColour, barIndex == 0 && Options.hudGradient));
         if (Options.hudPosition == HUDPosition.LEFT) drawContext.drawTexturedQuad(RenderPipelines.GUI_TEXTURED, texture, BAR_X, BAR_X + width, BAR_Y, BAR_Y + BAR_HEIGHT, 0f, (float)width / (float)BAR_WIDTH, barIndex / 2f, BAR_V2 + barIndex / 2f, barColour);
         else this.drawHorizontallyMirroredTexturedQuad(texture, drawContext, BAR_X + (BAR_WIDTH - width), BAR_X + BAR_WIDTH, BAR_Y, BAR_Y + BAR_HEIGHT, 0f, (float)width / (float)BAR_WIDTH, barIndex / 2f, BAR_V2 + barIndex / 2f, barColour);
     }
 
     private void renderMountBar (DrawContext drawContext, Identifier texture, int width, int barIndex) {
-        int barColour = ColourHelper.lerpBarColour((float)width / (float)MOUNT_BAR_WIDTH, barIndex == 1 ? Colors.WHITE : Options.hudStartColour, Options.hudEndColour, barIndex == 0 && Options.hudGradient);
+        int barColour = ColorHelper.fullAlpha(ColourHelper.lerpBarColour((float)width / (float)MOUNT_BAR_WIDTH, barIndex == 1 ? Colors.WHITE : Options.hudStartColour, Options.hudEndColour, barIndex == 0 && Options.hudGradient));
         if (Options.hudPosition == HUDPosition.LEFT) drawContext.drawTexturedQuad(RenderPipelines.GUI_TEXTURED, texture, BAR_X, BAR_X + width, BAR_Y + BAR_HEIGHT, BAR_Y + BAR_HEIGHT + MOUNT_BAR_HEIGHT, 0f, ((float)width / (float)MOUNT_BAR_WIDTH) * MOUNT_BAR_U2, MOUNT_BAR_V1 + barIndex / 2f, MOUNT_BAR_V2 + barIndex / 2f, barColour);
         else this.drawHorizontallyMirroredTexturedQuad(texture, drawContext, BAR_X + (MOUNT_BAR_WIDTH - width) + BAR_WIDTH_DIFF, BAR_X + BAR_WIDTH_DIFF + MOUNT_BAR_WIDTH, BAR_Y + BAR_HEIGHT, BAR_Y + BAR_HEIGHT + MOUNT_BAR_HEIGHT, 0f, ((float)width / (float)MOUNT_BAR_WIDTH) * MOUNT_BAR_U2, MOUNT_BAR_V1 + barIndex / 2f, MOUNT_BAR_V2 + barIndex / 2f, barColour);
     }
@@ -325,13 +326,14 @@ public class TargetHealthBar implements HudElement {
      * @param u2 As a percentage of the texture-width, the rightmost pixel to read and render.
      * @param v1 As a percentage of the texture-height, the topmost pixel to read and render.
      * @param v2 As a percentage of the texture-height, the bottommost pixel to read and render.
-     * @param colour Colour expressed as a vector. See {@link Vec3d#unpackRgb(int)}
+     * @param colour Colour
      */
     private void drawTexturedQuad (Identifier texture, DrawContext context, int x1, int x2, int y1, int y2, float u1, float u2, float v1, float v2, int colour) {
+        AbstractTexture abstractTexture = MinecraftClient.getInstance().getTextureManager().getTexture(texture);
         context.state.addSimpleElement(
             new TexturedQuadGuiElementRenderState(
                 RenderPipelines.GUI_TEXTURED,
-                TextureSetup.withoutGlTexture(MinecraftClient.getInstance().getTextureManager().getTexture(texture).getGlTextureView()),
+                TextureSetup.of(abstractTexture.getGlTextureView(), abstractTexture.getSampler()),
                 context.getMatrices(),
                 x1, y1,
                 x2, y2,
@@ -385,7 +387,6 @@ public class TargetHealthBar implements HudElement {
         EntityRenderManager entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
         EntityRenderer<? super LivingEntity, ?> entityRenderer = entityRenderDispatcher.getRenderer(entity);
         EntityRenderState state = entityRenderer.getAndUpdateRenderState(entity, 1.0F);
-        state.hitbox = null;
         state.onFire = false;
         state.nameLabelPos = null;
         state.outlineColor = 0;

@@ -9,6 +9,7 @@ import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -24,12 +25,12 @@ public class HealthParticle extends BillboardParticle {
     protected HealthParticle (ClientWorld clientWorld, double x, double y, double z, HealthParticleEffect particleEffect, SpriteProvider provider) {
         super(clientWorld, x, y, z, provider.getFirst());
 
-        this.red = particleEffect.colour().x();
-        this.green = particleEffect.colour().y();
-        this.blue = particleEffect.colour().z();
+        this.red = ColorHelper.getRed(particleEffect.colour()) / 255f;
+        this.green = ColorHelper.getGreen(particleEffect.colour()) / 255f;
+        this.blue = ColorHelper.getBlue(particleEffect.colour()) / 255f;
         this.scale = 0f;
         this.prevScale = 0f;
-        this.alpha = particleEffect.alpha();
+        this.alpha = ColorHelper.getAlpha(particleEffect.colour()) / 255f;
         this.textColour = particleEffect.textColour();
         this.text = particleEffect.text();
         this.maxAge = 40;

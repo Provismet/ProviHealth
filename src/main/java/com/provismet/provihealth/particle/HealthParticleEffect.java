@@ -10,9 +10,8 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.util.dynamic.Codecs;
-import org.joml.Vector3f;
 
-public record HealthParticleEffect (Vector3f colour, float alpha, float scale, int textColour, String text) implements ParticleEffect {
+public record HealthParticleEffect (int colour, float scale, int textColour, String text) implements ParticleEffect {
     private final static Codec<String> TEXT_CODEC = Codec.string(1, 8).validate(text -> {
         try {
             Integer.valueOf(text);
@@ -24,8 +23,7 @@ public record HealthParticleEffect (Vector3f colour, float alpha, float scale, i
 
     public static final MapCodec<HealthParticleEffect> CODEC = RecordCodecBuilder.mapCodec(instance ->
         instance.group(
-                Codecs.VECTOR_3F.fieldOf("colour").forGetter(effect -> effect.colour),
-                Codecs.POSITIVE_FLOAT.fieldOf("alpha").forGetter(effect -> effect.alpha),
+                Codecs.ARGB.fieldOf("colour").forGetter(effect -> effect.colour),
                 Codecs.POSITIVE_FLOAT.fieldOf("scale").forGetter(effect -> effect.scale),
                 Codecs.rangedInt(0, 0xFFFFFF).fieldOf("text_colour").forGetter(effect -> effect.textColour),
                 TEXT_CODEC.fieldOf("text").forGetter(effect -> effect.text))
@@ -33,10 +31,8 @@ public record HealthParticleEffect (Vector3f colour, float alpha, float scale, i
     );
 
     public static final PacketCodec<RegistryByteBuf, HealthParticleEffect> PACKET_CODEC = PacketCodec.tuple(
-        PacketCodecs.VECTOR_3F,
+        PacketCodecs.INTEGER,
         effect -> effect.colour,
-        PacketCodecs.FLOAT,
-        effect -> effect.alpha,
         PacketCodecs.FLOAT,
         effect -> effect.scale,
         PacketCodecs.INTEGER,

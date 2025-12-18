@@ -10,7 +10,6 @@ import com.provismet.provihealth.api.ProviHealthApi;
 import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.config.resources.EntityOptions;
 import com.provismet.provihealth.config.resources.TagOptions;
-import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -19,6 +18,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-public class ElementRegistry implements SimpleSynchronousResourceReloadListener {
+public class ElementRegistry implements SynchronousResourceReloader {
     // Cached Elements
     private static final Map<EntityType<?>, Identifier> borderCache = new HashMap<>();
     private static final Map<EntityType<?>, ItemStack> iconCache = new HashMap<>();
@@ -53,11 +53,6 @@ public class ElementRegistry implements SimpleSynchronousResourceReloadListener 
 
     public static final Identifier DEFAULT_BORDER = ProviHealthClient.identifier("textures/gui/healthbars/default.png");
     public static final Identifier DEFAULT_BARS = ProviHealthClient.identifier("textures/gui/healthbars/bars.png");
-
-    @Override
-    public Identifier getFabricId () {
-        return ProviHealthClient.identifier("asset_listener");
-    }
 
     @Override
     public void reload (ResourceManager manager) {

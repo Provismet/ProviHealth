@@ -7,6 +7,7 @@ import com.provismet.lilylib.util.json.JsonBuilder;
 import com.provismet.lilylib.util.json.JsonReader;
 import com.provismet.provihealth.ProviHealthClient;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalEntityTypeTags;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -17,16 +18,14 @@ import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 public class Options {
-    private static final String FILE = "./config/provihealth.json";
-
-    public static final Vector3f WHITE = Vec3d.unpackRgb(0xFFFFFF).toVector3f();
+    private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve("provihealth.json");
 
     public static int maxHealthBarTicks = 40;
 
@@ -56,8 +55,6 @@ public class Options {
     public static HUDPosition hudPosition = HUDPosition.LEFT;
     public static int hudStartColour = 0x00C100;
     public static int hudEndColour = 0xFF0000;
-    public static Vector3f unpackedStartHud = Vec3d.unpackRgb(hudStartColour).toVector3f();
-    public static Vector3f unpackedEndHud = Vec3d.unpackRgb(hudEndColour).toVector3f();
     public static boolean hudGradient = false;
     public static boolean hudTitles = true;
     public static boolean hudStatuses = true;
@@ -67,8 +64,6 @@ public class Options {
     public static float worldHealthBarScale = 1.5f;
     public static int worldStartColour = 0x00C100;
     public static int worldEndColour = 0xFF0000;
-    public static Vector3f unpackedStartWorld = Vec3d.unpackRgb(worldStartColour).toVector3f();
-    public static Vector3f unpackedEndWorld = Vec3d.unpackRgb(worldEndColour).toVector3f();
     public static boolean worldGradient = false;
     public static boolean overrideLabels = false;
     public static boolean worldShadows = true;
@@ -81,8 +76,6 @@ public class Options {
     public static boolean spawnHealingParticles = false;
     public static int damageColour = 0xFF0000;
     public static int healingColour = 0x00FF00;
-    public static Vector3f unpackedDamage = Vec3d.unpackRgb(damageColour).toVector3f();
-    public static Vector3f unpackedHealing = Vec3d.unpackRgb(healingColour).toVector3f();
     public static float particleScale = 0.25f;
     public static boolean particleTextShadow = true;
     public static int damageParticleTextColour = 0xFFFFFFFF;
@@ -191,7 +184,7 @@ public class Options {
             )
             .toString();
 
-        try (FileWriter writer = new FileWriter(FILE)) {
+        try (FileWriter writer = new FileWriter(FILE.toFile())) {
             writer.write(jsonData);
         }
         catch (IOException e) {
@@ -201,7 +194,7 @@ public class Options {
 
     public static void load () {
         try {
-            JsonReader jsonReader = JsonReader.file(new File(FILE));
+            JsonReader jsonReader = JsonReader.file(FILE.toFile());
             if (jsonReader == null) {
                 save();
                 return;
@@ -313,10 +306,10 @@ public class Options {
 
     public enum BarType {
         WORLD,
-        HUD;
+        HUD
     }
 
-    public static enum VisibilityType {
+    public enum VisibilityType {
         ALWAYS_HIDE,
         HIDE_IF_FULL,
         ALWAYS_SHOW;
@@ -327,7 +320,7 @@ public class Options {
         }
     }
 
-    public static enum HUDType {
+    public enum HUDType {
         NONE(false, false, false),
         PORTRAIT_ONLY(true, false, false),
         FULL(true, true, true);
@@ -348,7 +341,7 @@ public class Options {
         }
     }
 
-    public static enum DamageParticleType {
+    public enum DamageParticleType {
         RISING,
         GRAVITY,
         STATIC;
@@ -359,13 +352,13 @@ public class Options {
         }
     }
 
-    public static enum HUDPosition {
+    public enum HUDPosition {
         LEFT(150f),
         RIGHT(210f);
 
         public final float portraitYAW;
 
-        private HUDPosition (float portraitYAW) {
+        HUDPosition(float portraitYAW) {
             this.portraitYAW = portraitYAW;
         }
 
@@ -375,7 +368,7 @@ public class Options {
         }
     }
 
-    public static enum SeeThroughText {
+    public enum SeeThroughText {
         STANDARD,
         NONE,
         FULL;
@@ -386,7 +379,7 @@ public class Options {
         }
     }
 
-    public static enum HUDPortraitCompatMode {
+    public enum HUDPortraitCompatMode {
         STANDARD,
         COMPAT,
         NONE;

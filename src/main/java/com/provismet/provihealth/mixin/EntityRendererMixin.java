@@ -9,7 +9,6 @@ import com.provismet.provihealth.world.EntityHealthBar;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
-import net.minecraft.client.render.entity.EntityRenderManager;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.render.state.CameraRenderState;
@@ -27,9 +26,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class EntityRendererMixin {
     @Shadow @Final
     private TextRenderer textRenderer;
-
-    @Shadow @Final
-    protected EntityRenderManager dispatcher;
 
     @Shadow
     protected abstract boolean hasLabel (Entity entity, double squaredDistanceToCamera);

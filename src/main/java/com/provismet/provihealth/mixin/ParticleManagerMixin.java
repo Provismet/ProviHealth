@@ -1,6 +1,5 @@
 package com.provismet.provihealth.mixin;
 
-import com.provismet.provihealth.ProviHealthClient;
 import com.provismet.provihealth.particle.TextParticleRenderer;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.particle.ParticleRenderer;

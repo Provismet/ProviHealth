@@ -5,9 +5,9 @@ import com.provismet.provihealth.util.ColourHelper;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Colors;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import org.joml.Vector3f;
 
 import java.util.Optional;
 
@@ -36,21 +36,21 @@ public record RenderableHealthBar (Optional<Integer> teamColour, int index, floa
 
         final float Z = (float)this.index * -0.0001f;
 
-        Vector3f colour;
+        int colour;
         if (!Options.tintBackground && this.index == 1) {
-            colour = Options.WHITE;
+            colour = Colors.WHITE;
         }
         else if (Options.useTeamColours && this.teamColour.isPresent()) {
-            colour = Vec3d.unpackRgb(this.teamColour.get()).toVector3f();
+            colour = ColorHelper.fullAlpha(this.teamColour.get());
         }
         else {
-            colour = ColourHelper.lerpBarColour(healthPercentage, Options.unpackedStartWorld, Options.unpackedEndWorld, Options.worldGradient);
+            colour = ColorHelper.fullAlpha(ColourHelper.lerpBarColour(healthPercentage, Options.worldStartColour, Options.worldEndColour, Options.worldGradient));
         }
 
         int maxLight = 0xF000F0;
-        vertexConsumer.vertex(matrix, MIN_X, MIN_Y, Z).texture(MIN_U, MIN_V).light(maxLight).color(colour.x, colour.y, colour.z, 1f); // Top-Left
-        vertexConsumer.vertex(matrix, MAX_X, MIN_Y, Z).texture(MAX_U, MIN_V).light(maxLight).color(colour.x, colour.y, colour.z, 1f); // Top-Right
-        vertexConsumer.vertex(matrix, MAX_X, MAX_Y, Z).texture(MAX_U, MAX_V).light(maxLight).color(colour.x, colour.y, colour.z, 1f); // Bottom-Right
-        vertexConsumer.vertex(matrix, MIN_X, MAX_Y, Z).texture(MIN_U, MAX_V).light(maxLight).color(colour.x, colour.y, colour.z, 1f); // Bottom-Left
+        vertexConsumer.vertex(matrix, MIN_X, MIN_Y, Z).texture(MIN_U, MIN_V).light(maxLight).color(colour); // Top-Left
+        vertexConsumer.vertex(matrix, MAX_X, MIN_Y, Z).texture(MAX_U, MIN_V).light(maxLight).color(colour); // Top-Right
+        vertexConsumer.vertex(matrix, MAX_X, MAX_Y, Z).texture(MAX_U, MAX_V).light(maxLight).color(colour); // Bottom-Right
+        vertexConsumer.vertex(matrix, MIN_X, MAX_Y, Z).texture(MIN_U, MAX_V).light(maxLight).color(colour); // Bottom-Left
     }
 }

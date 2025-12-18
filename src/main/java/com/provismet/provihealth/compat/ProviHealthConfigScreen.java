@@ -15,7 +15,6 @@ import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
 
 import java.util.Arrays;
 import java.util.List;
@@ -99,19 +98,13 @@ public class ProviHealthConfigScreen {
 
         hud.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barStartColour"), Options.hudStartColour)
             .setDefaultValue(0x00C100)
-            .setSaveConsumer(newValue -> {
-                Options.hudStartColour = newValue;
-                Options.unpackedStartHud = Vec3d.unpackRgb(newValue).toVector3f();
-            })
+            .setSaveConsumer(newValue -> Options.hudStartColour = newValue)
             .build()
         );
 
         hud.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barEndColour"), Options.hudEndColour)
             .setDefaultValue(0xFF0000)
-            .setSaveConsumer(newValue -> {
-                Options.hudEndColour = newValue;
-                Options.unpackedEndHud = Vec3d.unpackRgb(newValue).toVector3f();
-            })
+            .setSaveConsumer(newValue -> Options.hudEndColour = newValue)
             .build()
         );
 
@@ -216,19 +209,13 @@ public class ProviHealthConfigScreen {
 
         health.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barStartColour"), Options.worldStartColour)
             .setDefaultValue(0x00C100)
-            .setSaveConsumer(newValue -> {
-                Options.worldStartColour = newValue;
-                Options.unpackedStartWorld = Vec3d.unpackRgb(newValue).toVector3f();
-            })
+            .setSaveConsumer(newValue -> Options.worldStartColour = newValue)
             .build()
         );
 
         health.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barEndColour"), Options.worldEndColour)
             .setDefaultValue(0xFF0000)
-            .setSaveConsumer(newValue -> {
-                Options.worldEndColour = newValue;
-                Options.unpackedEndWorld = Vec3d.unpackRgb(newValue).toVector3f();
-            })
+            .setSaveConsumer(newValue -> Options.worldEndColour = newValue)
             .build()
         );
 
@@ -314,10 +301,7 @@ public class ProviHealthConfigScreen {
 
         particles.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.damageColour"), Options.damageColour)
             .setDefaultValue(0xFF0000)
-            .setSaveConsumer(newValue -> {
-                Options.damageColour = newValue;
-                Options.unpackedDamage = Vec3d.unpackRgb(newValue).toVector3f();
-            })
+            .setSaveConsumer(newValue -> Options.damageColour = newValue)
             .build()
         );
 
@@ -331,10 +315,7 @@ public class ProviHealthConfigScreen {
 
         particles.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.healingColour"), Options.healingColour)
             .setDefaultValue(0x00FF00)
-            .setSaveConsumer(newValue -> {
-                Options.healingColour = newValue;
-                Options.unpackedHealing = Vec3d.unpackRgb(newValue).toVector3f();
-            })
+            .setSaveConsumer(newValue -> Options.healingColour = newValue)
             .build()
         );
 

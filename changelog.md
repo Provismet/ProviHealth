@@ -1,2 +1,1 @@
-## Bugfixes
-- Fixed a crash caused by viewing entities that have ambient status effects.
+- Updated to Minecraft 1.21.11

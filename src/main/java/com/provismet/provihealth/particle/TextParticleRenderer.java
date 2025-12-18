@@ -53,9 +53,9 @@ public class TextParticleRenderer extends ParticleRenderer<TextParticle> {
         public static TextParticleRenderer.State create (TextParticle particle, Camera camera, float tickDelta) {
             MatrixStack matrices = new MatrixStack();
             matrices.push();
-            float dX = (float)(MathHelper.lerp(tickDelta, particle.getPrevPos().x, particle.getPos().x) - camera.getPos().getX());
-            float dY = (float)(MathHelper.lerp(tickDelta, particle.getPrevPos().y, particle.getPos().y) - camera.getPos().getY());
-            float dZ = (float)(MathHelper.lerp(tickDelta, particle.getPrevPos().z, particle.getPos().z) - camera.getPos().getZ());
+            float dX = (float)(MathHelper.lerp(tickDelta, particle.getPrevPos().x, particle.getPos().x) - camera.getCameraPos().getX());
+            float dY = (float)(MathHelper.lerp(tickDelta, particle.getPrevPos().y, particle.getPos().y) - camera.getCameraPos().getY());
+            float dZ = (float)(MathHelper.lerp(tickDelta, particle.getPrevPos().z, particle.getPos().z) - camera.getCameraPos().getZ());
 
             matrices.translate(dX, dY, dZ);
             matrices.multiply(camera.getRotation());
