@@ -15,7 +15,7 @@ public record RenderableHealthBar (Optional<Integer> teamColour, int index, floa
     @Override
     public void render (MatrixStack.Entry matrix, VertexConsumer vertexConsumer) {
         float clampedPercentage = MathHelper.clamp(this.percentage, 0f, 1f);
-        float healthPercentage = clampedPercentage; // Just to decouple the colouring from the background image.
+        float healthPercentage = 1 - clampedPercentage; // Just to decouple the colouring from the background image.
         if (this.index == 1) clampedPercentage = 1f;
         if (this.isMount) clampedPercentage = MathHelper.lerp(clampedPercentage, 3f / EntityHealthBar.TEXTURE_SIZE, 61f / EntityHealthBar.TEXTURE_SIZE);
 
