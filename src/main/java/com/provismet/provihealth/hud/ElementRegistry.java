@@ -10,17 +10,6 @@ import com.provismet.provihealth.api.ProviHealthApi;
 import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.config.resources.EntityOptions;
 import com.provismet.provihealth.config.resources.TagOptions;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloader;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,8 +22,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 
-public class ElementRegistry implements SynchronousResourceReloader {
+public class ElementRegistry implements ResourceManagerReloadListener {
     // Cached Elements
     private static final Map<EntityType<?>, Identifier> borderCache = new HashMap<>();
     private static final Map<EntityType<?>, ItemStack> iconCache = new HashMap<>();
@@ -55,17 +55,17 @@ public class ElementRegistry implements SynchronousResourceReloader {
     public static final Identifier DEFAULT_BARS = ProviHealthClient.identifier("textures/gui/healthbars/bars.png");
 
     @Override
-    public void reload (ResourceManager manager) {
+    public void onResourceManagerReload (ResourceManager manager) {
         entityOptionCache.clear();
         tagOptionsCache.clear();
         borderCache.clear();
         iconCache.clear();
 
-        Registries.ENTITY_TYPE.getEntrySet().forEach(entry -> {
-            Identifier resourceLocation = entry.getKey().getValue().withPrefixedPath(ProviHealthClient.MODID + "/entity/").withSuffixedPath(".json");
+        BuiltInRegistries.ENTITY_TYPE.entrySet().forEach(entry -> {
+            Identifier resourceLocation = entry.getKey().identifier().withPrefix(ProviHealthClient.MODID + "/entity/").withSuffix(".json");
             Optional<Resource> resource = manager.getResource(resourceLocation);
             if (resource.isPresent()) {
-                try (InputStream stream = resource.get().getInputStream()) {
+                try (InputStream stream = resource.get().open()) {
                     String text = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
                     DataResult<Pair<EntityOptions, JsonElement>> dataResult = EntityOptions.CODEC.decode(JsonOps.INSTANCE, JsonParser.parseString(text));
                     EntityOptions resolvedOptions = dataResult.getOrThrow().getFirst();
@@ -73,26 +73,26 @@ public class ElementRegistry implements SynchronousResourceReloader {
                     ProviHealthClient.LOGGER.info("Found entity option with ID: {}", resourceLocation);
                 }
                 catch (Throwable e) {
-                    ProviHealthClient.LOGGER.error("ProviHealth encountered an error reading file {} from pack {}", resourceLocation, resource.get().getPackId(), e);
+                    ProviHealthClient.LOGGER.error("ProviHealth encountered an error reading file {} from pack {}", resourceLocation, resource.get().sourcePackId(), e);
                 }
             }
         });
 
-        Map<Identifier, Resource> tagOptions = manager.findResources(ProviHealthClient.MODID + "/tag", identifier -> identifier.getPath().endsWith(".json"));
+        Map<Identifier, Resource> tagOptions = manager.listResources(ProviHealthClient.MODID + "/tag", identifier -> identifier.getPath().endsWith(".json"));
         for (Map.Entry<Identifier, Resource> tagEntry : tagOptions.entrySet()) {
             String path = tagEntry.getKey().getPath().replace(".json", "").replaceFirst("provihealth/tag/", "");
-            Identifier tagId = Identifier.of(tagEntry.getKey().getNamespace(), path);
-            TagKey<EntityType<?>> tagKey = TagKey.of(RegistryKeys.ENTITY_TYPE, tagId);
+            Identifier tagId = Identifier.fromNamespaceAndPath(tagEntry.getKey().getNamespace(), path);
+            TagKey<EntityType<?>> tagKey = TagKey.create(Registries.ENTITY_TYPE, tagId);
             ProviHealthClient.LOGGER.info("Found tag options file {} for entity tag {}", tagEntry.getKey(), tagId);
 
-            try (InputStream stream = tagEntry.getValue().getInputStream()) {
+            try (InputStream stream = tagEntry.getValue().open()) {
                 String text = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
                 DataResult<Pair<TagOptions, JsonElement>> dataResult = TagOptions.CODEC.decode(JsonOps.INSTANCE, JsonParser.parseString(text));
                 TagOptions resolvedOptions = dataResult.getOrThrow().getFirst();
                 tagOptionsCache.put(tagKey, resolvedOptions);
             }
             catch (Throwable e) {
-                ProviHealthClient.LOGGER.error("ProviHealth encountered an error reading file {} from pack {}", tagEntry.getKey(), tagEntry.getValue().getPackId(), e);
+                ProviHealthClient.LOGGER.error("ProviHealth encountered an error reading file {} from pack {}", tagEntry.getKey(), tagEntry.getValue().sourcePackId(), e);
             }
         }
     }
@@ -169,7 +169,7 @@ public class ElementRegistry implements SynchronousResourceReloader {
             Identifier bestBorder = DEFAULT_BORDER;
             // Read from assets
             for (Map.Entry<TagKey<EntityType<?>>, TagOptions> entry : tagOptionsCache.entrySet()) {
-                if (entity.getType().isIn(entry.getKey()) && entry.getValue().getPriority() > maxPriority && entry.getValue().getBorder() != null) {
+                if (entity.getType().is(entry.getKey()) && entry.getValue().getPriority() > maxPriority && entry.getValue().getBorder() != null) {
                     bestBorder = entry.getValue().getBorder();
                     maxPriority = entry.getValue().getPriority();
                 }
@@ -177,7 +177,7 @@ public class ElementRegistry implements SynchronousResourceReloader {
 
             // Read from mod addons
             for (TagKey<EntityType<?>> entityTag : tagBorderPriorities.keySet()) {
-                if (entity.getType().isIn(entityTag) && tagBorderPriorities.get(entityTag).priority() > maxPriority) {
+                if (entity.getType().is(entityTag) && tagBorderPriorities.get(entityTag).priority() > maxPriority) {
                     bestBorder = tagBorderPriorities.get(entityTag).borderId();
                     maxPriority = tagBorderPriorities.get(entityTag).priority();
                 }
@@ -206,7 +206,7 @@ public class ElementRegistry implements SynchronousResourceReloader {
 
         // Read from assets
         for (Map.Entry<TagKey<EntityType<?>>, TagOptions> entry : tagOptionsCache.entrySet()) {
-            if (entity.getType().isIn(entry.getKey()) && entry.getValue().getPriority() > maxPriority && entry.getValue().getIcon() != null) {
+            if (entity.getType().is(entry.getKey()) && entry.getValue().getPriority() > maxPriority && entry.getValue().getIcon() != null) {
                 bestIcon = entry.getValue().getIcon();
                 maxPriority = entry.getValue().getPriority();
             }
@@ -214,7 +214,7 @@ public class ElementRegistry implements SynchronousResourceReloader {
 
         // Read from mod addons
         for (TagKey<EntityType<?>> entityTag : tagIconPriorities.keySet()) {
-            if (entity.getType().isIn(entityTag) && tagIconPriorities.get(entityTag).priority() > maxPriority) {
+            if (entity.getType().is(entityTag) && tagIconPriorities.get(entityTag).priority() > maxPriority) {
                 bestIcon = tagIconPriorities.get(entityTag).itemStack();
                 maxPriority = tagIconPriorities.get(entityTag).priority();
             }
@@ -240,7 +240,7 @@ public class ElementRegistry implements SynchronousResourceReloader {
 
         // Read from assets
         for (Map.Entry<TagKey<EntityType<?>>, TagOptions> entry : tagOptionsCache.entrySet()) {
-            if (entity.getType().isIn(entry.getKey()) && entry.getValue().getPriority() > maxPriority && entry.getValue().getHealthBar() != null) {
+            if (entity.getType().is(entry.getKey()) && entry.getValue().getPriority() > maxPriority && entry.getValue().getHealthBar() != null) {
                 bestBars = entry.getValue().getHealthBar();
                 maxPriority = entry.getValue().getPriority();
             }
@@ -260,7 +260,7 @@ public class ElementRegistry implements SynchronousResourceReloader {
 
         // Read from assets
         for (Map.Entry<TagKey<EntityType<?>>, TagOptions> entry : tagOptionsCache.entrySet()) {
-            if (entity.getType().isIn(entry.getKey()) && entry.getValue().getPriority() > maxPriority && entry.getValue().getHudType() != null) {
+            if (entity.getType().is(entry.getKey()) && entry.getValue().getPriority() > maxPriority && entry.getValue().getHudType() != null) {
                 bestHud = entry.getValue().getHudType();
                 maxPriority = entry.getValue().getPriority();
             }
@@ -270,7 +270,7 @@ public class ElementRegistry implements SynchronousResourceReloader {
         return bestHud;
     }
 
-    public static List<Text> getTitle (LivingEntity entity, boolean world, boolean hud) {
+    public static List<Component> getTitle (LivingEntity entity, boolean world, boolean hud) {
         if (entity == null) return null;
 
         return orderedTitles.stream().map(title -> title.titleGetter().apply(entity, world, hud)).filter(Objects::nonNull).toList();

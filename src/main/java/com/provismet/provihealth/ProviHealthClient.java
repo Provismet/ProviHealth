@@ -11,9 +11,9 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.resource.ResourceType;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.PackType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,18 +22,18 @@ public class ProviHealthClient implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger("Provi's Health Bars");
 
     public static Identifier identifier (String path) {
-        return Identifier.of(MODID, path);
+        return Identifier.fromNamespaceAndPath(MODID, path);
     }
 
     @Override
     public void onInitializeClient () {
         FabricLoader.getInstance().getModContainer(MODID).ifPresent(container -> {
-            ResourceLoader.registerBuiltinPack(identifier("rounded_bars"), container, Text.translatable("resource.provihealth.rounded_bars"), PackActivationType.NORMAL);
-            ResourceLoader.registerBuiltinPack(identifier("square_bars"), container, Text.translatable("resource.provihealth.square_bars"), PackActivationType.NORMAL);
+            ResourceLoader.registerBuiltinPack(identifier("rounded_bars"), container, Component.translatable("resource.provihealth.rounded_bars"), PackActivationType.NORMAL);
+            ResourceLoader.registerBuiltinPack(identifier("square_bars"), container, Component.translatable("resource.provihealth.square_bars"), PackActivationType.NORMAL);
         });
 
         HudElementRegistry.addLast(TargetHealthBar.HEALTHBAR_LAYER, new TargetHealthBar());
-        ResourceLoader.get(ResourceType.CLIENT_RESOURCES).registerReloader(identifier("asset_listener"), new ElementRegistry());
+        ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(identifier("asset_listener"), new ElementRegistry());
 
         FabricLoader.getInstance().getEntrypointContainers(MODID, ProviHealthApi.class).forEach(
             entrypoint -> {

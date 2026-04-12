@@ -2,13 +2,13 @@ package com.provismet.provihealth.mixin;
 
 import com.provismet.provihealth.interfaces.IMixinEntityRenderState;
 import com.provismet.provihealth.util.HealthContainer;
-import net.minecraft.client.render.entity.state.EntityRenderState;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 import java.util.List;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.network.chat.Component;
 
 @Mixin(EntityRenderState.class)
 public abstract class EntityRenderStateMixin implements IMixinEntityRenderState {
@@ -25,13 +25,13 @@ public abstract class EntityRenderStateMixin implements IMixinEntityRenderState 
     private boolean isLiving;
 
     @Unique
-    private List<Text> titles = List.of();
+    private List<Component> titles = List.of();
 
     @Unique
     private boolean shouldRenderLabel;
 
     @Unique
-    private Text healthBarLabel;
+    private Component healthBarLabel;
 
     @Unique
     private Integer teamColour = null;
@@ -57,7 +57,7 @@ public abstract class EntityRenderStateMixin implements IMixinEntityRenderState 
     }
 
     @Override
-    public void provi_Health$setTitles (List<Text> titles) {
+    public void provi_Health$setTitles (List<Component> titles) {
         this.titles = titles;
     }
 
@@ -67,7 +67,7 @@ public abstract class EntityRenderStateMixin implements IMixinEntityRenderState 
     }
 
     @Override
-    public void provi_Health$setLabel (Text label) {
+    public void provi_Health$setLabel (Component label) {
         this.healthBarLabel = label.copy();
     }
 
@@ -97,7 +97,7 @@ public abstract class EntityRenderStateMixin implements IMixinEntityRenderState 
     }
 
     @Override
-    public List<Text> provi_Health$getTitles () {
+    public List<Component> provi_Health$getTitles () {
         return this.titles;
     }
 
@@ -107,7 +107,7 @@ public abstract class EntityRenderStateMixin implements IMixinEntityRenderState 
     }
 
     @Override
-    public Text provi_Health$getLabel () {
+    public Component provi_Health$getLabel () {
         return this.healthBarLabel;
     }
 

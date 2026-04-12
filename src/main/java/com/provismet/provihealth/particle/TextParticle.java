@@ -2,15 +2,15 @@ package com.provismet.provihealth.particle;
 
 import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.config.Options.DamageParticleType;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleFactory;
-import net.minecraft.client.particle.ParticleTextureSheet;
-import net.minecraft.client.particle.SpriteProvider;
-import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.phys.Vec3;
 
 public class TextParticle extends Particle {
     private final String text;
@@ -20,25 +20,25 @@ public class TextParticle extends Particle {
     private float scale;
     private float prevScale;
 
-    protected TextParticle (ClientWorld clientWorld, double x, double y, double z, double velocityX, double velocityY, double velocityZ, TextParticleEffect particleEffect) {
+    protected TextParticle (ClientLevel clientWorld, double x, double y, double z, double velocityX, double velocityY, double velocityZ, TextParticleEffect particleEffect) {
         super(clientWorld, x, y, z);
 
         this.scale = 0f;
         this.prevScale = 0f;
         this.textColour = particleEffect.textColour();
         this.text = particleEffect.text();
-        this.maxAge = 40;
+        this.lifetime = 40;
         this.maxScale = particleEffect.scale();
 
-        this.lastX = this.x;
-        this.lastY = this.y;
-        this.lastZ = this.z;
+        this.xo = this.x;
+        this.yo = this.y;
+        this.zo = this.z;
 
-        this.velocityX = velocityX;
-        this.velocityY = velocityY;
-        this.velocityZ = velocityZ;
+        this.xd = velocityX;
+        this.yd = velocityY;
+        this.zd = velocityZ;
 
-        if (Options.particleType == DamageParticleType.RISING) this.velocityMultiplier = 0.85f;
+        if (Options.particleType == DamageParticleType.RISING) this.friction = 0.85f;
     }
 
     @Override
@@ -46,16 +46,16 @@ public class TextParticle extends Particle {
         super.tick();
         this.prevScale = this.scale;
 
-        if (this.age > this.maxAge / 2) this.scale -= this.maxScale / (this.maxAge / 2f);
+        if (this.age > this.lifetime / 2) this.scale -= this.maxScale / (this.lifetime / 2f);
         else if (this.scale < this.maxScale) this.scale += this.maxScale / 5f;
 
         if (Options.particleType == DamageParticleType.GRAVITY) {
             if (this.onGround) {
-                this.velocityX = 0;
-                this.velocityY = 0;
-                this.velocityZ = 0;
+                this.xd = 0;
+                this.yd = 0;
+                this.zd = 0;
             }
-            else this.velocityY -= 0.025;
+            else this.yd -= 0.025;
         }
 	}
 
@@ -88,13 +88,13 @@ public class TextParticle extends Particle {
 //    }
 
     @Override
-    public ParticleTextureSheet textureSheet () {
+    public ParticleRenderType getGroup () {
         return TextParticleRenderer.PARTICLE_TEXTURE_SHEET;
     }
 
     @Override
-    public int getBrightness (float tint) {
-        return LightmapTextureManager.MAX_LIGHT_COORDINATE;
+    public int getLightColor (float tint) {
+        return LightTexture.FULL_BRIGHT;
     }
 
     public String getText () {
@@ -106,22 +106,22 @@ public class TextParticle extends Particle {
     }
 
     public float getSize (float tickDelta) {
-        return MathHelper.lerp(tickDelta, this.prevScale, this.scale);
+        return Mth.lerp(tickDelta, this.prevScale, this.scale);
     }
 
-    public Vec3d getPos () {
-        return new Vec3d(this.x, this.y, this.z);
+    public Vec3 getPos () {
+        return new Vec3(this.x, this.y, this.z);
     }
 
-    public Vec3d getPrevPos () {
-        return new Vec3d(this.lastX, this.lastY, this.lastZ);
+    public Vec3 getPrevPos () {
+        return new Vec3(this.xo, this.yo, this.zo);
     }
 
-    public static class Factory implements ParticleFactory<TextParticleEffect> {
-        public Factory (SpriteProvider spriteProvider) {}
+    public static class Factory implements ParticleProvider<TextParticleEffect> {
+        public Factory (SpriteSet spriteProvider) {}
 
         @Override
-        public Particle createParticle (TextParticleEffect particleEffect, ClientWorld clientWorld, double x, double y, double z, double velX, double velY, double velZ, Random random) {
+        public Particle createParticle (TextParticleEffect particleEffect, ClientLevel clientWorld, double x, double y, double z, double velX, double velY, double velZ, RandomSource random) {
             return new TextParticle(clientWorld, x, y, z, velX, velY, velZ, particleEffect);
         }
 

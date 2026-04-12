@@ -1,17 +1,16 @@
 package com.provismet.provihealth.api;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.provismet.provihealth.hud.ElementRegistry;
-
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Mod integration API for Provi's Health Bars, this API is noticeably less powerful than the data-driven features, but
@@ -45,7 +44,7 @@ public interface ProviHealthApi {
      * @return Whether or not the registry succeeded. This is false if a higher priority icon already exists.
      */
     default boolean registerIcon (TagKey<EntityType<?>> tag, @NotNull Item item, int priority) {
-        return ElementRegistry.registerItem(tag, item.getDefaultStack(), priority);
+        return ElementRegistry.registerItem(tag, item.getDefaultInstance(), priority);
     }
 
     /**
@@ -74,7 +73,7 @@ public interface ProviHealthApi {
      * @return Whether or not the registry succeeded. This is false if a higher priority icon already exists.
      */
     default boolean registerIcon (EntityType<?> type, @NotNull Item item, int priority) {
-        return ElementRegistry.registerItem(type, item.getDefaultStack(), priority);
+        return ElementRegistry.registerItem(type, item.getDefaultInstance(), priority);
     }
 
 
@@ -231,6 +230,6 @@ public interface ProviHealthApi {
 
     @FunctionalInterface
     interface TitleGenerator {
-        Text apply (LivingEntity entity, boolean isWorld, boolean isHUD);
+        Component apply (LivingEntity entity, boolean isWorld, boolean isHUD);
     }
 }

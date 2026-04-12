@@ -2,19 +2,19 @@ package com.provismet.provihealth.particle;
 
 import com.provismet.lilylib.util.MoreMath;
 import com.provismet.provihealth.config.Options;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.particle.BillboardParticle;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleFactory;
-import net.minecraft.client.particle.SpriteProvider;
-import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.SingleQuadParticle;
+import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.ARGB;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.phys.Vec3;
 
-public class HealthParticle extends BillboardParticle {
+public class HealthParticle extends SingleQuadParticle {
     private final String text;
     private final float rotationSpeed;
     private final float maxScale;
@@ -22,95 +22,95 @@ public class HealthParticle extends BillboardParticle {
 
     private float prevScale;
 
-    protected HealthParticle (ClientWorld clientWorld, double x, double y, double z, HealthParticleEffect particleEffect, SpriteProvider provider) {
-        super(clientWorld, x, y, z, provider.getFirst());
+    protected HealthParticle (ClientLevel clientWorld, double x, double y, double z, HealthParticleEffect particleEffect, SpriteSet provider) {
+        super(clientWorld, x, y, z, provider.first());
 
-        this.red = ColorHelper.getRed(particleEffect.colour()) / 255f;
-        this.green = ColorHelper.getGreen(particleEffect.colour()) / 255f;
-        this.blue = ColorHelper.getBlue(particleEffect.colour()) / 255f;
-        this.scale = 0f;
+        this.rCol = ARGB.red(particleEffect.colour()) / 255f;
+        this.gCol = ARGB.green(particleEffect.colour()) / 255f;
+        this.bCol = ARGB.blue(particleEffect.colour()) / 255f;
+        this.quadSize = 0f;
         this.prevScale = 0f;
-        this.alpha = ColorHelper.getAlpha(particleEffect.colour()) / 255f;
+        this.alpha = ARGB.alpha(particleEffect.colour()) / 255f;
         this.textColour = particleEffect.textColour();
         this.text = particleEffect.text();
-        this.maxAge = 40;
+        this.lifetime = 40;
 
         this.rotationSpeed = (float)Math.toRadians((this.random.nextDouble() * 1.5 + 0.5) * (this.random.nextBoolean() ? 10 : -10));
         this.maxScale = particleEffect.scale();
 
         final double sign = this.random.nextBoolean() ? 1 : -1;
-        final MoreMath.RightAngledTriangle triangle = new MoreMath.RightAngledTriangle(new Vec3d(this.x, this.y, this.z), MinecraftClient.getInstance().player.getEyePos());
+        final MoreMath.RightAngledTriangle triangle = new MoreMath.RightAngledTriangle(new Vec3(this.x, this.y, this.z), Minecraft.getInstance().player.getEyePosition());
 
         switch (Options.particleType) {
             case RISING:
                 this.setPos(this.x + 0.5 * -triangle.cosine() * sign, this.y, this.z + 0.5 * triangle.sine() * sign);
-                this.velocityX = 0;
-                this.velocityY = 0.1;
-                this.velocityZ = 0;
-                this.velocityMultiplier = 0.85f;
+                this.xd = 0;
+                this.yd = 0.1;
+                this.zd = 0;
+                this.friction = 0.85f;
                 break;
 
             case GRAVITY:
                 this.setPos(this.x + 0.5 * -triangle.cosine() * sign, this.y + this.random.nextDouble() * 0.5, this.z + 0.5 * triangle.sine() * sign);
                 double velBonus = this.random.nextDouble() * 0.025 + 0.05;
-                this.velocityX = velBonus * -triangle.cosine() * sign;
-                this.velocityY = 0.125;
-                this.velocityZ = velBonus * triangle.sine() * sign;
+                this.xd = velBonus * -triangle.cosine() * sign;
+                this.yd = 0.125;
+                this.zd = velBonus * triangle.sine() * sign;
                 break;
 
             case STATIC:
                 this.setPos(this.x + 0.5 * -triangle.cosine() * sign, this.y + this.random.nextDouble() * 0.75, this.z + 0.5 * triangle.sine() * sign);
-                this.velocityX = 0;
-                this.velocityY = 0;
-                this.velocityZ = 0;
+                this.xd = 0;
+                this.yd = 0;
+                this.zd = 0;
                 break;
 
             default:
                 break;
         }
 
-        this.lastX = this.x;
-        this.lastY = this.y;
-        this.lastZ = this.z;
+        this.xo = this.x;
+        this.yo = this.y;
+        this.zo = this.z;
 
-        this.world.addParticleClient(
+        this.level.addParticle(
             TextParticleEffect.fromHealthParticleEffect(particleEffect),
             true,
             true,
             this.x, this.y, this.z,
-            this.velocityX, this.velocityY, this.velocityZ
+            this.xd, this.yd, this.zd
         );
     }
 
     @Override
     public void tick () {
         super.tick();
-        this.prevScale = this.scale;
+        this.prevScale = this.quadSize;
 
-        if (this.age > this.maxAge / 2) this.scale -= this.maxScale / (this.maxAge / 2f);
-        else if (this.scale < this.maxScale) this.scale += this.maxScale / 5f;
+        if (this.age > this.lifetime / 2) this.quadSize -= this.maxScale / (this.lifetime / 2f);
+        else if (this.quadSize < this.maxScale) this.quadSize += this.maxScale / 5f;
 
-        this.lastZRotation = this.zRotation;
-        this.zRotation += this.rotationSpeed;
+        this.oRoll = this.roll;
+        this.roll += this.rotationSpeed;
 
         if (Options.particleType == Options.DamageParticleType.GRAVITY) {
             if (this.onGround) {
-                this.velocityX = 0;
-                this.velocityY = 0;
-                this.velocityZ = 0;
+                this.xd = 0;
+                this.yd = 0;
+                this.zd = 0;
             }
-            else this.velocityY -= 0.025;
+            else this.yd -= 0.025;
         }
     }
 
     @Override
-    protected RenderType getRenderType () {
-        return RenderType.PARTICLE_ATLAS_TRANSLUCENT;
+    protected Layer getLayer () {
+        return Layer.TRANSLUCENT;
     }
 
     @Override
-    public int getBrightness (float tint) {
-        return LightmapTextureManager.pack(15, 15);
+    public int getLightColor (float tint) {
+        return LightTexture.pack(15, 15);
     }
 
     public String getText () {
@@ -122,29 +122,29 @@ public class HealthParticle extends BillboardParticle {
     }
 
     @Override
-    public float getSize (float tickDelta) {
-        return MathHelper.lerp(tickDelta, this.prevScale, this.scale);
+    public float getQuadSize (float tickDelta) {
+        return Mth.lerp(tickDelta, this.prevScale, this.quadSize);
     }
 
-    public Vec3d getPos () {
-        return new Vec3d(this.x, this.y, this.z);
+    public Vec3 getPos () {
+        return new Vec3(this.x, this.y, this.z);
     }
 
-    public Vec3d getPrevPos () {
-        return new Vec3d(this.lastX, this.lastY, this.lastZ);
+    public Vec3 getPrevPos () {
+        return new Vec3(this.xo, this.yo, this.zo);
     }
 
-    public static class Factory implements ParticleFactory<HealthParticleEffect> {
-        private final SpriteProvider spriteProvider;
+    public static class Factory implements ParticleProvider<HealthParticleEffect> {
+        private final SpriteSet spriteProvider;
 
-        public Factory (SpriteProvider spriteProvider) {
+        public Factory (SpriteSet spriteProvider) {
             this.spriteProvider = spriteProvider;
         }
 
         @Override
-        public Particle createParticle (HealthParticleEffect particleEffect, ClientWorld clientWorld, double x, double y, double z, double velX, double velY, double velZ, Random random) {
+        public Particle createParticle (HealthParticleEffect particleEffect, ClientLevel clientWorld, double x, double y, double z, double velX, double velY, double velZ, RandomSource random) {
             HealthParticle textParticle = new HealthParticle(clientWorld, x, y, z, particleEffect, this.spriteProvider);
-            textParticle.updateSprite(this.spriteProvider);
+            textParticle.setSpriteFromAge(this.spriteProvider);
             return textParticle;
         }
 

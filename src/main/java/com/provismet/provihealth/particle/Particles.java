@@ -4,10 +4,10 @@ import com.provismet.provihealth.ProviHealthClient;
 
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
-import net.minecraft.particle.ParticleEffect;
-import net.minecraft.particle.ParticleType;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 public class Particles {
     public static final ParticleType<TextParticleEffect> TEXT_PARTICLE = register("text_particle", FabricParticleTypes.complex(TextParticleEffect.CODEC, TextParticleEffect.PACKET_CODEC), TextParticle.Factory::new);
@@ -15,8 +15,8 @@ public class Particles {
 
     public static void init () {}
 
-    private static <T extends ParticleEffect> ParticleType<T> register (String name, ParticleType<T> particle, ParticleFactoryRegistry.PendingParticleFactory<T> factoryConstructor) {
-        Registry.register(Registries.PARTICLE_TYPE, ProviHealthClient.identifier(name), particle);
+    private static <T extends ParticleOptions> ParticleType<T> register (String name, ParticleType<T> particle, ParticleFactoryRegistry.PendingParticleFactory<T> factoryConstructor) {
+        Registry.register(BuiltInRegistries.PARTICLE_TYPE, ProviHealthClient.identifier(name), particle);
         ParticleFactoryRegistry.getInstance().register(particle, factoryConstructor);
         return particle;
     }

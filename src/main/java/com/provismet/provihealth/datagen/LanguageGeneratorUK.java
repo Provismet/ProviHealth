@@ -1,17 +1,16 @@
 package com.provismet.provihealth.datagen;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.minecraft.registry.RegistryWrapper;
-
+import net.minecraft.core.HolderLookup;
 import java.util.concurrent.CompletableFuture;
 
 public class LanguageGeneratorUK extends LanguageGenerator {
-    protected LanguageGeneratorUK (FabricDataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookup) {
+    protected LanguageGeneratorUK (FabricDataOutput dataOutput, CompletableFuture<HolderLookup.Provider> registryLookup) {
         super(dataOutput, registryLookup, "en_gb");
     }
 
     @Override
-    public void generateTranslations (RegistryWrapper.WrapperLookup registryLookup, TranslationBuilder translationBuilder) {
+    public void generateTranslations (HolderLookup.Provider registryLookup, TranslationBuilder translationBuilder) {
         this.entry(translationBuilder, "damageColour", "Damage Particle Colour");
         this.entry(translationBuilder, "healingColour", "Healing Particle Colour");
         this.entry(translationBuilder, "damageParticleTextColour", "Damage Text Colour");

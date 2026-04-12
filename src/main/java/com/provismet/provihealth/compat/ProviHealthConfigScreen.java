@@ -11,11 +11,9 @@ import com.provismet.provihealth.config.Options.VisibilityType;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
-
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,149 +21,149 @@ public class ProviHealthConfigScreen {
     public static Screen build (Screen parent) {
         ConfigBuilder builder = ConfigBuilder.create();
         builder.setParentScreen(parent);
-        builder.setTitle(Text.translatable("title.provihealth.config"));
-        builder.setDefaultBackgroundTexture(Identifier.of("textures/block/deepslate_tiles.png"));
+        builder.setTitle(Component.translatable("title.provihealth.config"));
+        builder.setDefaultBackgroundTexture(Identifier.parse("textures/block/deepslate_tiles.png"));
 
         ConfigEntryBuilder entryBuilder = builder.entryBuilder();
 
-        ConfigCategory hud = builder.getOrCreateCategory(Text.translatable("category.provihealth.hud"));
-        ConfigCategory health = builder.getOrCreateCategory(Text.translatable("category.provihealth.health"));
-        ConfigCategory particles = builder.getOrCreateCategory(Text.translatable("category.provihealth.particles"));
-        ConfigCategory compatibility = builder.getOrCreateCategory(Text.translatable("category.provihealth.compat"));
+        ConfigCategory hud = builder.getOrCreateCategory(Component.translatable("category.provihealth.hud"));
+        ConfigCategory health = builder.getOrCreateCategory(Component.translatable("category.provihealth.health"));
+        ConfigCategory particles = builder.getOrCreateCategory(Component.translatable("category.provihealth.particles"));
+        ConfigCategory compatibility = builder.getOrCreateCategory(Component.translatable("category.provihealth.compat"));
 
-        hud.addEntry(entryBuilder.startIntField(Text.translatable("entry.provihealth.hudDuration"), Options.maxHealthBarTicks)
+        hud.addEntry(entryBuilder.startIntField(Component.translatable("entry.provihealth.hudDuration"), Options.maxHealthBarTicks)
             .setDefaultValue(40)
             .setMin(0)
-            .setTooltip(Text.translatable("tooltip.provihealth.hudDuration"))
+            .setTooltip(Component.translatable("tooltip.provihealth.hudDuration"))
             .setSaveConsumer(newValue -> Options.maxHealthBarTicks = newValue)
             .build()
         );
 
-        hud.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.showIcon"), Options.showHudIcon)
+        hud.addEntry(entryBuilder.startBooleanToggle(Component.translatable("entry.provihealth.showIcon"), Options.showHudIcon)
             .setDefaultValue(true)
             .setSaveConsumer(newValue -> Options.showHudIcon = newValue)
             .build()
         );
 
-        hud.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.hudPortraits"), Options.useCustomHudPortraits)
+        hud.addEntry(entryBuilder.startBooleanToggle(Component.translatable("entry.provihealth.hudPortraits"), Options.useCustomHudPortraits)
             .setDefaultValue(true)
-            .setTooltip(Text.translatable("tooltip.provihealth.hudPortraits"))
+            .setTooltip(Component.translatable("tooltip.provihealth.hudPortraits"))
             .setSaveConsumer(newValue -> Options.useCustomHudPortraits = newValue)
             .build()
         );
 
-        hud.addEntry(entryBuilder.startFloatField(Text.translatable("entry.provihealth.hudGlide"), Options.hudGlide)
+        hud.addEntry(entryBuilder.startFloatField(Component.translatable("entry.provihealth.hudGlide"), Options.hudGlide)
             .setDefaultValue(0.5f)
             .setMin(0.01f)
             .setMax(1f)
-            .setTooltip(Text.translatable("tooltip.provihealth.glide"))
+            .setTooltip(Component.translatable("tooltip.provihealth.glide"))
             .setSaveConsumer(newValue -> Options.hudGlide = newValue)
             .build()
         );
 
-        hud.addEntry(entryBuilder.startEnumSelector(Text.translatable("entry.provihealth.hudOffsetX"), HUDPosition.class, Options.hudPosition)
+        hud.addEntry(entryBuilder.startEnumSelector(Component.translatable("entry.provihealth.hudOffsetX"), HUDPosition.class, Options.hudPosition)
             .setDefaultValue(HUDPosition.LEFT)
             .setSaveConsumer(newValue -> Options.hudPosition = newValue)
             .build()
         );
 
-        hud.addEntry(entryBuilder.startIntSlider(Text.translatable("entry.provihealth.hudOffsetY"), Options.hudOffsetPercent, 0, 100)
+        hud.addEntry(entryBuilder.startIntSlider(Component.translatable("entry.provihealth.hudOffsetY"), Options.hudOffsetPercent, 0, 100)
             .setDefaultValue(0)
-            .setTooltip(Text.translatable("tooltip.provihealth.hudOffsetY"))
+            .setTooltip(Component.translatable("tooltip.provihealth.hudOffsetY"))
             .setSaveConsumer(newValue -> Options.hudOffsetPercent = newValue)
             .build()
         );
 
-        hud.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.hudTitles"), Options.hudTitles)
+        hud.addEntry(entryBuilder.startBooleanToggle(Component.translatable("entry.provihealth.hudTitles"), Options.hudTitles)
             .setDefaultValue(true)
-            .setTooltip(Text.translatable("tooltip.provihealth.hudTitles"))
+            .setTooltip(Component.translatable("tooltip.provihealth.hudTitles"))
             .setSaveConsumer(newValue -> Options.hudTitles = newValue)
             .build()
         );
 
-        hud.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.hudStatuses"), Options.hudStatuses)
+        hud.addEntry(entryBuilder.startBooleanToggle(Component.translatable("entry.provihealth.hudStatuses"), Options.hudStatuses)
             .setDefaultValue(true)
             .setSaveConsumer(newValue -> Options.hudStatuses = newValue)
             .build()
         );
 
-        hud.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.gradient"), Options.hudGradient)
+        hud.addEntry(entryBuilder.startBooleanToggle(Component.translatable("entry.provihealth.gradient"), Options.hudGradient)
             .setDefaultValue(false)
-            .setTooltip(Text.translatable("tooltip.provihealth.gradient"))
+            .setTooltip(Component.translatable("tooltip.provihealth.gradient"))
             .setSaveConsumer(newValue -> Options.hudGradient = newValue)
             .build()
         );
 
-        hud.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barStartColour"), Options.hudStartColour)
+        hud.addEntry(entryBuilder.startColorField(Component.translatable("entry.provihealth.barStartColour"), Options.hudStartColour)
             .setDefaultValue(0x00C100)
             .setSaveConsumer(newValue -> Options.hudStartColour = newValue)
             .build()
         );
 
-        hud.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barEndColour"), Options.hudEndColour)
+        hud.addEntry(entryBuilder.startColorField(Component.translatable("entry.provihealth.barEndColour"), Options.hudEndColour)
             .setDefaultValue(0xFF0000)
             .setSaveConsumer(newValue -> Options.hudEndColour = newValue)
             .build()
         );
 
-        hud.addEntry(entryBuilder.startEnumSelector(Text.translatable("entry.provihealth.boss"), HUDType.class, Options.bossHUD)
+        hud.addEntry(entryBuilder.startEnumSelector(Component.translatable("entry.provihealth.boss"), HUDType.class, Options.bossHUD)
             .setDefaultValue(HUDType.FULL)
             .setSaveConsumer(newValue -> Options.bossHUD = newValue)
             .build()
         );
 
-        hud.addEntry(entryBuilder.startEnumSelector(Text.translatable("entry.provihealth.hostile"), HUDType.class, Options.hostileHUD)
+        hud.addEntry(entryBuilder.startEnumSelector(Component.translatable("entry.provihealth.hostile"), HUDType.class, Options.hostileHUD)
             .setDefaultValue(HUDType.FULL)
             .setSaveConsumer(newValue -> Options.hostileHUD = newValue)
             .build()
         );
 
-        hud.addEntry(entryBuilder.startEnumSelector(Text.translatable("entry.provihealth.player"), HUDType.class, Options.playerHUD)
+        hud.addEntry(entryBuilder.startEnumSelector(Component.translatable("entry.provihealth.player"), HUDType.class, Options.playerHUD)
             .setDefaultValue(HUDType.FULL)
             .setSaveConsumer(newValue -> Options.playerHUD = newValue)
             .build()
         );
 
-        hud.addEntry(entryBuilder.startEnumSelector(Text.translatable("entry.provihealth.other"), HUDType.class, Options.otherHUD)
+        hud.addEntry(entryBuilder.startEnumSelector(Component.translatable("entry.provihealth.other"), HUDType.class, Options.otherHUD)
             .setDefaultValue(HUDType.FULL)
             .setSaveConsumer(newValue -> Options.otherHUD = newValue)
             .build()
         );
 
-        hud.addEntry(entryBuilder.startStrList(Text.translatable("entry.provihealth.blacklist"), Options.blacklistHUD)
+        hud.addEntry(entryBuilder.startStrList(Component.translatable("entry.provihealth.blacklist"), Options.blacklistHUD)
             .setDefaultValue(List.of("minecraft:armor_stand"))
             .setSaveConsumer(newValue -> Options.blacklistHUD = newValue)
             .build()
         );
 
-        health.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.overrideLabels"), Options.overrideLabels)
+        health.addEntry(entryBuilder.startBooleanToggle(Component.translatable("entry.provihealth.overrideLabels"), Options.overrideLabels)
             .setDefaultValue(false)
             .setSaveConsumer(newValue -> Options.overrideLabels = newValue)
-            .setTooltip(Text.translatable("tooltip.provihealth.overrideLabels"))
+            .setTooltip(Component.translatable("tooltip.provihealth.overrideLabels"))
             .build()
         );
 
-        health.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.worldText"), Options.showTextInWorld)
+        health.addEntry(entryBuilder.startBooleanToggle(Component.translatable("entry.provihealth.worldText"), Options.showTextInWorld)
             .setDefaultValue(true)
             .setSaveConsumer(newValue -> Options.showTextInWorld = newValue)
             .build()
         );
 
-        health.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.worldShadows"), Options.worldShadows)
+        health.addEntry(entryBuilder.startBooleanToggle(Component.translatable("entry.provihealth.worldShadows"), Options.worldShadows)
             .setDefaultValue(true)
             .setSaveConsumer(newValue -> Options.worldShadows = newValue)
             .build()
         );
 
-        health.addEntry(entryBuilder.startFloatField(Text.translatable("entry.provihealth.maxDistance"), Options.maxRenderDistance)
+        health.addEntry(entryBuilder.startFloatField(Component.translatable("entry.provihealth.maxDistance"), Options.maxRenderDistance)
             .setMin(0f)
             .setDefaultValue(24f)
-            .setTooltip(Text.translatable("tooltip.provihealth.maxDistance"))
+            .setTooltip(Component.translatable("tooltip.provihealth.maxDistance"))
             .setSaveConsumer(newValue -> Options.maxRenderDistance = newValue)
             .build()
         );
 
-        health.addEntry(entryBuilder.startFloatField(Text.translatable("entry.provihealth.barScale"), Options.worldHealthBarScale)
+        health.addEntry(entryBuilder.startFloatField(Component.translatable("entry.provihealth.barScale"), Options.worldHealthBarScale)
             .setMin(0.01f)
             .setMax(3f)
             .setDefaultValue(1.5f)
@@ -173,139 +171,139 @@ public class ProviHealthConfigScreen {
             .build()
         );
 
-        health.addEntry(entryBuilder.startFloatField(Text.translatable("entry.provihealth.worldOffsetY"), Options.worldOffsetY)
+        health.addEntry(entryBuilder.startFloatField(Component.translatable("entry.provihealth.worldOffsetY"), Options.worldOffsetY)
             .setDefaultValue(0f)
             .setSaveConsumer(newValue -> Options.worldOffsetY = newValue)
             .build()
         );
 
-        health.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.worldTitles"), Options.worldTitles)
+        health.addEntry(entryBuilder.startBooleanToggle(Component.translatable("entry.provihealth.worldTitles"), Options.worldTitles)
             .setDefaultValue(true)
-            .setTooltip(Text.translatable("tooltip.provihealth.worldTitles"))
+            .setTooltip(Component.translatable("tooltip.provihealth.worldTitles"))
             .setSaveConsumer(newValue -> Options.worldTitles = newValue)
             .build()
         );
 
-        health.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.tintBackground"), Options.tintBackground)
+        health.addEntry(entryBuilder.startBooleanToggle(Component.translatable("entry.provihealth.tintBackground"), Options.tintBackground)
             .setDefaultValue(false)
-            .setTooltip(Text.translatable("tooltip.provihealth.tintBackground"))
+            .setTooltip(Component.translatable("tooltip.provihealth.tintBackground"))
             .setSaveConsumer(newValue -> Options.tintBackground = newValue)
             .build()
         );
 
-        health.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.teamColours"), Options.useTeamColours)
+        health.addEntry(entryBuilder.startBooleanToggle(Component.translatable("entry.provihealth.teamColours"), Options.useTeamColours)
             .setDefaultValue(false)
-            .setTooltip(Text.translatable("tooltip.provihealth.teamColours"))
+            .setTooltip(Component.translatable("tooltip.provihealth.teamColours"))
             .setSaveConsumer(newValue -> Options.useTeamColours = newValue)
             .build()
         );
 
-        health.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.gradient"), Options.worldGradient)
+        health.addEntry(entryBuilder.startBooleanToggle(Component.translatable("entry.provihealth.gradient"), Options.worldGradient)
             .setDefaultValue(false)
-            .setTooltip(Text.translatable("tooltip.provihealth.gradient"))
+            .setTooltip(Component.translatable("tooltip.provihealth.gradient"))
             .setSaveConsumer(newValue -> Options.worldGradient = newValue)
             .build()
         );
 
-        health.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barStartColour"), Options.worldStartColour)
+        health.addEntry(entryBuilder.startColorField(Component.translatable("entry.provihealth.barStartColour"), Options.worldStartColour)
             .setDefaultValue(0x00C100)
             .setSaveConsumer(newValue -> Options.worldStartColour = newValue)
             .build()
         );
 
-        health.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.barEndColour"), Options.worldEndColour)
+        health.addEntry(entryBuilder.startColorField(Component.translatable("entry.provihealth.barEndColour"), Options.worldEndColour)
             .setDefaultValue(0xFF0000)
             .setSaveConsumer(newValue -> Options.worldEndColour = newValue)
             .build()
         );
 
-        health.addEntry(entryBuilder.startSubCategory(Text.translatable("subcategory.provihealth.boss"), Arrays.asList(
-                entryBuilder.startEnumSelector(Text.translatable("entry.provihealth.healthBar"), VisibilityType.class, Options.bosses)
+        health.addEntry(entryBuilder.startSubCategory(Component.translatable("subcategory.provihealth.boss"), Arrays.asList(
+                entryBuilder.startEnumSelector(Component.translatable("entry.provihealth.healthBar"), VisibilityType.class, Options.bosses)
                     .setDefaultValue(VisibilityType.ALWAYS_HIDE)
                     .setSaveConsumer(newValue -> Options.bosses = newValue)
                     .build(),
-                entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.targetOverride"), Options.bossesVisibilityOverride)
+                entryBuilder.startBooleanToggle(Component.translatable("entry.provihealth.targetOverride"), Options.bossesVisibilityOverride)
                     .setDefaultValue(false)
-                    .setTooltip(Text.translatable("tooltip.provihealth.targetOverride"))
+                    .setTooltip(Component.translatable("tooltip.provihealth.targetOverride"))
                     .setSaveConsumer(newValue -> Options.bossesVisibilityOverride = newValue)
                     .build()
             ))
             .build()
         );
 
-        health.addEntry(entryBuilder.startSubCategory(Text.translatable("subcategory.provihealth.hostile"), Arrays.asList(
-                entryBuilder.startEnumSelector(Text.translatable("entry.provihealth.healthBar"), VisibilityType.class, Options.hostile)
+        health.addEntry(entryBuilder.startSubCategory(Component.translatable("subcategory.provihealth.hostile"), Arrays.asList(
+                entryBuilder.startEnumSelector(Component.translatable("entry.provihealth.healthBar"), VisibilityType.class, Options.hostile)
                     .setDefaultValue(VisibilityType.ALWAYS_SHOW)
                     .setSaveConsumer(newValue -> Options.hostile = newValue)
                     .build(),
-                entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.targetOverride"), Options.hostileVisibilityOverride)
+                entryBuilder.startBooleanToggle(Component.translatable("entry.provihealth.targetOverride"), Options.hostileVisibilityOverride)
                     .setDefaultValue(true)
-                    .setTooltip(Text.translatable("tooltip.provihealth.targetOverride"))
+                    .setTooltip(Component.translatable("tooltip.provihealth.targetOverride"))
                     .setSaveConsumer(newValue -> Options.hostileVisibilityOverride = newValue)
                     .build()
             ))
             .build()
         );
 
-        health.addEntry(entryBuilder.startSubCategory(Text.translatable("subcategory.provihealth.player"), Arrays.asList(
-                entryBuilder.startEnumSelector(Text.translatable("entry.provihealth.healthBar"), VisibilityType.class, Options.players)
+        health.addEntry(entryBuilder.startSubCategory(Component.translatable("subcategory.provihealth.player"), Arrays.asList(
+                entryBuilder.startEnumSelector(Component.translatable("entry.provihealth.healthBar"), VisibilityType.class, Options.players)
                     .setDefaultValue(VisibilityType.HIDE_IF_FULL)
                     .setSaveConsumer(newValue -> Options.players = newValue)
                     .build(),
-                entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.targetOverride"), Options.playersVisibilityOverride)
+                entryBuilder.startBooleanToggle(Component.translatable("entry.provihealth.targetOverride"), Options.playersVisibilityOverride)
                     .setDefaultValue(true)
-                    .setTooltip(Text.translatable("tooltip.provihealth.targetOverride"))
+                    .setTooltip(Component.translatable("tooltip.provihealth.targetOverride"))
                     .setSaveConsumer(newValue -> Options.playersVisibilityOverride = newValue)
                     .build()
             ))
             .build()
         );
 
-        health.addEntry(entryBuilder.startSubCategory(Text.translatable("subcategory.provihealth.other"), Arrays.asList(
-                entryBuilder.startEnumSelector(Text.translatable("entry.provihealth.healthBar"), VisibilityType.class, Options.others)
+        health.addEntry(entryBuilder.startSubCategory(Component.translatable("subcategory.provihealth.other"), Arrays.asList(
+                entryBuilder.startEnumSelector(Component.translatable("entry.provihealth.healthBar"), VisibilityType.class, Options.others)
                     .setDefaultValue(VisibilityType.HIDE_IF_FULL)
                     .setSaveConsumer(newValue -> Options.others = newValue)
                     .build(),
-                entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.targetOverride"), Options.othersVisibilityOverride)
+                entryBuilder.startBooleanToggle(Component.translatable("entry.provihealth.targetOverride"), Options.othersVisibilityOverride)
                     .setDefaultValue(true)
-                    .setTooltip(Text.translatable("tooltip.provihealth.targetOverride"))
+                    .setTooltip(Component.translatable("tooltip.provihealth.targetOverride"))
                     .setSaveConsumer(newValue -> Options.othersVisibilityOverride = newValue)
                     .build()
             ))
             .build()
         );
 
-        health.addEntry(entryBuilder.startStrList(Text.translatable("entry.provihealth.blacklist"), Options.blacklist)
+        health.addEntry(entryBuilder.startStrList(Component.translatable("entry.provihealth.blacklist"), Options.blacklist)
             .setDefaultValue(List.of("minecraft:armor_stand"))
             .setSaveConsumer(newValue -> Options.blacklist = newValue)
             .build()
         );
 
-        particles.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.damageParticles"), Options.spawnDamageParticles)
+        particles.addEntry(entryBuilder.startBooleanToggle(Component.translatable("entry.provihealth.damageParticles"), Options.spawnDamageParticles)
             .setDefaultValue(true)
             .setSaveConsumer(newValue -> Options.spawnDamageParticles = newValue)
             .build()
         );
 
-        particles.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.healingParticles"), Options.spawnHealingParticles)
+        particles.addEntry(entryBuilder.startBooleanToggle(Component.translatable("entry.provihealth.healingParticles"), Options.spawnHealingParticles)
             .setDefaultValue(false)
             .setSaveConsumer(newValue -> Options.spawnHealingParticles = newValue)
             .build()
         );
 
-        particles.addEntry(entryBuilder.startEnumSelector(Text.translatable("entry.provihealth.particleType"), DamageParticleType.class, Options.particleType)
+        particles.addEntry(entryBuilder.startEnumSelector(Component.translatable("entry.provihealth.particleType"), DamageParticleType.class, Options.particleType)
             .setDefaultValue(DamageParticleType.RISING)
             .setSaveConsumer(newValue -> Options.particleType = newValue)
             .build()
         );
 
-        particles.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.damageColour"), Options.damageColour)
+        particles.addEntry(entryBuilder.startColorField(Component.translatable("entry.provihealth.damageColour"), Options.damageColour)
             .setDefaultValue(0xFF0000)
             .setSaveConsumer(newValue -> Options.damageColour = newValue)
             .build()
         );
 
-        particles.addEntry(entryBuilder.startFloatField(Text.translatable("entry.provihealth.damageAlpha"), Options.damageAlpha)
+        particles.addEntry(entryBuilder.startFloatField(Component.translatable("entry.provihealth.damageAlpha"), Options.damageAlpha)
             .setDefaultValue(1f)
             .setMin(0f)
             .setMax(1f)
@@ -313,13 +311,13 @@ public class ProviHealthConfigScreen {
             .build()
         );
 
-        particles.addEntry(entryBuilder.startColorField(Text.translatable("entry.provihealth.healingColour"), Options.healingColour)
+        particles.addEntry(entryBuilder.startColorField(Component.translatable("entry.provihealth.healingColour"), Options.healingColour)
             .setDefaultValue(0x00FF00)
             .setSaveConsumer(newValue -> Options.healingColour = newValue)
             .build()
         );
 
-        particles.addEntry(entryBuilder.startFloatField(Text.translatable("entry.provihealth.healingAlpha"), Options.healingAlpha)
+        particles.addEntry(entryBuilder.startFloatField(Component.translatable("entry.provihealth.healingAlpha"), Options.healingAlpha)
             .setDefaultValue(1f)
             .setMin(0f)
             .setMax(1f)
@@ -327,41 +325,41 @@ public class ProviHealthConfigScreen {
             .build()
         );
 
-        particles.addEntry(entryBuilder.startAlphaColorField(Text.translatable("entry.provihealth.damageParticleTextColour"), Options.damageParticleTextColour)
+        particles.addEntry(entryBuilder.startAlphaColorField(Component.translatable("entry.provihealth.damageParticleTextColour"), Options.damageParticleTextColour)
             .setDefaultValue(0xFFFFFFFF)
             .setSaveConsumer(newValue -> Options.damageParticleTextColour = newValue)
             .build()
         );
 
-        particles.addEntry(entryBuilder.startAlphaColorField(Text.translatable("entry.provihealth.healingParticleTextColour"), Options.healingParticleTextColour)
+        particles.addEntry(entryBuilder.startAlphaColorField(Component.translatable("entry.provihealth.healingParticleTextColour"), Options.healingParticleTextColour)
             .setDefaultValue(0xFFFFFFFF)
             .setSaveConsumer(newValue -> Options.healingParticleTextColour = newValue)
             .build()
         );
 
-        particles.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.provihealth.particleTextShadow"), Options.particleTextShadow)
+        particles.addEntry(entryBuilder.startBooleanToggle(Component.translatable("entry.provihealth.particleTextShadow"), Options.particleTextShadow)
             .setDefaultValue(true)
             .setSaveConsumer(newValue -> Options.particleTextShadow = newValue)
             .build()
         );
 
-        particles.addEntry(entryBuilder.startFloatField(Text.translatable("entry.provihealth.particleScale"), Options.particleScale)
+        particles.addEntry(entryBuilder.startFloatField(Component.translatable("entry.provihealth.particleScale"), Options.particleScale)
             .setDefaultValue(0.25f)
             .setMin(0.01f)
             .setSaveConsumer(newValue -> Options.particleScale = newValue)
             .build()
         );
 
-        particles.addEntry(entryBuilder.startFloatField(Text.translatable("entry.provihealth.maxParticleDistance"), Options.maxParticleDistance)
+        particles.addEntry(entryBuilder.startFloatField(Component.translatable("entry.provihealth.maxParticleDistance"), Options.maxParticleDistance)
             .setDefaultValue(16f)
             .setMin(0f)
             .setSaveConsumer(newValue -> Options.maxParticleDistance = newValue)
             .build()
         );
 
-        compatibility.addEntry(entryBuilder.startEnumSelector(Text.translatable("entry.provihealth.compatText"), SeeThroughText.class, Options.seeThroughTextType)
+        compatibility.addEntry(entryBuilder.startEnumSelector(Component.translatable("entry.provihealth.compatText"), SeeThroughText.class, Options.seeThroughTextType)
             .setDefaultValue(SeeThroughText.STANDARD)
-            .setTooltip(Text.translatable("tooltip.provihealth.compatText"))
+            .setTooltip(Component.translatable("tooltip.provihealth.compatText"))
             .setSaveConsumer(newValue -> Options.seeThroughTextType = newValue)
             .build()
         );
@@ -375,7 +373,7 @@ public class ProviHealthConfigScreen {
         );
          */
 
-        compatibility.addEntry(entryBuilder.startEnumSelector(Text.translatable("entry.provihealth.compatHud"), HUDPortraitCompatMode.class, Options.HUDCompat)
+        compatibility.addEntry(entryBuilder.startEnumSelector(Component.translatable("entry.provihealth.compatHud"), HUDPortraitCompatMode.class, Options.HUDCompat)
             .setDefaultValue(HUDPortraitCompatMode.STANDARD)
             .setSaveConsumer(newValue -> Options.HUDCompat = newValue)
             .build()

@@ -6,15 +6,14 @@ import com.mojang.serialization.JsonOps;
 import com.provismet.provihealth.ProviHealthClient;
 import com.provismet.provihealth.config.resources.EntityOptions;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.minecraft.data.DataOutput;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
-import net.minecraft.data.DataWriter;
-import net.minecraft.entity.EntityType;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.data.PackOutput;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.EntityType;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,16 +21,16 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public abstract class EntityOptionsDatagenProvider implements DataProvider {
-    private final CompletableFuture<RegistryWrapper.WrapperLookup> future;
-    private final DataOutput.PathResolver pathResolver;
+    private final CompletableFuture<HolderLookup.Provider> future;
+    private final PackOutput.PathProvider pathResolver;
 
-    protected EntityOptionsDatagenProvider (FabricDataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+    protected EntityOptionsDatagenProvider (FabricDataOutput dataOutput, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         this.future = registriesFuture;
-        this.pathResolver = dataOutput.getResolver(DataOutput.OutputType.RESOURCE_PACK, ProviHealthClient.MODID + "/entity");
+        this.pathResolver = dataOutput.createPathProvider(PackOutput.Target.RESOURCE_PACK, ProviHealthClient.MODID + "/entity");
     }
 
     @Override
-    public CompletableFuture<?> run (DataWriter writer) {
+    public CompletableFuture<?> run (CachedOutput writer) {
         return this.future.thenCompose(wrapperLookup -> {
             EntityOptionsConsumer consumer = new EntityOptionsConsumer(wrapperLookup);
             this.generate(consumer);
@@ -39,8 +38,8 @@ public abstract class EntityOptionsDatagenProvider implements DataProvider {
             return CompletableFuture.allOf(consumer.entries.entrySet()
                 .stream()
                 .map(entry -> {
-                    Path path = this.pathResolver.resolveJson(entry.getKey());
-                    return DataProvider.writeToPath(writer, entry.getValue(), path);
+                    Path path = this.pathResolver.json(entry.getKey());
+                    return DataProvider.saveStable(writer, entry.getValue(), path);
                 })
                 .toArray(CompletableFuture[]::new)
             );
@@ -56,18 +55,18 @@ public abstract class EntityOptionsDatagenProvider implements DataProvider {
 
     protected static class EntityOptionsConsumer {
         private final Map<Identifier, JsonElement> entries = new HashMap<>();
-        private final RegistryWrapper.WrapperLookup lookup;
+        private final HolderLookup.Provider lookup;
 
-        private EntityOptionsConsumer (RegistryWrapper.WrapperLookup lookup) {
+        private EntityOptionsConsumer (HolderLookup.Provider lookup) {
             this.lookup = lookup;
         }
 
         public void add (EntityType<?> type, EntityOptions options) {
-            Optional<RegistryKey<EntityType<?>>> optionalKey = Registries.ENTITY_TYPE.getKey(type);
+            Optional<ResourceKey<EntityType<?>>> optionalKey = BuiltInRegistries.ENTITY_TYPE.getResourceKey(type);
             if (optionalKey.isEmpty()) throw new RuntimeException("Registry key not found for entity type: " + type.toString());
 
-            DataResult<JsonElement> json = EntityOptions.CODEC.encodeStart(lookup.getOps(JsonOps.INSTANCE), options);
-            this.entries.put(optionalKey.get().getValue(), json.mapError(message -> "Invalid entry for entity type %s: %s".formatted(optionalKey.get().getValue().toString(), message)).getOrThrow());
+            DataResult<JsonElement> json = EntityOptions.CODEC.encodeStart(lookup.createSerializationContext(JsonOps.INSTANCE), options);
+            this.entries.put(optionalKey.get().identifier(), json.mapError(message -> "Invalid entry for entity type %s: %s".formatted(optionalKey.get().identifier().toString(), message)).getOrThrow());
         }
     }
 }

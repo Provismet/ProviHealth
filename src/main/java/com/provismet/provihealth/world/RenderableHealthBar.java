@@ -1,23 +1,22 @@
 package com.provismet.provihealth.world;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.util.ColourHelper;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.command.OrderedRenderCommandQueue;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Colors;
-import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.MathHelper;
-
 import java.util.Optional;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.util.ARGB;
+import net.minecraft.util.CommonColors;
+import net.minecraft.util.Mth;
 
-public record RenderableHealthBar (Optional<Integer> teamColour, int index, float percentage, boolean isMount) implements OrderedRenderCommandQueue.Custom {
+public record RenderableHealthBar (Optional<Integer> teamColour, int index, float percentage, boolean isMount) implements SubmitNodeCollector.CustomGeometryRenderer {
     @Override
-    public void render (MatrixStack.Entry matrix, VertexConsumer vertexConsumer) {
-        float clampedPercentage = MathHelper.clamp(this.percentage, 0f, 1f);
+    public void render (PoseStack.Pose matrix, VertexConsumer vertexConsumer) {
+        float clampedPercentage = Mth.clamp(this.percentage, 0f, 1f);
         float healthPercentage = 1 - clampedPercentage; // Just to decouple the colouring from the background image.
         if (this.index == 1) clampedPercentage = 1f;
-        if (this.isMount) clampedPercentage = MathHelper.lerp(clampedPercentage, 3f / EntityHealthBar.TEXTURE_SIZE, 61f / EntityHealthBar.TEXTURE_SIZE);
+        if (this.isMount) clampedPercentage = Mth.lerp(clampedPercentage, 3f / EntityHealthBar.TEXTURE_SIZE, 61f / EntityHealthBar.TEXTURE_SIZE);
 
         // As of 1.21, the rendering was changed for whatever reason and the bars were facing in the wrong direction (which makes them invisible).
         // This method now renders them backwards because simply rotating them was causing even more issues.
@@ -38,19 +37,19 @@ public record RenderableHealthBar (Optional<Integer> teamColour, int index, floa
 
         int colour;
         if (!Options.tintBackground && this.index == 1) {
-            colour = Colors.WHITE;
+            colour = CommonColors.WHITE;
         }
         else if (Options.useTeamColours && this.teamColour.isPresent()) {
-            colour = ColorHelper.fullAlpha(this.teamColour.get());
+            colour = ARGB.opaque(this.teamColour.get());
         }
         else {
-            colour = ColorHelper.fullAlpha(ColourHelper.lerpBarColour(healthPercentage, Options.worldStartColour, Options.worldEndColour, Options.worldGradient));
+            colour = ARGB.opaque(ColourHelper.lerpBarColour(healthPercentage, Options.worldStartColour, Options.worldEndColour, Options.worldGradient));
         }
 
         int maxLight = 0xF000F0;
-        vertexConsumer.vertex(matrix, MIN_X, MIN_Y, Z).texture(MIN_U, MIN_V).light(maxLight).color(colour); // Top-Left
-        vertexConsumer.vertex(matrix, MAX_X, MIN_Y, Z).texture(MAX_U, MIN_V).light(maxLight).color(colour); // Top-Right
-        vertexConsumer.vertex(matrix, MAX_X, MAX_Y, Z).texture(MAX_U, MAX_V).light(maxLight).color(colour); // Bottom-Right
-        vertexConsumer.vertex(matrix, MIN_X, MAX_Y, Z).texture(MIN_U, MAX_V).light(maxLight).color(colour); // Bottom-Left
+        vertexConsumer.addVertex(matrix, MIN_X, MIN_Y, Z).setUv(MIN_U, MIN_V).setLight(maxLight).setColor(colour); // Top-Left
+        vertexConsumer.addVertex(matrix, MAX_X, MIN_Y, Z).setUv(MAX_U, MIN_V).setLight(maxLight).setColor(colour); // Top-Right
+        vertexConsumer.addVertex(matrix, MAX_X, MAX_Y, Z).setUv(MAX_U, MAX_V).setLight(maxLight).setColor(colour); // Bottom-Right
+        vertexConsumer.addVertex(matrix, MIN_X, MAX_Y, Z).setUv(MIN_U, MAX_V).setLight(maxLight).setColor(colour); // Bottom-Left
     }
 }

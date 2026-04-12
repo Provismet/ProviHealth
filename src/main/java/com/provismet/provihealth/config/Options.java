@@ -8,13 +8,12 @@ import com.provismet.lilylib.util.json.JsonReader;
 import com.provismet.provihealth.ProviHealthClient;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalEntityTypeTags;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
@@ -89,21 +88,21 @@ public class Options {
     public static HUDPortraitCompatMode HUDCompat = HUDPortraitCompatMode.STANDARD;
 
     public static boolean shouldRenderHealthFor (LivingEntity livingEntity) {
-        if (blacklist.contains(EntityType.getId(livingEntity.getType()).toString())) return false;
+        if (blacklist.contains(EntityType.getKey(livingEntity.getType()).toString())) return false;
 //        float maxDistance = RenderSystem.getShaderFog().length();
 //        if (maxDistance < 1) maxDistance = Options.maxRenderDistance;
 //        if (livingEntity.distanceTo(MinecraftClient.getInstance().player) > Math.min(Options.maxRenderDistance, maxDistance)) return false;
 
-        Entity target = MinecraftClient.getInstance().targetedEntity;
-        if (livingEntity.getType().isIn(ConventionalEntityTypeTags.BOSSES)) {
+        Entity target = Minecraft.getInstance().crosshairPickEntity;
+        if (livingEntity.getType().is(ConventionalEntityTypeTags.BOSSES)) {
             if (bossesVisibilityOverride && livingEntity == target) return true;
             return shouldRenderHealthFor(bosses, livingEntity);
         }
-        else if (livingEntity instanceof HostileEntity) {
+        else if (livingEntity instanceof Monster) {
             if (hostileVisibilityOverride && livingEntity == target) return true;
             return shouldRenderHealthFor(hostile, livingEntity);
         }
-        else if (livingEntity instanceof PlayerEntity) {
+        else if (livingEntity instanceof Player) {
             if (playersVisibilityOverride && livingEntity == target) return true;
             return shouldRenderHealthFor(players, livingEntity);
         }
@@ -116,8 +115,8 @@ public class Options {
     public static boolean isBlacklisted (Entity entity, @Nullable BarType barType) {
         return switch (barType) {
             case null -> false;
-            case WORLD -> Options.blacklist.contains(EntityType.getId(entity.getType()).toString());
-            case HUD -> Options.blacklistHUD.contains(EntityType.getId(entity.getType()).toString());
+            case WORLD -> Options.blacklist.contains(EntityType.getKey(entity.getType()).toString());
+            case HUD -> Options.blacklistHUD.contains(EntityType.getKey(entity.getType()).toString());
         };
     }
 
@@ -289,7 +288,7 @@ public class Options {
             case ALWAYS_HIDE -> false;
             case HIDE_IF_FULL -> {
                 if (livingEntity.getHealth() < livingEntity.getMaxHealth()) yield true;
-                else if (livingEntity.hasVehicle()) {
+                else if (livingEntity.isPassenger()) {
                     Entity vehicle = livingEntity.getVehicle();
                     while (vehicle != null) {
                         if (vehicle instanceof LivingEntity livingVehicle) {

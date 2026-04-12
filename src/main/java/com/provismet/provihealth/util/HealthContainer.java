@@ -1,6 +1,6 @@
 package com.provismet.provihealth.util;
 
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
 public final class HealthContainer {
     private float maxHealth;
@@ -33,7 +33,7 @@ public final class HealthContainer {
     }
 
     public void lerp (float progress) {
-        this.lerpedHealth = MathHelper.lerp(progress, this.previousHealth, this.currentHealth);
+        this.lerpedHealth = Mth.lerp(progress, this.previousHealth, this.currentHealth);
     }
 
     public float getMax () {

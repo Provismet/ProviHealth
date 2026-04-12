@@ -3,9 +3,6 @@ package com.provismet.provihealth.compat;
 import com.provismet.provihealth.ProviHealthClient;
 import com.provismet.provihealth.api.ProviHealthApi;
 
-import net.minecraft.item.Items;
-import net.minecraft.registry.tag.EntityTypeTags;
-
 public class SelfApiHook implements ProviHealthApi {
     private static final int DEFAULT_PRIORITY = -999;
 

@@ -3,12 +3,12 @@ package com.provismet.provihealth.config.resources;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.provismet.provihealth.config.Options;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.Codecs;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.ExtraCodecs;
+import net.minecraft.world.item.ItemStack;
 
 public class TagOptions {
     public static final Codec<TagOptions> CODEC = RecordCodecBuilder.create(
@@ -17,7 +17,7 @@ public class TagOptions {
             Identifier.CODEC.optionalFieldOf("border").forGetter(options -> Optional.ofNullable(options.border)),
             Identifier.CODEC.optionalFieldOf("healthbar").forGetter(options -> Optional.ofNullable(options.healthBar)),
             ItemStack.CODEC.optionalFieldOf("icon").forGetter(options -> Optional.ofNullable(options.icon)),
-            Codecs.NON_EMPTY_STRING.optionalFieldOf("hudType").forGetter(options -> Optional.ofNullable(options.hudType).map(Enum::name))
+            ExtraCodecs.NON_EMPTY_STRING.optionalFieldOf("hudType").forGetter(options -> Optional.ofNullable(options.hudType).map(Enum::name))
         ).apply(instance, (priority, border, health, icon, hud) -> new TagOptions(
             priority,
             border.orElse(null),

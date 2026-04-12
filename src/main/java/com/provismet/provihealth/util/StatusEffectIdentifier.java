@@ -1,24 +1,24 @@
 package com.provismet.provihealth.util;
 
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.particle.TintedParticleEffect;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.core.Holder;
+import net.minecraft.core.particles.ColorParticleOption;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.util.ARGB;
+import net.minecraft.world.effect.MobEffect;
 
 public abstract class StatusEffectIdentifier {
-    private static final Map<Integer, RegistryEntry<StatusEffect>> colourToEffect = new HashMap<>();
+    private static final Map<Integer, Holder<MobEffect>> colourToEffect = new HashMap<>();
 
     @Nullable
-    public static RegistryEntry<StatusEffect> fromParticleEffect (TintedParticleEffect particleEffect) {
+    public static Holder<MobEffect> fromParticleEffect (ColorParticleOption particleEffect) {
         return colourToEffect.getOrDefault(particleEffect.color, null);
     }
 
     public static void setup () {
-        Registries.STATUS_EFFECT.streamEntries().forEach(effect -> colourToEffect.putIfAbsent(ColorHelper.fullAlpha(effect.value().getColor()), effect));
+        BuiltInRegistries.MOB_EFFECT.listElements().forEach(effect -> colourToEffect.putIfAbsent(ARGB.opaque(effect.value().getColor()), effect));
     }
 }

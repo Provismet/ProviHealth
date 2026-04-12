@@ -1,45 +1,44 @@
 package com.provismet.provihealth.particle;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.provismet.provihealth.config.Options;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.particle.ParticleManager;
-import net.minecraft.client.particle.ParticleRenderer;
-import net.minecraft.client.particle.ParticleTextureSheet;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.Frustum;
-import net.minecraft.client.render.Submittable;
-import net.minecraft.client.render.command.OrderedRenderCommandQueue;
-import net.minecraft.client.render.state.CameraRenderState;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.MathHelper;
-
 import java.util.List;
+import net.minecraft.client.Camera;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.client.particle.ParticleGroup;
+import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.state.ParticleGroupRenderState;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 
-public class TextParticleRenderer extends ParticleRenderer<TextParticle> {
-    public static final ParticleTextureSheet PARTICLE_TEXTURE_SHEET = new ParticleTextureSheet("PROVIHEALTH_TEXT");
+public class TextParticleRenderer extends ParticleGroup<TextParticle> {
+    public static final ParticleRenderType PARTICLE_TEXTURE_SHEET = new ParticleRenderType("PROVIHEALTH_TEXT");
 
-    public TextParticleRenderer (ParticleManager particleManager) {
+    public TextParticleRenderer (ParticleEngine particleManager) {
         super(particleManager);
     }
 
     @Override
-    public Submittable render (Frustum frustum, Camera camera, float tickProgress) {
+    public ParticleGroupRenderState extractRenderState (Frustum frustum, Camera camera, float tickProgress) {
         return new TextParticleRenderer.Result(
             this.particles.stream().map(textParticle -> TextParticleRenderer.State.create(textParticle, camera, tickProgress)).toList()
         );
     }
 
-    record Result (List<TextParticleRenderer.State> states) implements Submittable {
+    record Result (List<TextParticleRenderer.State> states) implements ParticleGroupRenderState {
         @Override
-        public void submit (OrderedRenderCommandQueue queue, CameraRenderState cameraRenderState) {
+        public void submit (SubmitNodeCollector queue, CameraRenderState cameraRenderState) {
             for (State state : this.states) {
                 queue.submitText(
                     state.matrices,
                     0, 0,
-                    Text.literal(state.text).asOrderedText(),
+                    Component.literal(state.text).getVisualOrderText(),
                     Options.particleTextShadow,
-                    TextRenderer.TextLayerType.POLYGON_OFFSET,
+                    Font.DisplayMode.POLYGON_OFFSET,
                     state.light,
                     state.colour,
                     0,
@@ -49,20 +48,20 @@ public class TextParticleRenderer extends ParticleRenderer<TextParticle> {
         }
     }
 
-    record State (MatrixStack matrices, String text, int colour, int light) {
+    record State (PoseStack matrices, String text, int colour, int light) {
         public static TextParticleRenderer.State create (TextParticle particle, Camera camera, float tickDelta) {
-            MatrixStack matrices = new MatrixStack();
-            matrices.push();
-            float dX = (float)(MathHelper.lerp(tickDelta, particle.getPrevPos().x, particle.getPos().x) - camera.getCameraPos().getX());
-            float dY = (float)(MathHelper.lerp(tickDelta, particle.getPrevPos().y, particle.getPos().y) - camera.getCameraPos().getY());
-            float dZ = (float)(MathHelper.lerp(tickDelta, particle.getPrevPos().z, particle.getPos().z) - camera.getCameraPos().getZ());
+            PoseStack matrices = new PoseStack();
+            matrices.pushPose();
+            float dX = (float)(Mth.lerp(tickDelta, particle.getPrevPos().x, particle.getPos().x) - camera.position().x());
+            float dY = (float)(Mth.lerp(tickDelta, particle.getPrevPos().y, particle.getPos().y) - camera.position().y());
+            float dZ = (float)(Mth.lerp(tickDelta, particle.getPrevPos().z, particle.getPos().z) - camera.position().z());
 
             matrices.translate(dX, dY, dZ);
-            matrices.multiply(camera.getRotation());
+            matrices.mulPose(camera.rotation());
             float scaleSize = particle.getSize(tickDelta) / 6f;
             matrices.scale(scaleSize, -scaleSize, scaleSize);
 
-            return new TextParticleRenderer.State(matrices, particle.getText(), particle.getColour(), particle.getBrightness(tickDelta));
+            return new TextParticleRenderer.State(matrices, particle.getText(), particle.getColour(), particle.getLightColor(tickDelta));
         }
     }
 }

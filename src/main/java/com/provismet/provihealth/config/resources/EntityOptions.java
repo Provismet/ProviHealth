@@ -5,12 +5,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.hud.ElementRegistry;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalEntityTypeTags;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.Codecs;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.ExtraCodecs;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +25,7 @@ public class EntityOptions {
             Identifier.CODEC.optionalFieldOf("border").forGetter(options -> Optional.ofNullable(options.border)),
             Identifier.CODEC.optionalFieldOf("healthbar").forGetter(options -> Optional.ofNullable(options.healthBar)),
             ItemStack.CODEC.optionalFieldOf("icon").forGetter(options -> Optional.ofNullable(options.icon)),
-            Codecs.NON_EMPTY_STRING.optionalFieldOf("hudType").forGetter(options -> Optional.ofNullable(options.hudType).map(Enum::name))
+            ExtraCodecs.NON_EMPTY_STRING.optionalFieldOf("hudType").forGetter(options -> Optional.ofNullable(options.hudType).map(Enum::name))
         ).apply(instance, (border, health, icon, hud) -> new EntityOptions(border.orElse(null), health.orElse(null), icon.orElse(null), hud.orElse(null)))
     );
 
@@ -68,9 +68,9 @@ public class EntityOptions {
             Options.HUDType fromCache = ElementRegistry.getOrCacheHudType(entity);
             if (fromCache != null) return fromCache;
 
-            if (entity.getType().isIn(ConventionalEntityTypeTags.BOSSES)) return Options.bossHUD;
-            else if (entity instanceof HostileEntity) return Options.hostileHUD;
-            else if (entity instanceof PlayerEntity) return Options.playerHUD;
+            if (entity.getType().is(ConventionalEntityTypeTags.BOSSES)) return Options.bossHUD;
+            else if (entity instanceof Monster) return Options.hostileHUD;
+            else if (entity instanceof Player) return Options.playerHUD;
             else return Options.otherHUD;
         }
         return this.hudType;
