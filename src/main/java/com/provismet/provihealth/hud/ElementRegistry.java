@@ -207,7 +207,7 @@ public class ElementRegistry implements ResourceManagerReloadListener {
         // Read from assets
         for (Map.Entry<TagKey<EntityType<?>>, TagOptions> entry : tagOptionsCache.entrySet()) {
             if (entity.is(entry.getKey()) && entry.getValue().getPriority() > maxPriority && entry.getValue().getIcon() != null) {
-                bestIcon = entry.getValue().getIcon();
+                bestIcon = entry.getValue().getIcon().create();
                 maxPriority = entry.getValue().getPriority();
             }
         }

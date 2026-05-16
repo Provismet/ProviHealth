@@ -1,7 +1,6 @@
 {
   "border": "provihealth:textures/gui/healthbars/arthropod.png",
   "icon": {
-    "count": 1,
     "id": "minecraft:cobweb"
   },
   "priority": -997

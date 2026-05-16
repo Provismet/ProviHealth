@@ -22,7 +22,7 @@ public class TagOptionsGenerator extends TagOptionsDatagenProvider {
             DEFAULT_PRIORITY + 1,
             ProviHealthClient.identifier("textures/gui/healthbars/aquatic.png"),
             null,
-            Items.COD.getDefaultInstance(),
+            Items.COD,
             null
         ));
 
@@ -30,7 +30,7 @@ public class TagOptionsGenerator extends TagOptionsDatagenProvider {
             DEFAULT_PRIORITY + 2,
             ProviHealthClient.identifier("textures/gui/healthbars/arthropod.png"),
             null,
-            Items.COBWEB.getDefaultInstance(),
+            Items.COBWEB,
             null
         ));
 
@@ -38,7 +38,7 @@ public class TagOptionsGenerator extends TagOptionsDatagenProvider {
             DEFAULT_PRIORITY,
             ProviHealthClient.identifier("textures/gui/healthbars/illager.png"),
             null,
-            Items.IRON_AXE.getDefaultInstance(),
+            Items.IRON_AXE,
             null
         ));
 
@@ -46,7 +46,7 @@ public class TagOptionsGenerator extends TagOptionsDatagenProvider {
             DEFAULT_PRIORITY + 3,
             ProviHealthClient.identifier("textures/gui/healthbars/undead.png"),
             null,
-            Items.ROTTEN_FLESH.getDefaultInstance(),
+            Items.ROTTEN_FLESH,
             null
         ));
     }

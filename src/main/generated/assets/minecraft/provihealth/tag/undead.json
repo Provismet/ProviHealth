@@ -1,7 +1,6 @@
 {
   "border": "provihealth:textures/gui/healthbars/undead.png",
   "icon": {
-    "count": 1,
     "id": "minecraft:rotten_flesh"
   },
   "priority": -996

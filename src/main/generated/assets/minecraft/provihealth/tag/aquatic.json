@@ -1,7 +1,6 @@
 {
   "border": "provihealth:textures/gui/healthbars/aquatic.png",
   "icon": {
-    "count": 1,
     "id": "minecraft:cod"
   },
   "priority": -998

@@ -3,12 +3,13 @@ package com.provismet.provihealth.config.resources;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.provismet.provihealth.config.Options;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStackTemplate;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.world.item.ItemStack;
 
 public class TagOptions {
     public static final Codec<TagOptions> CODEC = RecordCodecBuilder.create(
@@ -16,7 +17,7 @@ public class TagOptions {
             Codec.INT.fieldOf("priority").forGetter(TagOptions::getPriority),
             Identifier.CODEC.optionalFieldOf("border").forGetter(options -> Optional.ofNullable(options.border)),
             Identifier.CODEC.optionalFieldOf("healthbar").forGetter(options -> Optional.ofNullable(options.healthBar)),
-            ItemStack.CODEC.optionalFieldOf("icon").forGetter(options -> Optional.ofNullable(options.icon)),
+            ItemStackTemplate.CODEC.optionalFieldOf("icon").forGetter(options -> Optional.ofNullable(options.icon)),
             ExtraCodecs.NON_EMPTY_STRING.optionalFieldOf("hudType").forGetter(options -> Optional.ofNullable(options.hudType).map(Enum::name))
         ).apply(instance, (priority, border, health, icon, hud) -> new TagOptions(
             priority,
@@ -30,16 +31,20 @@ public class TagOptions {
     private final int priority;
     private final Identifier border;
     private final Identifier healthBar;
-    private final ItemStack icon;
+    private final ItemStackTemplate icon;
     private final Options.HUDType hudType;
 
-    public TagOptions (int priority, Identifier border, Identifier healthBar, ItemStack icon, String hudType) {
+    public TagOptions (int priority, Identifier border, Identifier healthBar, ItemStackTemplate icon, String hudType) {
         this.priority = priority;
         this.border = border;
         this.healthBar = healthBar;
         this.icon = icon;
         if (hudType == null) this.hudType = null;
         else this.hudType = Options.HUDType.valueOf(hudType);
+    }
+
+    public TagOptions (int priority, Identifier border, Identifier healthBar, Item icon, String hudType) {
+        this(priority, border, healthBar, new ItemStackTemplate(icon), hudType);
     }
 
     public int getPriority () {
@@ -57,7 +62,7 @@ public class TagOptions {
     }
 
     @Nullable
-    public ItemStack getIcon () {
+    public ItemStackTemplate getIcon () {
         return this.icon;
     }
 
