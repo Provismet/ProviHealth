@@ -16,20 +16,20 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.render.TextureSetup;
-import net.minecraft.client.gui.render.state.BlitRenderState;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.state.gui.BlitRenderState;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.CommonColors;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.LivingEntity;
@@ -80,7 +80,7 @@ public class TargetHealthBar implements HudElement {
     private int currentVehicleHealthWidth;
 
     @Override
-    public void render (GuiGraphics drawContext, DeltaTracker tickCounter) {
+    public void extractRenderState (GuiGraphicsExtractor drawContext, DeltaTracker tickCounter) {
         float tickDelta = tickCounter.getGameTimeDeltaPartialTick(true);
         if (this.healthBarDuration > 0f) this.healthBarDuration -= tickDelta;
         else this.reset();
@@ -137,11 +137,11 @@ public class TargetHealthBar implements HudElement {
             ItemStack icon = entityOptions.getIcon(this.target);
             if (Options.hudPosition == HUDPosition.LEFT) {
                 int expectedNameX = LEFT_TEXT_X + nameWidth + 2; // Starting point + width + 2 pixels of free space.
-                if (icon != null && Options.showHudIcon) drawContext.renderItem(icon, Math.max(BAR_X + BAR_WIDTH - 16, expectedNameX), BAR_Y - 16);
+                if (icon != null && Options.showHudIcon) drawContext.item(icon, Math.max(BAR_X + BAR_WIDTH - 16, expectedNameX), BAR_Y - 16);
             }
             else {
                 int expectedNameX = OFFSET_X - 18 - nameWidth; // Leftmost pixel of name, then left by 2 pixels, then left by 16 to make space for the icon.
-                if (icon != null && Options.showHudIcon) drawContext.renderItem(icon, Math.min(BAR_X, expectedNameX), BAR_Y - 16);
+                if (icon != null && Options.showHudIcon) drawContext.item(icon, Math.min(BAR_X, expectedNameX), BAR_Y - 16);
                 infoLeftX = BAR_X + 3;
             }
 
@@ -191,14 +191,14 @@ public class TargetHealthBar implements HudElement {
 
             if (Options.hudPosition == HUDPosition.LEFT) {
                 for (Component title : titles) {
-                    drawContext.drawString(Minecraft.getInstance().font, title, titleX, titleY, CommonColors.WHITE, true);
+                    drawContext.text(Minecraft.getInstance().font, title, titleX, titleY, CommonColors.WHITE, true);
                     titleY += 10;
                 }
             }
             else {
                 for (Component title : titles) {
                     titleX = Minecraft.getInstance().getWindow().getGuiScaledWidth() - 10 - Minecraft.getInstance().font.width(title);
-                    drawContext.drawString(Minecraft.getInstance().font, title, titleX, titleY, CommonColors.WHITE, true);
+                    drawContext.text(Minecraft.getInstance().font, title, titleX, titleY, CommonColors.WHITE, true);
                     titleY += 10;
                 }
             }
@@ -208,11 +208,11 @@ public class TargetHealthBar implements HudElement {
             // Render Portrait Background and Text (foreground comes later)
             if (Options.hudPosition == HUDPosition.LEFT) {
                 this.drawTexturedWhiteQuad(entityOptions.getBorder(this.target), drawContext, 0, OFFSET_Y, 48f, 0f, FRAME_LENGTH, FRAME_LENGTH, FRAME_LENGTH * 2, FRAME_LENGTH); // Background
-                drawContext.drawString(Minecraft.getInstance().font, this.getName(this.target), LEFT_TEXT_X, BAR_Y - BAR_HEIGHT, CommonColors.WHITE, true); // Name
+                drawContext.text(Minecraft.getInstance().font, this.getName(this.target), LEFT_TEXT_X, BAR_Y - BAR_HEIGHT, CommonColors.WHITE, true); // Name
             }
             else {
                 this.drawHorizontallyMirroredTexturedQuad(entityOptions.getBorder(this.target), drawContext, OFFSET_X, OFFSET_X + FRAME_LENGTH, OFFSET_Y, OFFSET_Y + FRAME_LENGTH, 0.5f, 1f, 0f, 1f, CommonColors.WHITE); // Background
-                drawContext.drawString(Minecraft.getInstance().font, this.getName(this.target), OFFSET_X - 1 - nameWidth, BAR_Y - BAR_HEIGHT, CommonColors.WHITE, true); // Name
+                drawContext.text(Minecraft.getInstance().font, this.getName(this.target), OFFSET_X - 1 - nameWidth, BAR_Y - BAR_HEIGHT, CommonColors.WHITE, true); // Name
             }
 
             // Render Paper Doll
@@ -264,13 +264,13 @@ public class TargetHealthBar implements HudElement {
         return this.currentVehicleHealthWidth;
     }
 
-    private void renderBar (GuiGraphics drawContext, Identifier texture, int width, int barIndex) {
+    private void renderBar (GuiGraphicsExtractor drawContext, Identifier texture, int width, int barIndex) {
         int barColour = ARGB.opaque(ColourHelper.lerpBarColour(1 - (float)width / (float)BAR_WIDTH, barIndex == 1 ? CommonColors.WHITE : Options.hudStartColour, Options.hudEndColour, barIndex == 0 && Options.hudGradient));
         if (Options.hudPosition == HUDPosition.LEFT) drawContext.innerBlit(RenderPipelines.GUI_TEXTURED, texture, BAR_X, BAR_X + width, BAR_Y, BAR_Y + BAR_HEIGHT, 0f, (float)width / (float)BAR_WIDTH, barIndex / 2f, BAR_V2 + barIndex / 2f, barColour);
         else this.drawHorizontallyMirroredTexturedQuad(texture, drawContext, BAR_X + (BAR_WIDTH - width), BAR_X + BAR_WIDTH, BAR_Y, BAR_Y + BAR_HEIGHT, 0f, (float)width / (float)BAR_WIDTH, barIndex / 2f, BAR_V2 + barIndex / 2f, barColour);
     }
 
-    private void renderMountBar (GuiGraphics drawContext, Identifier texture, int width, int barIndex) {
+    private void renderMountBar (GuiGraphicsExtractor drawContext, Identifier texture, int width, int barIndex) {
         int barColour = ARGB.opaque(ColourHelper.lerpBarColour(1 - (float)width / (float)MOUNT_BAR_WIDTH, barIndex == 1 ? CommonColors.WHITE : Options.hudStartColour, Options.hudEndColour, barIndex == 0 && Options.hudGradient));
         if (Options.hudPosition == HUDPosition.LEFT) drawContext.innerBlit(RenderPipelines.GUI_TEXTURED, texture, BAR_X, BAR_X + width, BAR_Y + BAR_HEIGHT, BAR_Y + BAR_HEIGHT + MOUNT_BAR_HEIGHT, 0f, ((float)width / (float)MOUNT_BAR_WIDTH) * MOUNT_BAR_U2, MOUNT_BAR_V1 + barIndex / 2f, MOUNT_BAR_V2 + barIndex / 2f, barColour);
         else this.drawHorizontallyMirroredTexturedQuad(texture, drawContext, BAR_X + (MOUNT_BAR_WIDTH - width) + BAR_WIDTH_DIFF, BAR_X + BAR_WIDTH_DIFF + MOUNT_BAR_WIDTH, BAR_Y + BAR_HEIGHT, BAR_Y + BAR_HEIGHT + MOUNT_BAR_HEIGHT, 0f, ((float)width / (float)MOUNT_BAR_WIDTH) * MOUNT_BAR_U2, MOUNT_BAR_V1 + barIndex / 2f, MOUNT_BAR_V2 + barIndex / 2f, barColour);
@@ -304,11 +304,11 @@ public class TargetHealthBar implements HudElement {
         }
     }
 
-    private void drawHorizontallyMirroredTexturedQuad (Identifier texture, GuiGraphics context, int x1, int x2, int y1, int y2, float u1, float u2, float v1, float v2, int colour) {
+    private void drawHorizontallyMirroredTexturedQuad (Identifier texture, GuiGraphicsExtractor context, int x1, int x2, int y1, int y2, float u1, float u2, float v1, float v2, int colour) {
         this.drawTexturedQuad(texture, context, x1, x2, y1, y2, u2, u1, v1, v2, colour);
     }
 
-    private void drawTexturedWhiteQuad (Identifier texture, GuiGraphics context, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight) {
+    private void drawTexturedWhiteQuad (Identifier texture, GuiGraphicsExtractor context, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight) {
         this.drawTexturedQuad(texture, context, x, x + width, y, y + height, u / (float)textureWidth, (u + (float)width) / (float)textureWidth, v / (float)textureHeight, (v + (float)height) / (float)textureHeight, CommonColors.WHITE);
     }
 
@@ -327,9 +327,9 @@ public class TargetHealthBar implements HudElement {
      * @param v2 As a percentage of the texture-height, the bottommost pixel to read and render.
      * @param colour Colour
      */
-    private void drawTexturedQuad (Identifier texture, GuiGraphics context, int x1, int x2, int y1, int y2, float u1, float u2, float v1, float v2, int colour) {
+    private void drawTexturedQuad (Identifier texture, GuiGraphicsExtractor context, int x1, int x2, int y1, int y2, float u1, float u2, float v1, float v2, int colour) {
         AbstractTexture abstractTexture = Minecraft.getInstance().getTextureManager().getTexture(texture);
-        context.guiRenderState.submitGuiElement(
+        context.guiRenderState.addGuiElement(
             new BlitRenderState(
                 RenderPipelines.GUI_TEXTURED,
                 TextureSetup.singleTexture(abstractTexture.getTextureView(), abstractTexture.getSampler()),
@@ -344,12 +344,12 @@ public class TargetHealthBar implements HudElement {
         );
     }
 
-    private int drawTextAndGetWidth (GuiGraphics context, String text, int x, int y, int colour, boolean shadow) {
-        context.drawString(Minecraft.getInstance().font, text, x, y, ARGB.opaque(colour), shadow);
+    private int drawTextAndGetWidth (GuiGraphicsExtractor context, String text, int x, int y, int colour, boolean shadow) {
+        context.text(Minecraft.getInstance().font, text, x, y, ARGB.opaque(colour), shadow);
         return x + Minecraft.getInstance().font.width(text);
     }
 
-    private void drawEntity (GuiGraphics context, Quaternionf rotation) {
+    private void drawEntity (GuiGraphicsExtractor context, Quaternionf rotation) {
         float renderHeight;
         if (this.target.getEyeHeight(Pose.STANDING) >= this.target.getBbHeight() * 0.6) {
             renderHeight = this.target.getEyeHeight(this.target.getPose()) + 0.5f;
@@ -373,7 +373,7 @@ public class TargetHealthBar implements HudElement {
     }
 
     private void drawEntity (
-        GuiGraphics drawer,
+        GuiGraphicsExtractor drawer,
         int x1,
         int y1,
         int x2,
@@ -389,8 +389,8 @@ public class TargetHealthBar implements HudElement {
         state.displayFireAnimation = false;
         state.nameTagAttachment = null;
         state.outlineColor = 0;
-        state.lightCoords = LightTexture.FULL_BRIGHT;
+        state.lightCoords = LightCoordsUtil.FULL_BRIGHT;
         ((IMixinEntityRenderState)state).provi_Health$setShouldRenderHealth(false);
-        drawer.submitEntityRenderState(state, scale, translation, rotation, null, x1, y1, x2, y2);
+        drawer.entity(state, scale, translation, rotation, null, x1, y1, x2, y2);
     }
 }

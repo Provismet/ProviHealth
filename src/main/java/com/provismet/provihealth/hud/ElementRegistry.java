@@ -169,7 +169,7 @@ public class ElementRegistry implements ResourceManagerReloadListener {
             Identifier bestBorder = DEFAULT_BORDER;
             // Read from assets
             for (Map.Entry<TagKey<EntityType<?>>, TagOptions> entry : tagOptionsCache.entrySet()) {
-                if (entity.getType().is(entry.getKey()) && entry.getValue().getPriority() > maxPriority && entry.getValue().getBorder() != null) {
+                if (entity.is(entry.getKey()) && entry.getValue().getPriority() > maxPriority && entry.getValue().getBorder() != null) {
                     bestBorder = entry.getValue().getBorder();
                     maxPriority = entry.getValue().getPriority();
                 }
@@ -177,7 +177,7 @@ public class ElementRegistry implements ResourceManagerReloadListener {
 
             // Read from mod addons
             for (TagKey<EntityType<?>> entityTag : tagBorderPriorities.keySet()) {
-                if (entity.getType().is(entityTag) && tagBorderPriorities.get(entityTag).priority() > maxPriority) {
+                if (entity.is(entityTag) && tagBorderPriorities.get(entityTag).priority() > maxPriority) {
                     bestBorder = tagBorderPriorities.get(entityTag).borderId();
                     maxPriority = tagBorderPriorities.get(entityTag).priority();
                 }
@@ -206,7 +206,7 @@ public class ElementRegistry implements ResourceManagerReloadListener {
 
         // Read from assets
         for (Map.Entry<TagKey<EntityType<?>>, TagOptions> entry : tagOptionsCache.entrySet()) {
-            if (entity.getType().is(entry.getKey()) && entry.getValue().getPriority() > maxPriority && entry.getValue().getIcon() != null) {
+            if (entity.is(entry.getKey()) && entry.getValue().getPriority() > maxPriority && entry.getValue().getIcon() != null) {
                 bestIcon = entry.getValue().getIcon();
                 maxPriority = entry.getValue().getPriority();
             }
@@ -214,7 +214,7 @@ public class ElementRegistry implements ResourceManagerReloadListener {
 
         // Read from mod addons
         for (TagKey<EntityType<?>> entityTag : tagIconPriorities.keySet()) {
-            if (entity.getType().is(entityTag) && tagIconPriorities.get(entityTag).priority() > maxPriority) {
+            if (entity.is(entityTag) && tagIconPriorities.get(entityTag).priority() > maxPriority) {
                 bestIcon = tagIconPriorities.get(entityTag).itemStack();
                 maxPriority = tagIconPriorities.get(entityTag).priority();
             }
@@ -240,7 +240,7 @@ public class ElementRegistry implements ResourceManagerReloadListener {
 
         // Read from assets
         for (Map.Entry<TagKey<EntityType<?>>, TagOptions> entry : tagOptionsCache.entrySet()) {
-            if (entity.getType().is(entry.getKey()) && entry.getValue().getPriority() > maxPriority && entry.getValue().getHealthBar() != null) {
+            if (entity.is(entry.getKey()) && entry.getValue().getPriority() > maxPriority && entry.getValue().getHealthBar() != null) {
                 bestBars = entry.getValue().getHealthBar();
                 maxPriority = entry.getValue().getPriority();
             }
@@ -260,7 +260,7 @@ public class ElementRegistry implements ResourceManagerReloadListener {
 
         // Read from assets
         for (Map.Entry<TagKey<EntityType<?>>, TagOptions> entry : tagOptionsCache.entrySet()) {
-            if (entity.getType().is(entry.getKey()) && entry.getValue().getPriority() > maxPriority && entry.getValue().getHudType() != null) {
+            if (entity.is(entry.getKey()) && entry.getValue().getPriority() > maxPriority && entry.getValue().getHudType() != null) {
                 bestHud = entry.getValue().getHudType();
                 maxPriority = entry.getValue().getPriority();
             }

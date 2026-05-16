@@ -3,7 +3,7 @@ package com.provismet.provihealth.datagen;
 import com.provismet.provihealth.ProviHealthClient;
 import com.provismet.provihealth.api.TagOptionsDatagenProvider;
 import com.provismet.provihealth.config.resources.TagOptions;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.item.Items;
@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture;
 public class TagOptionsGenerator extends TagOptionsDatagenProvider {
     private static final int DEFAULT_PRIORITY = -999;
 
-    protected TagOptionsGenerator (FabricDataOutput dataOutput, CompletableFuture<HolderLookup.Provider> registriesFuture) {
+    protected TagOptionsGenerator (FabricPackOutput dataOutput, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         super(dataOutput, registriesFuture);
     }
 

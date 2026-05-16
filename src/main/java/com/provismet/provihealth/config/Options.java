@@ -94,7 +94,7 @@ public class Options {
 //        if (livingEntity.distanceTo(MinecraftClient.getInstance().player) > Math.min(Options.maxRenderDistance, maxDistance)) return false;
 
         Entity target = Minecraft.getInstance().crosshairPickEntity;
-        if (livingEntity.getType().is(ConventionalEntityTypeTags.BOSSES)) {
+        if (livingEntity.is(ConventionalEntityTypeTags.BOSSES)) {
             if (bossesVisibilityOverride && livingEntity == target) return true;
             return shouldRenderHealthFor(bosses, livingEntity);
         }

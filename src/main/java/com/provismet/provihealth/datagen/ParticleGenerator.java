@@ -3,12 +3,12 @@ package com.provismet.provihealth.datagen;
 import com.provismet.lilylib.datagen.provider.LilyParticleTextureProvider;
 import com.provismet.provihealth.ProviHealthClient;
 import com.provismet.provihealth.particle.Particles;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.minecraft.core.HolderLookup;
 import java.util.concurrent.CompletableFuture;
 
 public class ParticleGenerator extends LilyParticleTextureProvider {
-    protected ParticleGenerator (FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registryLookup) {
+    protected ParticleGenerator (FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registryLookup) {
         super(output, registryLookup);
     }
 

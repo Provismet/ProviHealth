@@ -1,6 +1,7 @@
 package com.provismet.provihealth.mixin;
 
 import com.provismet.provihealth.particle.TextParticleRenderer;
+import net.minecraft.client.renderer.state.level.ParticlesRenderState;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -15,7 +16,6 @@ import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.particle.ParticleGroup;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.client.renderer.state.ParticlesRenderState;
 
 @Mixin(ParticleEngine.class)
 public abstract class ParticleManagerMixin {

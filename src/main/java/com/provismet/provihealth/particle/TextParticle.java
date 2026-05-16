@@ -7,7 +7,7 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
@@ -93,8 +93,8 @@ public class TextParticle extends Particle {
     }
 
     @Override
-    public int getLightColor (float tint) {
-        return LightTexture.FULL_BRIGHT;
+    public int getLightCoords (float tint) {
+        return LightCoordsUtil.FULL_BRIGHT;
     }
 
     public String getText () {

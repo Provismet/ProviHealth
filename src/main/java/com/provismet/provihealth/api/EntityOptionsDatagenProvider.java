@@ -5,7 +5,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import com.provismet.provihealth.ProviHealthClient;
 import com.provismet.provihealth.config.resources.EntityOptions;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
@@ -24,9 +24,9 @@ public abstract class EntityOptionsDatagenProvider implements DataProvider {
     private final CompletableFuture<HolderLookup.Provider> future;
     private final PackOutput.PathProvider pathResolver;
 
-    protected EntityOptionsDatagenProvider (FabricDataOutput dataOutput, CompletableFuture<HolderLookup.Provider> registriesFuture) {
+    protected EntityOptionsDatagenProvider (FabricPackOutput packOutput, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         this.future = registriesFuture;
-        this.pathResolver = dataOutput.createPathProvider(PackOutput.Target.RESOURCE_PACK, ProviHealthClient.MODID + "/entity");
+        this.pathResolver = packOutput.createPathProvider(PackOutput.Target.RESOURCE_PACK, ProviHealthClient.MODID + "/entity");
     }
 
     @Override

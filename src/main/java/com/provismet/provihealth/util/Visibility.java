@@ -7,7 +7,7 @@ import net.minecraft.world.entity.player.Player;
 
 public class Visibility {
     public static boolean isVisible (LivingEntity living) {
-        if (!living.isInvisibleTo(Minecraft.getInstance().player)) return true;
+        if (Minecraft.getInstance().player != null && !living.isInvisibleTo(Minecraft.getInstance().player)) return true;
         if (living instanceof Player player && player.isSpectator()) return false;
         if (living.isVehicle()) return true;
         if (!living.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) return true;

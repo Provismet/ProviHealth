@@ -2,7 +2,7 @@ package com.provismet.provihealth.particle;
 
 import com.provismet.provihealth.ProviHealthClient;
 
-import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
+import net.fabricmc.fabric.api.client.particle.v1.ParticleProviderRegistry;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleOptions;
@@ -15,9 +15,9 @@ public class Particles {
 
     public static void init () {}
 
-    private static <T extends ParticleOptions> ParticleType<T> register (String name, ParticleType<T> particle, ParticleFactoryRegistry.PendingParticleFactory<T> factoryConstructor) {
+    private static <T extends ParticleOptions> ParticleType<T> register (String name, ParticleType<T> particle, ParticleProviderRegistry.PendingParticleProvider<T> factoryConstructor) {
         Registry.register(BuiltInRegistries.PARTICLE_TYPE, ProviHealthClient.identifier(name), particle);
-        ParticleFactoryRegistry.getInstance().register(particle, factoryConstructor);
+        ParticleProviderRegistry.getInstance().register(particle, factoryConstructor);
         return particle;
     }
 }

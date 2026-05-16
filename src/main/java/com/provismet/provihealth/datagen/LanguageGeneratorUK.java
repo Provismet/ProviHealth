@@ -1,11 +1,11 @@
 package com.provismet.provihealth.datagen;
 
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.minecraft.core.HolderLookup;
 import java.util.concurrent.CompletableFuture;
 
 public class LanguageGeneratorUK extends LanguageGenerator {
-    protected LanguageGeneratorUK (FabricDataOutput dataOutput, CompletableFuture<HolderLookup.Provider> registryLookup) {
+    protected LanguageGeneratorUK (FabricPackOutput dataOutput, CompletableFuture<HolderLookup.Provider> registryLookup) {
         super(dataOutput, registryLookup, "en_gb");
     }
 

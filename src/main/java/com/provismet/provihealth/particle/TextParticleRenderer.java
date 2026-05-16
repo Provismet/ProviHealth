@@ -10,8 +10,8 @@ import net.minecraft.client.particle.ParticleGroup;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.client.renderer.state.CameraRenderState;
-import net.minecraft.client.renderer.state.ParticleGroupRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.state.level.ParticleGroupRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
@@ -61,7 +61,7 @@ public class TextParticleRenderer extends ParticleGroup<TextParticle> {
             float scaleSize = particle.getSize(tickDelta) / 6f;
             matrices.scale(scaleSize, -scaleSize, scaleSize);
 
-            return new TextParticleRenderer.State(matrices, particle.getText(), particle.getColour(), particle.getLightColor(tickDelta));
+            return new TextParticleRenderer.State(matrices, particle.getText(), particle.getColour(), particle.getLightCoords(tickDelta));
         }
     }
 }

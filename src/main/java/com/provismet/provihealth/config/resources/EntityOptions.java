@@ -68,7 +68,7 @@ public class EntityOptions {
             Options.HUDType fromCache = ElementRegistry.getOrCacheHudType(entity);
             if (fromCache != null) return fromCache;
 
-            if (entity.getType().is(ConventionalEntityTypeTags.BOSSES)) return Options.bossHUD;
+            if (entity.is(ConventionalEntityTypeTags.BOSSES)) return Options.bossHUD;
             else if (entity instanceof Monster) return Options.hostileHUD;
             else if (entity instanceof Player) return Options.playerHUD;
             else return Options.otherHUD;

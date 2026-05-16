@@ -12,7 +12,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
-import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Final;
@@ -30,7 +30,7 @@ public abstract class EntityRendererMixin {
     @Shadow
     protected abstract boolean shouldShowName (Entity entity, double squaredDistanceToCamera);
 
-    @Inject(method="submitNameTag", at=@At("HEAD"), cancellable=true)
+    @Inject(method="submitNameDisplay(Lnet/minecraft/client/renderer/entity/state/EntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V", at=@At("HEAD"), cancellable=true)
     private void cancelLabel (EntityRenderState state, PoseStack matrices, SubmitNodeCollector queue, CameraRenderState cameraRenderState, CallbackInfo info) {
         if (Options.overrideLabels &&  ((IMixinEntityRenderState)state).provi_Health$shouldRenderHealth()) info.cancel();
     }

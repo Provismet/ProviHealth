@@ -5,7 +5,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import com.provismet.provihealth.ProviHealthClient;
 import com.provismet.provihealth.config.resources.TagOptions;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
@@ -21,7 +21,7 @@ public abstract class TagOptionsDatagenProvider implements DataProvider {
     private final CompletableFuture<HolderLookup.Provider> future;
     private final PackOutput.PathProvider pathResolver;
 
-    protected TagOptionsDatagenProvider (FabricDataOutput dataOutput, CompletableFuture<HolderLookup.Provider> registriesFuture) {
+    protected TagOptionsDatagenProvider (FabricPackOutput dataOutput, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         this.future = registriesFuture;
         this.pathResolver = dataOutput.createPathProvider(PackOutput.Target.RESOURCE_PACK, ProviHealthClient.MODID + "/tag");
     }

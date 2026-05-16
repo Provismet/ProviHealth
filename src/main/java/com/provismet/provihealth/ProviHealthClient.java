@@ -33,7 +33,7 @@ public class ProviHealthClient implements ClientModInitializer {
         });
 
         HudElementRegistry.addLast(TargetHealthBar.HEALTHBAR_LAYER, new TargetHealthBar());
-        ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(identifier("asset_listener"), new ElementRegistry());
+        ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(identifier("asset_listener"), new ElementRegistry());
 
         FabricLoader.getInstance().getEntrypointContainers(MODID, ProviHealthApi.class).forEach(
             entrypoint -> {

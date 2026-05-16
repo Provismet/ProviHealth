@@ -8,8 +8,8 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.util.ARGB;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
@@ -109,8 +109,8 @@ public class HealthParticle extends SingleQuadParticle {
     }
 
     @Override
-    public int getLightColor (float tint) {
-        return LightTexture.pack(15, 15);
+    public int getLightCoords (float tint) {
+        return LightCoordsUtil.FULL_BRIGHT;
     }
 
     public String getText () {

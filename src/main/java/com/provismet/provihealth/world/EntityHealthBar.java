@@ -6,14 +6,9 @@ import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.config.Options.SeeThroughText;
 import com.provismet.provihealth.interfaces.IMixinEntityRenderState;
 import com.provismet.provihealth.util.HealthContainer;
-import org.joml.Quaternionf;
-
-import java.util.List;
-import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Font.DisplayMode;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
@@ -22,11 +17,16 @@ import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.CommonColors;
+import net.minecraft.util.LightCoordsUtil;
+import org.joml.Quaternionf;
+
+import java.util.List;
+import java.util.Optional;
 
 public class EntityHealthBar {
     public static final float TEXTURE_SIZE = 64;
     private static final Identifier BARS = ProviHealthClient.identifier("textures/gui/healthbars/in_world.png");
-    private static final int LIGHT = LightTexture.pack(15, 15);
+    private static final int LIGHT = LightCoordsUtil.FULL_BRIGHT;
     private static final int BACKGROUND_BAR_INDEX = 1;
     private static final int FOREGROUND_BAR_INDEX = 0;
 
