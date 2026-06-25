@@ -1,1 +1,1 @@
-Updated to Minecraft 26.1 versions!
+Updated to Minecraft 26.2 versions
