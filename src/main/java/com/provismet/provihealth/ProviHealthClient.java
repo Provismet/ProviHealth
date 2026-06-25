@@ -3,7 +3,7 @@ package com.provismet.provihealth;
 import com.provismet.provihealth.api.ProviHealthApi;
 import com.provismet.provihealth.config.Options;
 import com.provismet.provihealth.hud.ElementRegistry;
-import com.provismet.provihealth.hud.TargetHealthBar;
+import com.provismet.provihealth.hud.HudHealthBar;
 import com.provismet.provihealth.particle.Particles;
 import com.provismet.provihealth.util.StatusEffectIdentifier;
 import net.fabricmc.api.ClientModInitializer;
@@ -32,7 +32,7 @@ public class ProviHealthClient implements ClientModInitializer {
             ResourceLoader.registerBuiltinPack(identifier("square_bars"), container, Component.translatable("resource.provihealth.square_bars"), PackActivationType.NORMAL);
         });
 
-        HudElementRegistry.addLast(TargetHealthBar.HEALTHBAR_LAYER, new TargetHealthBar());
+        HudElementRegistry.addLast(HudHealthBar.HEALTHBAR_LAYER, new HudHealthBar());
         ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(identifier("asset_listener"), new ElementRegistry());
 
         FabricLoader.getInstance().getEntrypointContainers(MODID, ProviHealthApi.class).forEach(

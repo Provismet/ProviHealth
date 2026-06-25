@@ -41,7 +41,7 @@ import org.joml.Vector3f;
 
 import java.util.List;
 
-public class TargetHealthBar implements HudElement {
+public class HudHealthBar implements HudElement {
     public static final Identifier HEALTHBAR_LAYER = ProviHealthClient.identifier("healthbar_layer");
 
     private static final Identifier COMPAT_BARS = ProviHealthClient.identifier("textures/gui/healthbars/bars_coloured.png");
