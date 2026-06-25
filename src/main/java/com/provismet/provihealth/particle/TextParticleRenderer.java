@@ -16,7 +16,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
 public class TextParticleRenderer extends ParticleGroup<TextParticle> {
-    public static final ParticleRenderType PARTICLE_TEXTURE_SHEET = new ParticleRenderType("PROVIHEALTH_TEXT");
+    public static final ParticleRenderType PARTICLE_TEXTURE_SHEET = new ParticleRenderType("PROVIHEALTH_TEXT", "PHT");
 
     public TextParticleRenderer (ParticleEngine particleManager) {
         super(particleManager);

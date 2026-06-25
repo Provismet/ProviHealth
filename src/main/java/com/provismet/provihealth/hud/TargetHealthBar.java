@@ -15,8 +15,8 @@ import com.provismet.provihealth.util.Visibility;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
@@ -85,7 +85,8 @@ public class TargetHealthBar implements HudElement {
         if (this.healthBarDuration > 0f) this.healthBarDuration -= tickDelta;
         else this.reset();
 
-        if (!Minecraft.renderNames()
+
+        if (Minecraft.getInstance().gui.hud.isHidden()
             || Minecraft.getInstance().getDebugOverlay().showDebugScreen()
             || (Minecraft.getInstance().player != null && Minecraft.getInstance().player.isSpectator())) return;
 
@@ -175,7 +176,7 @@ public class TargetHealthBar implements HudElement {
                 if (!effects.isEmpty()) {
                     int effectXOffset = 0;
                     for (Holder<MobEffect> effect : effects) {
-                        Identifier effectTexture = Gui.getMobEffectSprite(effect);
+                        Identifier effectTexture = Hud.getMobEffectSprite(effect);
                         drawContext.blitSprite(RenderPipelines.GUI_TEXTURED, effectTexture, EFFECT_X + effectXOffset, EFFECT_BASE_Y + offsetFromMountBar, 16, 16);
                         effectXOffset += EFFECT_X_OFFSET;
                     }

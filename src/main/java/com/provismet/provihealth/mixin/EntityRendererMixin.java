@@ -78,7 +78,9 @@ public abstract class EntityRendererMixin {
                 mixinState.provi_Health$getMountHealth().lerp(tickDelta);
             }
 
-            if (living.getTeam() != null) mixinState.provi_Health$setTeamColour(living.getTeam().getColor().getColor());
+            if (living.getTeam() != null && living.getTeam().getColor().isPresent()) {
+                mixinState.provi_Health$setTeamColour(living.getTeam().getColor().get().rgb());
+            }
             else mixinState.provi_Health$setTeamColour(null);
         }
     }

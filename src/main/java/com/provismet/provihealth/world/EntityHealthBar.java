@@ -32,7 +32,7 @@ public class EntityHealthBar {
 
     public static void render (EntityRenderState state, PoseStack matrices, SubmitNodeCollector queue, Quaternionf rotation, Font textRenderer) {
         IMixinEntityRenderState mixinState = (IMixinEntityRenderState)state;
-        if (!mixinState.provi_Health$isLiving() || !mixinState.provi_Health$shouldRenderHealth() || !Minecraft.renderNames()) return;
+        if (!mixinState.provi_Health$isLiving() || !mixinState.provi_Health$shouldRenderHealth() || Minecraft.getInstance().gui.hud.isHidden()) return;
 
         matrices.pushPose();
         matrices.translate(0f, state.boundingBoxHeight + 0.45f - (0.003f / Options.worldHealthBarScale) + Options.worldOffsetY, 0f);
