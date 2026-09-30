@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.state.level.ParticleGroupRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import org.joml.Matrix4f;
 
 public class TextParticleRenderer extends ParticleGroup<TextParticle> {
     public static final ParticleRenderType PARTICLE_TEXTURE_SHEET = new ParticleRenderType("PROVIHEALTH_TEXT", "PHT");
@@ -57,7 +58,7 @@ public class TextParticleRenderer extends ParticleGroup<TextParticle> {
             float dZ = (float)(Mth.lerp(tickDelta, particle.getPrevPos().z, particle.getPos().z) - camera.position().z());
 
             matrices.translate(dX, dY, dZ);
-            matrices.mulPose(camera.rotation());
+            matrices.mulPose(camera.getViewRotationMatrix(new Matrix4f()).invert(new Matrix4f()));
             float scaleSize = particle.getSize(tickDelta) / 6f;
             matrices.scale(scaleSize, -scaleSize, scaleSize);
 

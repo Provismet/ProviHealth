@@ -37,7 +37,7 @@ public abstract class EntityRendererMixin {
 
     @Inject(method="submit", at=@At("HEAD"))
     private void addHealthBar (EntityRenderState state, PoseStack matrices, SubmitNodeCollector queue, CameraRenderState cameraState, CallbackInfo info) {
-        EntityHealthBar.render(state, matrices, queue, cameraState.orientation, this.font);
+        EntityHealthBar.render(state, matrices, queue, cameraState, this.font);
     }
 
     @Inject(method="extractRenderState", at=@At("HEAD"))

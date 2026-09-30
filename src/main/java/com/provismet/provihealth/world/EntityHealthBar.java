@@ -14,11 +14,12 @@ import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.CommonColors;
 import net.minecraft.util.LightCoordsUtil;
-import org.joml.Quaternionf;
+import org.joml.Matrix4f;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +31,7 @@ public class EntityHealthBar {
     private static final int BACKGROUND_BAR_INDEX = 1;
     private static final int FOREGROUND_BAR_INDEX = 0;
 
-    public static void render (EntityRenderState state, PoseStack matrices, SubmitNodeCollector queue, Quaternionf rotation, Font textRenderer) {
+    public static void render (EntityRenderState state, PoseStack matrices, SubmitNodeCollector queue, CameraRenderState cameraRenderState, Font textRenderer) {
         IMixinEntityRenderState mixinState = (IMixinEntityRenderState)state;
         if (!mixinState.provi_Health$isLiving() || !mixinState.provi_Health$shouldRenderHealth() || Minecraft.getInstance().gui.hud.isHidden()) return;
 
@@ -38,7 +39,7 @@ public class EntityHealthBar {
         matrices.translate(0f, state.boundingBoxHeight + 0.45f - (0.003f / Options.worldHealthBarScale) + Options.worldOffsetY, 0f);
         matrices.scale(Options.worldHealthBarScale, Options.worldHealthBarScale, Options.worldHealthBarScale);
         matrices.translate(0f, (mixinState.provi_Health$shouldRenderLabel() && !Options.overrideLabels && !(state.isInvisible || (state instanceof LivingEntityRenderState livingState && livingState.isInvisibleToPlayer)) ? 0.02f + 0.3f / Options.worldHealthBarScale : 0f), 0f);
-        matrices.mulPose(rotation); // This is the problem.
+        matrices.mulPose(cameraRenderState.viewRotationMatrix.invert(new Matrix4f())); // This is the problem.
 
         renderBars(mixinState, matrices, queue, false);
         if (mixinState.provi_Health$getMountHealth() != null && mixinState.provi_Health$getMountHealth().getMax() > 0) {
